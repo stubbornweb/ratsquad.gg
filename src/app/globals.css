@@ -2,14 +2,42 @@
 
 /* --- 0. DESIGN SYSTEM & RESET --- */
 
+/* NASTUP BASIC Font - Stencil Tactical Font */
+@font-face {
+    font-family: 'NASTUP';
+    src: url('/fonts/nastup/Nastup-Basic.woff2') format('woff2'),
+         url('/fonts/nastup/Nastup-Basic.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
-    --bg-main: #0A0A0A;
+    /* Backgrounds - Deep tactical blacks */
+    --bg-main: #09090B;
     --bg-alt: #0D0D0D;
     --bg-footer: #050505;
-    --accent: #FFA500;
-    --text-main: #FFFFFF;
-    --text-muted: #888888;
-    --border-color: #1A1A1A;
+    --bg-card: #111111;
+
+    /* Accent - Cyber/Tactical Yellow */
+    --accent: #FFD700;
+    --accent-dim: rgba(255, 215, 0, 0.6);
+    --accent-glow: rgba(255, 215, 0, 0.15);
+    --accent-pulse: rgba(255, 215, 0, 0.3);
+
+    /* Text hierarchy */
+    --text-main: #FAFAFA;
+    --text-muted: #A1A1AA;
+    --text-dark: #71717A;
+
+    /* Borders - Industrial */
+    --border-color: #18181B;
+    --border-subtle: #27272A;
+    --border-accent: rgba(255, 215, 0, 0.3);
+
+    /* Status colors */
+    --status-danger: #EF4444;
+    --status-success: #22C55E;
 }
 
 @theme inline {
@@ -68,18 +96,35 @@ ul {
 .block { display: block; }
 .mt-2 { margin-top: 0.5rem; }
 
-/* Buttons */
+/* Buttons - Sharp Tactical Style */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-label), sans-serif;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 400;
     cursor: pointer;
     border-radius: 0; /* Strict requirement: no rounded corners */
-    transition: all 0.2s ease;
-    border: none;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    transition: none; /* Instant tactical response */
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.4s ease;
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn-primary {
@@ -87,10 +132,18 @@ ul {
     color: var(--bg-main);
     font-size: 16px;
     padding: 16px 40px;
+    border-color: var(--accent);
 }
 
 .btn-primary:hover {
-    filter: brightness(1.2);
+    background-color: var(--text-main);
+    color: var(--bg-main);
+    border-color: var(--text-main);
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
 }
 
 .btn-massive {
@@ -139,14 +192,123 @@ ul {
     transform: translateY(0);
 }
 
-/* Noise overlay */
+/* Noise overlay - Gritty Film Grain */
 .noise-overlay {
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
     z-index: 1;
     pointer-events: none;
+}
+
+/* Scanline Effect - CRT/Tactical Monitor */
+.scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.1) 2px,
+        rgba(0, 0, 0, 0.1) 4px
+    );
+    z-index: 2;
+    pointer-events: none;
+    animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+}
+
+/* Glitch Effect for Tactical Text */
+.glitch-text {
+    position: relative;
+}
+
+.glitch-text:hover {
+    animation: glitch 0.3s steps(2) infinite;
+}
+
+@keyframes glitch {
+    0% {
+        text-shadow: 2px 0 var(--accent), -2px 0 var(--status-danger);
+        transform: translate(0);
+    }
+    25% {
+        text-shadow: -2px 0 var(--accent), 2px 0 var(--status-danger);
+        transform: translate(-1px, 1px);
+    }
+    50% {
+        text-shadow: 2px 0 var(--status-danger), -2px 0 var(--accent);
+        transform: translate(1px, -1px);
+    }
+    75% {
+        text-shadow: -1px 0 var(--accent), 1px 0 var(--status-danger);
+        transform: translate(-1px, 0);
+    }
+    100% {
+        text-shadow: 2px 0 var(--accent), -2px 0 var(--status-danger);
+        transform: translate(0);
+    }
+}
+
+/* Stenciled Border - Interrupted Border Effect */
+.stencil-border {
+    position: relative;
+}
+
+.stencil-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    background:
+        linear-gradient(var(--border-color), var(--border-color)) padding-box,
+        repeating-linear-gradient(
+            90deg,
+            var(--border-subtle) 0px,
+            var(--border-subtle) 8px,
+            transparent 8px,
+            transparent 12px
+        ) border-box;
+    pointer-events: none;
+}
+
+/* Tactical Grid Background */
+.tactical-grid {
+    background-image:
+        linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+/* Hazard Stripe Pattern */
+.hazard-stripe {
+    background: repeating-linear-gradient(
+        -45deg,
+        var(--accent),
+        var(--accent) 10px,
+        var(--bg-main) 10px,
+        var(--bg-main) 20px
+    );
+    height: 4px;
+}
+
+/* Pulsing Glow Animation */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--accent-glow), 0 0 10px var(--accent-glow);
+    }
+    50% {
+        box-shadow: 0 0 15px var(--accent-pulse), 0 0 30px var(--accent-pulse);
+    }
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
 }
 
 /* --- 1. NAVIGATION BAR --- */
@@ -159,17 +321,17 @@ ul {
     z-index: 100;
     background: transparent;
     border-bottom: 1px solid transparent;
-    transition: background 0.3s ease, border-color 0.3s ease;
+    transition: background 0.15s steps(2), border-color 0.15s steps(2);
 }
 
 .navbar.scrolled {
-    background: rgba(10, 10, 10, 0.95);
-    border-bottom: 1px solid rgba(255, 165, 0, 0.2);
-    backdrop-filter: blur(10px);
+    background: rgba(10, 10, 10, 0.97);
+    border-bottom: 1px solid var(--border-accent);
+    backdrop-filter: blur(12px);
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     height: 100%;
     padding: 0 40px;
@@ -179,27 +341,35 @@ ul {
 }
 
 .nav-logo a {
-    font-family: var(--font-heading), sans-serif;
-    font-size: 24px;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: 28px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 10px var(--accent-glow);
+    transition: none;
+}
+
+.nav-logo a:hover {
     color: var(--text-main);
-    letter-spacing: 0.1em;
+    text-shadow: 0 0 15px var(--accent-pulse);
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 40px;
 }
 
 .nav-link {
     font-family: var(--font-body), sans-serif;
-    font-weight: 500;
-    font-size: 13px;
+    font-weight: 600;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-main);
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
     position: relative;
     padding-bottom: 4px;
+    transition: color 0s;
 }
 
 .nav-link::after {
@@ -208,9 +378,13 @@ ul {
     bottom: 0;
     left: 0;
     width: 0;
-    height: 1px;
+    height: 2px;
     background-color: var(--accent);
-    transition: width 0.2s ease;
+    transition: width 0s;
+}
+
+.nav-link:hover {
+    color: var(--text-main);
 }
 
 .nav-link:hover::after {
@@ -218,8 +392,9 @@ ul {
 }
 
 .nav-cta {
-    font-size: 15px;
-    padding: 10px 24px;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
+    font-size: 14px;
+    padding: 12px 28px;
 }
 
 .mobile-menu-btn {
@@ -240,6 +415,11 @@ ul {
     padding-left: 10%;
     padding-right: 10%;
     overflow: hidden;
+    /* Tactical grid overlay */
+    background-image:
+        linear-gradient(rgba(255, 215, 0, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 215, 0, 0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
 }
 
 .hero-video-bg {
@@ -253,7 +433,8 @@ ul {
     transform: translateX(-50%) translateY(-50%);
     z-index: 0;
     object-fit: cover;
-    background-image: url('/assets/inspo-images/hero-bg.jpg'); /* Fallback */
+    filter: saturate(0.7) contrast(1.1);
+    background-image: url('/assets/inspo-images/hero-bg.jpg');
     background-size: cover;
     background-position: center;
 }
@@ -261,7 +442,12 @@ ul {
 .hero-bg-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.8) 100%);
+    background: linear-gradient(
+        to right,
+        rgba(10, 10, 10, 0.95) 0%,
+        rgba(10, 10, 10, 0.7) 40%,
+        rgba(10, 10, 10, 0.85) 100%
+    );
     z-index: 1;
 }
 
@@ -273,9 +459,9 @@ ul {
 
 .hero-tag {
     font-family: var(--font-label), sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     color: var(--accent);
     display: flex;
     align-items: center;
@@ -285,31 +471,45 @@ ul {
 
 .tag-line {
     width: 40px;
-    height: 1px;
+    height: 2px;
     background-color: var(--accent);
 }
 
 .hero-headline {
-    font-family: var(--font-heading), sans-serif;
-    font-size: clamp(52px, 8vw, 120px);
-    line-height: 0.95;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: clamp(48px, 8vw, 110px);
+    line-height: 0.9;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     margin-bottom: 24px;
 }
 
+.hero-headline .block {
+    display: block;
+}
+
+.hero-headline:hover .block {
+    animation: glitch 0.3s steps(2) infinite;
+}
+
 .hero-sub {
-    font-size: 18px;
+    font-size: 17px;
     color: var(--text-muted);
     max-width: 480px;
     margin-bottom: 40px;
+    line-height: 1.7;
 }
 
 .hero-actions {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
     margin-bottom: 64px;
+}
+
+.btn-large {
+    padding: 18px 44px;
+    font-size: 15px;
 }
 
 .hero-stats {
@@ -319,29 +519,31 @@ ul {
 }
 
 .stat-item {
-    font-family: var(--font-label), sans-serif;
-    font-size: 13px;
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     color: var(--text-muted);
+    position: relative;
 }
 
-.hero-stats > .stat-item:not(:last-child)::after {
-    content: '';
-    display: inline-block;
-    width: 1px;
-    height: 12px;
-    background-color: var(--accent);
+.stat-item::after {
+    content: '//';
     margin-left: 24px;
+    color: var(--accent);
     opacity: 0.5;
+}
+
+.stat-item:last-child::after {
+    display: none;
 }
 
 /* Hero Right Side: HUD & Terminal */
 .hero-hud {
     position: relative;
     z-index: 2;
-    width: 400px;
-    height: 400px;
+    width: 420px;
+    height: 420px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -351,46 +553,76 @@ ul {
     position: relative;
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(10, 10, 10, 0.4);
-    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-subtle);
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    padding: 24px;
+    padding: 20px;
 }
 
-/* Corner Accents */
+/* Scanlines for HUD */
+.hud-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.15) 2px,
+        rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Subtle vignette on HUD */
+.hud-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Corner Accents - Tactical Markers */
 .hud-corner {
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border: 2px solid var(--accent);
-    opacity: 0.7;
+    opacity: 0.8;
+    z-index: 3;
 }
-.hud-corner.top-left { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-.hud-corner.top-right { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-.hud-corner.bottom-left { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-.hud-corner.bottom-right { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+.hud-corner.top-left { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.hud-corner.top-right { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.hud-corner.bottom-left { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.hud-corner.bottom-right { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
 .hud-header {
+    position: relative;
+    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-subtle);
     padding-bottom: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .hud-label, .hud-data {
-    font-family: var(--font-label), sans-serif;
-    font-size: 13px;
-    letter-spacing: 0.15em;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
     color: var(--text-muted);
+    text-transform: uppercase;
 }
 
 .hud-data.blinking {
-    color: #ff3333;
-    animation: blink 2s infinite;
+    color: var(--status-danger);
+    animation: blink 1s steps(1) infinite;
 }
 
 @keyframes blink {
@@ -399,13 +631,15 @@ ul {
 }
 
 .terminal-container {
+    position: relative;
+    z-index: 3;
     flex-grow: 1;
     font-family: var(--font-mono), monospace;
-    font-size: 13px;
-    color: rgba(255, 165, 0, 0.9); /* Amber tint */
-    line-height: 1.6;
+    font-size: 12px;
+    color: var(--accent);
+    line-height: 1.7;
     overflow-y: hidden;
-    position: relative;
+    padding-right: 8px;
 }
 
 .terminal-content {
@@ -416,8 +650,9 @@ ul {
 .terminal-cursor {
     display: inline-block;
     color: var(--accent);
-    animation: blinkCursor 1s infinite;
+    animation: blinkCursor 1s steps(1) infinite;
     vertical-align: bottom;
+    font-size: 14px;
 }
 
 @keyframes blinkCursor {
@@ -426,10 +661,12 @@ ul {
 }
 
 .hud-footer {
+    position: relative;
+    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-subtle);
     padding-top: 12px;
     margin-top: auto;
 }
@@ -440,13 +677,13 @@ ul {
 }
 
 .hud-bar {
-    width: 12px;
+    width: 14px;
     height: 4px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .hud-bar.filled { background-color: var(--accent); }
-.hud-bar.half { background-color: rgba(255, 165, 0, 0.5); }
+.hud-bar.half { background-color: rgba(255, 215, 0, 0.4); }
 
 
 /* --- 3. ABOUT THE CLAN --- */
@@ -473,16 +710,16 @@ ul {
 }
 
 .section-headline {
-    font-family: var(--font-heading), sans-serif;
-    font-size: clamp(40px, 5vw, 64px);
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
     line-height: 1;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     margin-bottom: 40px;
 }
 
 .about {
-    border-top: 1px solid rgba(255, 165, 0, 0.2);
+    border-top: 1px solid var(--border-accent);
 }
 
 .about-grid {
@@ -494,7 +731,8 @@ ul {
 .about-content p {
     color: var(--text-muted);
     margin-bottom: 24px;
-    font-size: 18px;
+    font-size: 17px;
+    line-height: 1.7;
 }
 
 .about-pillars {
@@ -506,34 +744,35 @@ ul {
 .pillar {
     position: relative;
     padding-top: 24px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .ghost-number {
     position: absolute;
     top: 0;
     left: 0;
-    font-family: var(--font-heading), sans-serif;
-    font-size: 72px;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: 80px;
     color: var(--accent);
-    opacity: 0.15;
+    opacity: 0.12;
     line-height: 1;
-    transform: translateY(-20px);
+    transform: translateY(-24px);
     z-index: -1;
 }
 
 .pillar-title {
-    font-family: var(--font-label), sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
+    font-size: 22px;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     margin-bottom: 8px;
 }
 
 .pillar-body {
     color: var(--text-muted);
     font-size: 15px;
+    line-height: 1.6;
 }
 
 /* --- 4. ROSTER / MEMBERS --- */
@@ -555,15 +794,41 @@ ul {
 }
 
 .roster-card {
+    position: relative;
     background-color: var(--bg-alt);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     padding: 24px;
-    transition: border-color 0.2s ease;
+    transition: none;
     border-radius: 0;
+    overflow: hidden;
+}
+
+.roster-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--accent) 0%, var(--accent) 20%,
+        transparent 20%, transparent 25%,
+        var(--accent) 25%, var(--accent) 45%,
+        transparent 45%, transparent 50%,
+        var(--accent) 50%, var(--accent) 70%,
+        transparent 70%, transparent 75%,
+        var(--accent) 75%, var(--accent) 100%
+    );
+    opacity: 0;
+    transition: opacity 0s;
 }
 
 .roster-card:hover {
     border-color: var(--accent);
+}
+
+.roster-card:hover::before {
+    opacity: 1;
 }
 
 .roster-controls {
@@ -638,18 +903,18 @@ ul {
 }
 
 .role-tag {
-    font-family: var(--font-label), sans-serif;
-    font-size: 11px;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     color: var(--accent);
     margin-bottom: 8px;
 }
 
 .member-name {
-    font-family: var(--font-heading), sans-serif;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: 28px;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     margin-bottom: 4px;
 }
 
@@ -665,18 +930,20 @@ ul {
     border: 1px dashed var(--accent);
     background: transparent;
     text-align: center;
-    font-family: var(--font-label), sans-serif;
-    font-size: 18px;
-    font-weight: 700;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
+    font-size: 16px;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--text-main);
+    min-height: 200px;
 }
 
 .join-teaser:hover {
     border-style: solid;
     border-color: var(--accent);
     color: var(--accent);
+    background: rgba(255, 215, 0, 0.03);
 }
 
 /* --- 5. HOW TO JOIN --- */
@@ -730,14 +997,14 @@ ul {
 .step {
     position: relative;
     padding-top: 16px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .step-ghost-number {
     position: absolute;
     top: 0;
     left: 0;
-    font-family: var(--font-heading), sans-serif;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: 80px;
     color: var(--accent);
     opacity: 0.12;
@@ -749,11 +1016,11 @@ ul {
 .step-title {
     position: relative;
     z-index: 1;
-    font-family: var(--font-label), sans-serif;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     margin-bottom: 8px;
 }
 
@@ -762,6 +1029,7 @@ ul {
     z-index: 1;
     font-size: 15px;
     color: var(--text-muted);
+    line-height: 1.6;
 }
 
 .join-cta {
@@ -781,7 +1049,7 @@ ul {
 .faq {
     background-color: var(--bg-alt);
     position: relative;
-    border-top: 1px solid rgba(255, 165, 0, 0.2);
+    border-top: 1px solid var(--border-accent);
 }
 
 .faq-list {
@@ -792,7 +1060,7 @@ ul {
 }
 
 .faq-item {
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .faq-question {
@@ -805,13 +1073,13 @@ ul {
     border: none;
     color: var(--text-main);
     font-family: var(--font-label), sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     cursor: pointer;
     text-align: left;
-    transition: color 0.2s ease;
+    transition: none;
 }
 
 .faq-question:hover, .faq-question.active {
@@ -821,8 +1089,9 @@ ul {
 .faq-icon {
     color: var(--accent);
     font-family: var(--font-mono), monospace;
-    font-size: 24px;
-    transition: transform 0.3s ease;
+    font-size: 22px;
+    font-weight: 400;
+    transition: transform 0s;
 }
 
 .faq-question.active .faq-icon {
@@ -832,9 +1101,10 @@ ul {
 .faq-answer {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    transition: max-height 0.3s steps(4), padding 0.3s steps(4);
     color: var(--text-muted);
-    font-size: 16px;
+    font-size: 15px;
+    line-height: 1.7;
 }
 
 .faq-answer.active {
@@ -903,26 +1173,26 @@ ul {
 }
 
 .footer-logo {
-    font-family: var(--font-heading), sans-serif;
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: 32px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     margin-bottom: 8px;
 }
 
 .footer-tagline {
-    font-family: var(--font-label), sans-serif;
-    font-size: 11px;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     color: var(--text-dark);
 }
 
 .footer-col-title {
-    font-family: var(--font-label), sans-serif;
+    font-family: 'NASTUP', var(--font-label), sans-serif;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.18em;
     color: var(--accent);
     margin-bottom: 24px;
 }
@@ -932,6 +1202,7 @@ ul {
     font-size: 14px;
     color: #666666;
     margin-bottom: 12px;
+    transition: color 0s;
 }
 
 .footer-link:hover {
@@ -941,13 +1212,14 @@ ul {
 .footer-text {
     font-size: 14px;
     color: #666666;
+    line-height: 1.6;
 }
 
 .footer-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-subtle);
     padding-top: 24px;
 }
 

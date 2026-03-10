@@ -1,4 +1,4 @@
-.PHONY: install dev add build up down logs clean shell
+!.PHONY: install dev add build up down logs clean shell
 
 # Run bun install inside docker
 install:
