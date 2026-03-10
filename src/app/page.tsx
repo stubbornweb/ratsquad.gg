@@ -638,6 +638,10 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {/* Big Brand Mark */}
+        <div className="footer-brand-mark">
+          <div className="brand-mark-text">RATS</div>
+        </div>
       </footer>
     </>
   );
