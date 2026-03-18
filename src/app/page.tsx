@@ -1,46 +1,38 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react";
+import { type JSX, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { type FaqItem } from "@/types";
 
-export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+// Animation prop helpers — hero (immediate) vs scroll-triggered
+const heroUp = (delay: number) => ({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" as const, delay },
+});
+
+const heroFade = (delay: number) => ({
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.6, ease: "easeOut" as const, delay },
+});
+
+const scrollFade = (delay = 0) => ({
+  initial: { opacity: 0 },
+  whileInView: { opacity: 1 },
+  viewport: { once: true, amount: 0.15 },
+  transition: { duration: 0.6, ease: "easeOut" as const, delay },
+});
+
+export default function Home(): JSX.Element {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const terminalRef = useRef<HTMLDivElement>(null);
+  const [terminalLines, setTerminalLines] = useState<string[]>([]);
 
-  // Scroll effect for navbar
+  // Terminal typing effect — state-driven, no innerHTML mutation
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Intersection Observer for fade animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            obs.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-
-    const elements = document.querySelectorAll(".fade-up, .fade-in");
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Terminal Typing Effect
-  useEffect(() => {
-    const terminalOutput = terminalRef.current;
-    if (!terminalOutput) return;
-
     const terminalLogs = [
       "> RATS COMMAND TERMINAL ONLINE",
       "> REGION: EUROPE // LANGUAGE: ENGLISH",
@@ -56,26 +48,24 @@ export default function Home() {
       " ",
       "> PINGING DISCORD SERVER...",
       "> 142 MEMBERS ONLINE",
-      "> UPLINK SECURE."
+      "> UPLINK SECURE.",
     ];
-
-    let logIndex = 0;
-    let charIndex = 0;
-    let currentLine = "";
-    let timeoutId: NodeJS.Timeout;
 
     const typingSpeedMs = 30;
     const lineDelayMs = 800;
     const clearDelayMs = 4000;
 
-    const typeTerminalLine = () => {
-      if (!terminalRef.current) return; // Unmounted
+    let logIndex = 0;
+    let charIndex = 0;
+    let timeoutId: NodeJS.Timeout;
 
+    const typeNext = () => {
       if (logIndex >= terminalLogs.length) {
         timeoutId = setTimeout(() => {
-          if (terminalRef.current) terminalRef.current.innerHTML = "";
+          setTerminalLines([]);
           logIndex = 0;
-          typeTerminalLine();
+          charIndex = 0;
+          typeNext();
         }, clearDelayMs);
         return;
       }
@@ -83,35 +73,22 @@ export default function Home() {
       const targetLine = terminalLogs[logIndex];
 
       if (charIndex < targetLine.length) {
-        currentLine += targetLine.charAt(charIndex);
+        const partial = targetLine.slice(0, charIndex + 1);
         charIndex++;
-
-        const previousLinesHtml = terminalLogs
-          .slice(0, logIndex)
-          .map((line) => `<div>${line}</div>`)
-          .join("");
-        terminalRef.current.innerHTML =
-          previousLinesHtml + `<div>${currentLine}</div>`;
-
-        timeoutId = setTimeout(
-          typeTerminalLine,
-          targetLine === " " ? 0 : typingSpeedMs
-        );
+        setTerminalLines((prev) => {
+          const next = [...prev];
+          next[logIndex] = partial;
+          return next;
+        });
+        timeoutId = setTimeout(typeNext, targetLine === " " ? 0 : typingSpeedMs);
       } else {
         logIndex++;
         charIndex = 0;
-        currentLine = "";
-
-        terminalRef.current.innerHTML = terminalLogs
-          .slice(0, logIndex)
-          .map((line) => `<div>${line}</div>`)
-          .join("");
-
-        timeoutId = setTimeout(typeTerminalLine, lineDelayMs);
+        timeoutId = setTimeout(typeNext, lineDelayMs);
       }
     };
 
-    const initialTimeout = setTimeout(typeTerminalLine, 1500);
+    const initialTimeout = setTimeout(typeNext, 1500);
 
     return () => {
       clearTimeout(initialTimeout);
@@ -119,65 +96,20 @@ export default function Home() {
     };
   }, []);
 
-  const toggleFaq = (index: number) => {
+  const toggleFaq = (index: number): void => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  const faqs = [
-    { q: "What timezones do you operate in?", a: "We primarily operate in EU timezones (CET/CEST), with dedicated operations running during EU evening hours." },
-    { q: "Do I need DLC or specific mods?", a: "We play vanilla Squad for most of our competitive matches, but occasionally participate in modded events. We will announce any required mods well in advance." },
-    { q: "How does the recruitment process work?", a: "Join our Discord, submit an application ticket, and you will be invited to a voice interview. If approved, you enter a trial phase where we assess your communication and teamwork in-game." },
-    { q: "Are you a competitive/esports clan?", a: "Yes. While we enjoy standard matches, our primary focus is structured, competitive 50v50 scrims and tournaments." },
+  const faqs: FaqItem[] = [
+    { question: "What timezones do you operate in?", answer: "We primarily operate in EU timezones (CET/CEST), with dedicated operations running during EU evening hours." },
+    { question: "Do I need DLC or specific mods?", answer: "We play vanilla Squad for most of our competitive matches, but occasionally participate in modded events. We will announce any required mods well in advance." },
+    { question: "How does the recruitment process work?", answer: "Join our Discord, submit an application ticket, and you will be invited to a voice interview. If approved, you enter a trial phase where we assess your communication and teamwork in-game." },
+    { question: "Are you a competitive/esports clan?", answer: "Yes. While we enjoy standard matches, our primary focus is structured, competitive 50v50 scrims and tournaments." },
   ];
 
   return (
     <>
-      {/* 1. Navigation Bar */}
-      <nav className={`navbar ${isScrolled ? "scrolled" : ""}`} id="navbar">
-        <div className="nav-container">
-          <div className="nav-logo">
-            <Link href="/">RATS</Link>
-          </div>
-
-          <button
-            className="mobile-menu-btn"
-            aria-label="Toggle Menu"
-            aria-expanded={isMobileMenuOpen}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
-
-          <div className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
-            <Link href="/#about" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              ABOUT
-            </Link>
-            <Link href="/roster" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              ROSTER
-            </Link>
-            <Link href="/#faq" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              FAQ
-            </Link>
-            <Link href="/#join" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
-              JOIN US
-            </Link>
-            <Link href="/#join" className="btn btn-primary nav-cta" onClick={() => setIsMobileMenuOpen(false)}>
-              APPLY NOW
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* 2. Hero Section */}
       <header className="hero" id="hero">
@@ -187,38 +119,38 @@ export default function Home() {
         </video>
         <div className="hero-bg-overlay"></div>
         <div className="hero-content">
-          <div className="hero-tag fade-up" style={{ transitionDelay: "0s" }}>
+          <motion.div className="hero-tag" {...heroUp(0)}>
             <span className="tag-line"></span> SQUAD — EU COMPETITIVE CLAN
-          </div>
+          </motion.div>
           <h1 className="hero-headline">
-            <span className="fade-up block" style={{ transitionDelay: "0.15s" }}>
+            <motion.span className="block" {...heroUp(0.15)}>
               MOVE AS ONE.
-            </span>
-            <span className="fade-up block" style={{ transitionDelay: "0.3s" }}>
+            </motion.span>
+            <motion.span className="block" {...heroUp(0.3)}>
               STRIKE AS ONE.
-            </span>
+            </motion.span>
           </h1>
-          <p className="hero-sub fade-up" style={{ transitionDelay: "0.5s" }}>
+          <motion.p className="hero-sub" {...heroUp(0.5)}>
             RATS is a competitive EU mil-sim clan for Squad. We don&apos;t play for
             fun. We play to win — together.
-          </p>
-          <div className="hero-actions fade-up" style={{ transitionDelay: "0.7s" }}>
+          </motion.p>
+          <motion.div className="hero-actions" {...heroUp(0.7)}>
             <Link href="/#join" className="btn btn-primary btn-large">
               APPLY TO JOIN
             </Link>
             <Link href="/#about" className="btn btn-text">
               LEARN MORE &darr;
             </Link>
-          </div>
-          <div className="hero-stats fade-up" style={{ transitionDelay: "0.9s" }}>
+          </motion.div>
+          <motion.div className="hero-stats" {...heroUp(0.9)}>
             <div className="stat-item">EU BASED</div>
             <div className="stat-item">SQUAD ONLY</div>
             <div className="stat-item">SELECTIVE RECRUITMENT</div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Right Side: Tactical HUD & Terminal */}
-        <div className="hero-hud fade-in" style={{ transitionDelay: "1.2s" }}>
+        <motion.div className="hero-hud" {...heroFade(1.2)}>
           <div className="hud-frame">
             <div className="hud-corner top-left"></div>
             <div className="hud-corner top-right"></div>
@@ -231,13 +163,15 @@ export default function Home() {
             </div>
 
             <div className="terminal-container">
-              <div className="terminal-content" ref={terminalRef}>
-                {/* JS typing effect goes here */}
+              <div className="terminal-content">
+                {terminalLines.map((line, i) => (
+                  <div key={i}>{line}</div>
+                ))}
               </div>
               <span className="terminal-cursor">&#x2588;</span>
             </div>
 
-            {/* NEW: Stats Box in HUD */}
+            {/* Stats Box in HUD */}
             <div style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
@@ -276,14 +210,14 @@ export default function Home() {
               <span className="hud-data">CONN: SECURE</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </header>
 
       {/* 3. About the Clan */}
       <section className="section about" id="about">
         <div className="section-container">
           <div className="about-grid">
-            <div className="about-content fade-in">
+            <motion.div className="about-content" {...scrollFade()}>
               <div className="section-tag">
                 <span className="tag-line"></span> WHO WE ARE
               </div>
@@ -298,8 +232,8 @@ export default function Home() {
                 serious about Squad — if you study the map, call out positions,
                 and trust your squadmates — you belong here.
               </p>
-            </div>
-            <div className="about-pillars fade-in">
+            </motion.div>
+            <motion.div className="about-pillars" {...scrollFade(0.2)}>
               <div className="pillar">
                 <div className="ghost-number">01</div>
                 <h3 className="pillar-title">DISCIPLINE</h3>
@@ -323,7 +257,7 @@ export default function Home() {
                   We review, we adapt, we get better. Complacency is the enemy.
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -331,15 +265,15 @@ export default function Home() {
       {/* 4. Roster / Members */}
       <section className="section roster" id="roster">
         <div className="section-container">
-          <div className="section-tag fade-in">
+          <motion.div className="section-tag" {...scrollFade()}>
             <span className="tag-line"></span> THE UNIT
-          </div>
-          <h2 className="section-headline fade-in">MEET THE RATS.</h2>
-          <p className="section-sub fade-in">
+          </motion.div>
+          <motion.h2 className="section-headline" {...scrollFade(0.1)}>MEET THE RATS.</motion.h2>
+          <motion.p className="section-sub" {...scrollFade(0.2)}>
             A small, selective unit of serious Squad players.
-          </p>
+          </motion.p>
 
-          <div className="roster-grid fade-in">
+          <motion.div className="roster-grid" {...scrollFade(0.3)}>
             <div className="roster-card">
               <div className="avatar-placeholder">
                 <span className="watermark">RATS</span>
@@ -368,7 +302,7 @@ export default function Home() {
             <Link href="/roster" className="roster-card join-teaser">
               <div className="join-teaser-content">VIEW FULL ROSTER &rarr;</div>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -376,17 +310,17 @@ export default function Home() {
       <section className="section join" id="join">
         <div className="section-border-top"></div>
         <div className="section-container">
-          <div className="section-tag fade-in">
+          <motion.div className="section-tag" {...scrollFade()}>
             <span className="tag-line"></span> RECRUITMENT
-          </div>
-          <h2 className="section-headline fade-in">
+          </motion.div>
+          <motion.h2 className="section-headline" {...scrollFade(0.1)}>
             THINK YOU HAVE WHAT IT TAKES?
-          </h2>
-          <p className="section-sub fade-in">
+          </motion.h2>
+          <motion.p className="section-sub" {...scrollFade(0.2)}>
             We recruit selectively. We don&apos;t fill seats — we build a unit.
-          </p>
+          </motion.p>
 
-          <div className="join-grid fade-in">
+          <motion.div className="join-grid" {...scrollFade(0.3)}>
             <div className="join-requirements">
               <ul className="requirements-list">
                 <li>
@@ -442,9 +376,9 @@ export default function Home() {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="join-cta fade-in">
+          <motion.div className="join-cta" {...scrollFade(0.4)}>
             <Link
               href="https://discord.gg/"
               target="_blank"
@@ -455,24 +389,24 @@ export default function Home() {
             <p className="join-cta-sub">
               Already a member? Find us in Discord &rarr; #recruitment
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* 6. FAQ Section */}
       <section className="section faq" id="faq">
         <div className="section-container">
-          <div className="section-tag fade-in">
+          <motion.div className="section-tag" {...scrollFade()}>
             <span className="tag-line"></span> INTELLIGENCE
-          </div>
-          <h2 className="section-headline fade-in">
+          </motion.div>
+          <motion.h2 className="section-headline" {...scrollFade(0.1)}>
             FREQUENTLY ASKED QUESTIONS
-          </h2>
-          <p className="section-sub fade-in" style={{ marginTop: "-24px", marginBottom: "40px" }}>
+          </motion.h2>
+          <motion.p className="section-sub" style={{ marginTop: "-24px", marginBottom: "40px" }} {...scrollFade(0.2)}>
             Need intel before committing? Read our standard operating procedures.
-          </p>
+          </motion.p>
 
-          <div className="faq-list fade-in">
+          <motion.div className="faq-list" {...scrollFade(0.3)}>
             {faqs.map((faq, index) => (
               <div className="faq-item" key={index}>
                 <button
@@ -480,169 +414,77 @@ export default function Home() {
                   onClick={() => toggleFaq(index)}
                   aria-expanded={openFaq === index}
                 >
-                  {faq.q}
+                  {faq.question}
                   <span className="faq-icon">+</span>
                 </button>
                 <div className={`faq-answer ${openFaq === index ? "active" : ""}`}>
-                  <p>{faq.a}</p>
+                  <p>{faq.answer}</p>
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 7. Discord & Social Links + Footer */}
+      {/* 7. Discord & Social Links */}
       <section className="discord-banner" id="discord">
         <div className="noise-overlay"></div>
         <div className="section-border-top"></div>
         <div className="section-container text-center">
-          <div className="section-tag fade-in center-tag">
+          <motion.div className="section-tag center-tag" {...scrollFade()}>
             <span className="tag-line"></span> COMMUNITY{" "}
             <span className="tag-line"></span>
-          </div>
-          <h2 className="section-headline fade-in">
+          </motion.div>
+          <motion.h2 className="section-headline" {...scrollFade(0.1)}>
             THE MISSION CONTINUES IN DISCORD.
-          </h2>
-          <p className="section-sub fade-in mx-auto">
+          </motion.h2>
+          <motion.p className="section-sub mx-auto" {...scrollFade(0.2)}>
             Ops planning, scrims, clan news, and the RATS community — all in
             one place.
-          </p>
+          </motion.p>
 
-          <div className="social-links fade-in">
+          <motion.div className="social-links" {...scrollFade(0.3)}>
             <a
               href="https://discord.gg/"
               target="_blank"
+              rel="noopener noreferrer"
               aria-label="Discord"
               className="social-icon"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
                 <path d="M18 6h-2c-1.1 0-2 .9-2 2s.9 2 2 2h2c1.1 0 2-.9 2-2s-.9-2-2-2zm-12 0H4c-1.1 0-2 .9-2 2s.9 2 2 2h2c1.1 0 2-.9 2-2s-.9-2-2-2z" />
                 <path d="M9 12c-2.2 0-4 1.8-4 4v4h14v-4c0-2.2-1.8-4-4-4H9z" />
               </svg>
             </a>
-            <a
-              href="#"
-              aria-label="Steam"
-              className="social-icon"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
+            <a href="#" aria-label="Steam" className="social-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
                 <circle cx="9" cy="15" r="2" />
                 <circle cx="15.5" cy="8.5" r="2.5" />
                 <path d="M10.8 14.2l3-2.5" />
               </svg>
             </a>
-            <a
-              href="#"
-              aria-label="Twitter"
-              className="social-icon"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
-              >
+            <a href="#" aria-label="Twitter" className="social-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
                 <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
               </svg>
             </a>
-          </div>
+          </motion.div>
 
-          <div className="fade-in">
+          <motion.div {...scrollFade(0.4)}>
             <Link
               href="https://discord.gg/"
               target="_blank"
+              rel="noopener noreferrer"
               className="btn btn-primary btn-large discord-btn"
             >
               JOIN DISCORD
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 8. Footer */}
-      <footer className="footer">
-        <div className="section-border-top footer-border"></div>
-        <div className="footer-container">
-          <div className="footer-grid">
-            <div className="footer-brand">
-              <div className="footer-logo">RATS</div>
-              <div className="footer-tagline">EU COMPETITIVE SQUAD CLAN</div>
-            </div>
-
-            <div className="footer-col">
-              <h4 className="footer-col-title">NAVIGATE</h4>
-              <Link href="/#about" className="footer-link">
-                About
-              </Link>
-              <Link href="/roster" className="footer-link">
-                Roster
-              </Link>
-              <Link href="/#faq" className="footer-link">
-                FAQ
-              </Link>
-              <Link href="/#join" className="footer-link">
-                How to Join
-              </Link>
-            </div>
-
-            <div className="footer-col">
-              <h4 className="footer-col-title">COMMUNITY</h4>
-              <Link href="#" className="footer-link">
-                Discord
-              </Link>
-              <Link href="#" className="footer-link">
-                Steam Group
-              </Link>
-            </div>
-
-            <div className="footer-col">
-              <h4 className="footer-col-title">CONTACT / INFO</h4>
-              <p className="footer-text">
-                For recruitment enquiries, open a ticket in Discord.
-              </p>
-              <p className="footer-text mt-2">Region: EU — Europe</p>
-              <p className="footer-text">Game: Squad</p>
-            </div>
-          </div>
-
-          <div className="footer-bottom">
-            <div className="footer-copy">
-              RATS &copy; 2025 &mdash; ALL RIGHTS RESERVED
-            </div>
-            <div className="footer-legal">
-              SQUAD IS A TRADEMARK OF OFFWORLD INDUSTRIES
-            </div>
-          </div>
-        </div>
-        {/* Big Brand Mark */}
-        <div className="footer-brand-mark">
-          <div className="brand-mark-text">RATS</div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 }

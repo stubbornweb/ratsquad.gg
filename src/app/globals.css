@@ -90,12 +90,6 @@ ul {
     list-style: none;
 }
 
-/* Typography Utilities */
-.text-center { text-align: center; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.block { display: block; }
-.mt-2 { margin-top: 0.5rem; }
-
 /* Buttons - Sharp Tactical Style */
 .btn {
     display: inline-flex;
@@ -173,23 +167,6 @@ ul {
 
 .btn-text:hover::after {
     width: 100%;
-}
-
-/* Animations & Intersection Observer Setup */
-.fade-up {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
-
-.fade-in {
-    opacity: 0;
-    transition: opacity 0.6s ease-out;
-}
-
-.fade-up.visible, .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 /* Noise overlay - Gritty Film Grain */
@@ -776,6 +753,26 @@ ul {
 }
 
 /* --- 4. ROSTER / MEMBERS --- */
+.roster-page-header {
+    padding-top: 160px;
+    padding-bottom: 60px;
+    background-color: var(--bg-main);
+    position: relative;
+}
+
+.roster-no-results {
+    text-align: center;
+    padding: 60px 0;
+}
+
+.roster-no-results-title {
+    color: var(--text-muted);
+}
+
+.roster-no-results-sub {
+    color: var(--text-dark);
+}
+
 .roster {
     background-color: var(--bg-main);
 }
@@ -1226,14 +1223,6 @@ ul {
 .footer-copy, .footer-legal {
     font-size: 12px;
     color: #444444;
-}
-
-/* --- 9. BIG FOOTER BRAND MARK --- */
-.footer-brand-mark {
-    margin-top: 80px;
-    padding: 80px 0 40px;
-    text-align: center;
-    border-top: 1px solid var(--border-subtle);
 }
 
 /* --- 9. BIG FOOTER BRAND MARK --- */
