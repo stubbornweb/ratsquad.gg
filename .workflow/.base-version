@@ -1,0 +1,8 @@
+{
+    "version": "local",
+    "updated_at": "2026-03-25T20:51:18+01:00",
+    "previous_version": "local",
+    "stack": "next",
+    "source": "tuti-cli/workflow-kit",
+    "architecture": "v3"
+}
