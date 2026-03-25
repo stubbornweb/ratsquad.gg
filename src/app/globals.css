@@ -357,7 +357,7 @@ ul {
     width: 0;
     height: 2px;
     background-color: var(--accent);
-    transition: width 0s;
+    transition: width 0.2s ease-out;
 }
 
 .nav-link:hover {
@@ -1081,6 +1081,8 @@ ul {
 
 .faq-question:hover, .faq-question.active {
     color: var(--accent);
+    background-color: var(--bg-alt);
+    border: 1px solid var(--accent);
 }
 
 .faq-icon {
@@ -1140,10 +1142,12 @@ ul {
     width: 48px;
     height: 48px;
     color: var(--text-main);
+    transition: transform 0.15s ease-out;
 }
 
 .social-icon:hover {
     color: var(--accent);
+    transform: scale(1.15);
 }
 
 /* --- 8. FOOTER --- */

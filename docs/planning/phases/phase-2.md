@@ -1,6 +1,6 @@
 # Phase 2: Visual Polish
 
-**Status:** Not Started
+**Status:** Complete
 **Priority:** high
 
 ## Overview
@@ -15,10 +15,10 @@ Elevate the site from functional to premium. Add missing hover states, page tran
 - **Status:** [~]
 
 Tasks:
-- [ ] Add social icon hover animations (scale + accent color shift)
-- [ ] Add nav link hover underline or highlight effect
-- [ ] Refine FAQ accordion hover feedback (subtle border or background shift)
-- [ ] Audit all interactive elements for consistent hover states
+- [x] Add social icon hover animations (scale + accent color shift)
+- [x] Add nav link hover underline or highlight effect
+- [x] Refine FAQ accordion hover feedback (subtle border or background shift)
+- [x] Audit all interactive elements for consistent hover states
 
 ---
 
@@ -28,10 +28,10 @@ Tasks:
 - **Status:** [ ]
 
 Tasks:
-- [ ] Add Framer Motion `AnimatePresence` for route transitions
-- [ ] Implement fade or slide transition between homepage and roster
-- [ ] Ensure no layout shift during transition
-- [ ] Test transition on both navigation directions (home → roster, roster → home)
+- [x] Add Framer Motion `AnimatePresence` for route transitions
+- [x] Implement fade or slide transition between homepage and roster
+- [x] Ensure no layout shift during transition
+- [x] Test transition on both navigation directions (home → roster, roster → home)
 
 ---
 
@@ -41,12 +41,12 @@ Tasks:
 - **Status:** [~]
 
 Tasks:
-- [ ] Audit grid layouts at tablet breakpoint (md) — verify 2-column grids
-- [ ] Audit grid layouts at desktop breakpoint (lg/xl) — verify 4-column grids
-- [ ] Test hero section layout on mobile (HUD panel stacking)
-- [ ] Test roster page grid on all breakpoints
-- [ ] Fix any overflow or spacing issues found
-- [ ] Verify hamburger menu opens/closes correctly on mobile
+- [x] Audit grid layouts at tablet breakpoint (md) — verify 2-column grids
+- [x] Audit grid layouts at desktop breakpoint (lg/xl) — verify 4-column grids
+- [x] Test hero section layout on mobile (HUD panel stacking)
+- [x] Test roster page grid on all breakpoints
+- [x] Fix any overflow or spacing issues found
+- [x] Verify hamburger menu opens/closes correctly on mobile
 
 ---
 

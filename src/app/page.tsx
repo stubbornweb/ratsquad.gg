@@ -443,19 +443,6 @@ export default function Home(): JSX.Element {
                 <path d="M9 12c-2.2 0-4 1.8-4 4v4h14v-4c0-2.2-1.8-4-4-4H9z" />
               </svg>
             </a>
-            <a href="#" aria-label="Steam" className="social-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
-                <circle cx="9" cy="15" r="2" />
-                <circle cx="15.5" cy="8.5" r="2.5" />
-                <path d="M10.8 14.2l3-2.5" />
-              </svg>
-            </a>
-            <a href="#" aria-label="Twitter" className="social-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
-                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-              </svg>
-            </a>
           </motion.div>
 
           <motion.div {...scrollFade(0.4)}>

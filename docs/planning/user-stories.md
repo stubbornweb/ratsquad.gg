@@ -31,12 +31,12 @@ Status legend: `[x]` Implemented | `[ ]` Not yet implemented | `[~]` Partial
 **I want** smooth transitions between pages,
 **so that** the site feels polished and professional.
 
-**Status:** [ ]
+**Status:** [x]
 
 **Acceptance Criteria:**
-- [ ] Transition animation between homepage and roster page
-- [ ] No layout shift during navigation
-- [ ] Fast perceived load time
+- [x] Transition animation between homepage and roster page
+- [x] No layout shift during navigation
+- [x] Fast perceived load time
 
 ---
 
@@ -259,13 +259,13 @@ Status legend: `[x]` Implemented | `[ ]` Not yet implemented | `[~]` Partial
 **I want** the site to work well on my phone,
 **so that** I can browse and apply from any device.
 
-**Status:** [~]
+**Status:** [x]
 
 **Acceptance Criteria:**
 - [x] Stacked layouts on mobile
 - [x] Hamburger menu for nav on small screens
-- [~] Grid adjustments for tablet (2-col) and desktop (4-col)
-- [ ] Verified on actual mobile devices / responsive testing
+- [x] Grid adjustments for tablet (2-col) and desktop (4-col)
+- [x] Verified on actual mobile devices / responsive testing
 
 ---
 
@@ -326,14 +326,14 @@ Status legend: `[x]` Implemented | `[ ]` Not yet implemented | `[~]` Partial
 **I want** interactive elements to respond to hover,
 **so that** the site feels alive and clickable.
 
-**Status:** [~]
+**Status:** [x]
 
 **Acceptance Criteria:**
 - [x] Button hover states (color flip, border accent)
 - [x] Card hover states (border accent change)
-- [~] FAQ accordion hover feedback
-- [ ] Social icon hover animations
-- [ ] Nav link hover underline/highlight
+- [x] FAQ accordion hover feedback
+- [x] Social icon hover animations
+- [x] Nav link hover underline/highlight
 
 ---
 
