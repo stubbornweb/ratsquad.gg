@@ -3,6 +3,7 @@ import Link from "next/link";
 import { DISCORD_URL } from "@/consts/router";
 
 export default function Footer(): JSX.Element {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className="footer">
       <div className="section-border-top footer-border"></div>
@@ -38,7 +39,7 @@ export default function Footer(): JSX.Element {
 
         <div className="footer-bottom">
           <div className="footer-copy">
-            RATS &copy; 2025 &mdash; ALL RIGHTS RESERVED
+            RATS &copy; {currentYear} &mdash; ALL RIGHTS RESERVED
           </div>
           <div className="footer-legal">
             SQUAD IS A TRADEMARK OF OFFWORLD INDUSTRIES

@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { type FaqItem } from "@/types";
 import { FEATURED_MEMBERS } from "@/data/roster";
+import { FaqAccordion } from "@/components/FaqAccordion";
+import { spring } from "@/hooks/useAnimations";
 
 // Animation prop helpers — hero (immediate) vs scroll-triggered
 const heroUp = (delay: number) => ({
@@ -29,7 +31,6 @@ const scrollFade = (delay = 0) => ({
 });
 
 export default function Home(): JSX.Element {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [terminalLines, setTerminalLines] = useState<string[]>([]);
 
   // Terminal typing effect — state-driven, no innerHTML mutation
@@ -97,10 +98,6 @@ export default function Home(): JSX.Element {
     };
   }, []);
 
-  const toggleFaq = (index: number): void => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
   const faqs: FaqItem[] = [
     { question: "What timezones do you operate in?", answer: "We primarily operate in EU timezones (CET/CEST), with dedicated operations running during EU evening hours." },
     { question: "Do I need DLC or specific mods?", answer: "We play vanilla Squad for most of our competitive matches, but occasionally participate in modded events. We will announce any required mods well in advance." },
@@ -136,9 +133,11 @@ export default function Home(): JSX.Element {
             fun. We play to win — together.
           </motion.p>
           <motion.div className="hero-actions" {...heroUp(0.7)}>
-            <Link href="/#join" className="btn btn-primary btn-large">
-              APPLY TO JOIN
-            </Link>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} transition={spring.snappy}>
+              <Link href="/#join" className="btn btn-primary btn-large">
+                APPLY TO JOIN
+              </Link>
+            </motion.div>
             <Link href="/#about" className="btn btn-text">
               LEARN MORE &darr;
             </Link>
@@ -173,34 +172,26 @@ export default function Home(): JSX.Element {
             </div>
 
             {/* Stats Box in HUD */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "12px",
-              marginTop: "auto",
-              marginBottom: "16px",
-              paddingTop: "16px",
-              borderTop: "1px solid rgba(255, 255, 255, 0.1)"
-            }}>
+            <div className="hud-stats-grid">
               <div>
-                <div style={{ fontFamily: "var(--font-label)", fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.1em" }}>ACTIVE MEMS</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "16px", color: "var(--accent)" }}>42</div>
+                <div className="hud-stat-label">ACTIVE MEMS</div>
+                <div className="hud-stat-value">42</div>
               </div>
               <div>
-                <div style={{ fontFamily: "var(--font-label)", fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.1em" }}>SQUAD LEADS</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "16px", color: "var(--accent)" }}>8</div>
+                <div className="hud-stat-label">SQUAD LEADS</div>
+                <div className="hud-stat-value">8</div>
               </div>
               <div>
-                <div style={{ fontFamily: "var(--font-label)", fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.1em" }}>RECRUITS</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "16px", color: "var(--accent)" }}>12</div>
+                <div className="hud-stat-label">RECRUITS</div>
+                <div className="hud-stat-value">12</div>
               </div>
               <div>
-                <div style={{ fontFamily: "var(--font-label)", fontSize: "11px", color: "var(--text-muted)", letterSpacing: "0.1em" }}>ESTABLISHED</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "16px", color: "var(--accent)" }}>2023</div>
+                <div className="hud-stat-label">ESTABLISHED</div>
+                <div className="hud-stat-value">2023</div>
               </div>
             </div>
 
-            <div className="hud-footer" style={{ marginTop: "0", borderTop: "none", paddingTop: "0" }}>
+            <div className="hud-footer hud-footer-compact">
               <div className="hud-bar-container">
                 <div className="hud-bar filled"></div>
                 <div className="hud-bar filled"></div>
@@ -393,22 +384,8 @@ export default function Home(): JSX.Element {
             Need intel before committing? Read our standard operating procedures.
           </motion.p>
 
-          <motion.div className="faq-list" {...scrollFade(0.3)}>
-            {faqs.map((faq, index) => (
-              <div className="faq-item" key={index}>
-                <button
-                  className={`faq-question ${openFaq === index ? "active" : ""}`}
-                  onClick={() => toggleFaq(index)}
-                  aria-expanded={openFaq === index}
-                >
-                  {faq.question}
-                  <span className="faq-icon">+</span>
-                </button>
-                <div className={`faq-answer ${openFaq === index ? "active" : ""}`}>
-                  <p>{faq.answer}</p>
-                </div>
-              </div>
-            ))}
+          <motion.div {...scrollFade(0.3)}>
+            <FaqAccordion faqs={faqs} />
           </motion.div>
         </div>
       </section>

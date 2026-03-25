@@ -4,6 +4,7 @@ import { type JSX, useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { navLinks, DISCORD_URL } from "@/consts/router";
+import { cn } from "@/lib/utils";
 
 export default function Navbar(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,7 +17,7 @@ export default function Navbar(): JSX.Element {
   }, []);
 
   return (
-    <nav className={`navbar ${isScrolled ? "scrolled" : ""}`} id="navbar">
+    <nav className={cn("navbar", isScrolled && "scrolled")} id="navbar">
       <div className="nav-container">
         <div className="nav-logo">
           <Link href="/">RATS</Link>
@@ -34,7 +35,7 @@ export default function Navbar(): JSX.Element {
           />
         </button>
 
-        <div className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>
+        <div className={cn("nav-links", isMobileMenuOpen && "active")}>
           {navLinks.map(({ label, href }) => (
             <Link key={href} href={href} className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>
               {label}

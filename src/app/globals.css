@@ -90,6 +90,25 @@ ul {
     list-style: none;
 }
 
+/* Accessible Focus States */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
 /* Buttons - Sharp Tactical Style */
 .btn {
     display: inline-flex;
@@ -662,6 +681,37 @@ ul {
 .hud-bar.filled { background-color: var(--accent); }
 .hud-bar.half { background-color: rgba(255, 215, 0, 0.4); }
 
+/* HUD Stats Grid - replaces inline styles */
+.hud-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: auto;
+    margin-bottom: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hud-stat-label {
+    font-family: var(--font-label), sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.hud-stat-value {
+    font-family: var(--font-mono), monospace;
+    font-size: 16px;
+    color: var(--accent);
+}
+
+.hud-footer-compact {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+}
+
 
 /* --- 3. ABOUT THE CLAN --- */
 .section {
@@ -795,7 +845,7 @@ ul {
     background-color: var(--bg-alt);
     border: 1px solid var(--border-subtle);
     padding: 24px;
-    transition: none;
+    transition: transform 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
     border-radius: 0;
     overflow: hidden;
 }
@@ -822,6 +872,8 @@ ul {
 
 .roster-card:hover {
     border-color: var(--accent);
+    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .roster-card:hover::before {
@@ -1366,5 +1418,22 @@ ul {
         flex-direction: column;
         gap: 16px;
         text-align: center;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .roster-card:hover {
+        transform: none;
+        box-shadow: none;
     }
 }

@@ -1,11 +1,12 @@
 "use client"
 
 import { type JSX, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { rosterData } from "@/data/roster";
+import { spring } from "@/hooks/useAnimations";
 
 export default function RosterPage(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,36 +89,46 @@ export default function RosterPage(): JSX.Element {
           </motion.div>
 
           {/* Dynamic Grid Container */}
-          {filteredMembers.length > 0 ? (
-            <div className="roster-grid" id="roster-grid">
-              {filteredMembers.map((member) => (
-                <motion.div
-                  className="roster-card"
-                  key={member.callsign}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, amount: 0 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  <div className="avatar-placeholder">
-                    <span className="watermark">RATS</span>
-                  </div>
-                  <div className="role-tag">{member.role}</div>
-                  <h3 className="member-name">{member.callsign}</h3>
-                  <div className="member-stats">
-                    {member.hours}h &middot; Since {member.since}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="roster-no-results">
-              <h3 className="member-name roster-no-results-title">
-                NO OPERATORS FOUND
-              </h3>
-              <p className="roster-no-results-sub">Try adjusting your search terms.</p>
-            </div>
-          )}
+          <AnimatePresence mode="popLayout">
+            {filteredMembers.length > 0 ? (
+              <motion.div className="roster-grid" id="roster-grid" layout>
+                {filteredMembers.map((member) => (
+                  <motion.div
+                    className="roster-card"
+                    key={member.callsign}
+                    layoutId={`card-${member.callsign}`}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    whileHover={{ scale: 1.02, borderColor: "var(--accent)" }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={spring.gentle}
+                  >
+                    <div className="avatar-placeholder">
+                      <span className="watermark">RATS</span>
+                    </div>
+                    <div className="role-tag">{member.role}</div>
+                    <h3 className="member-name">{member.callsign}</h3>
+                    <div className="member-stats">
+                      {member.hours}h &middot; Since {member.since}
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                className="roster-no-results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <h3 className="member-name roster-no-results-title">
+                  NO OPERATORS FOUND
+                </h3>
+                <p className="roster-no-results-sub">Try adjusting your search terms.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
