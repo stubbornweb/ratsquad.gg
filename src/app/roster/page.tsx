@@ -2,6 +2,7 @@
 
 import { type JSX, useState } from "react";
 import { motion } from "framer-motion";
+import { Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { rosterData } from "@/data/roster";
@@ -63,21 +64,12 @@ export default function RosterPage(): JSX.Element {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <div className="search-wrapper">
-              <svg
+              <Search
+                size={20}
+                strokeWidth={2}
                 className="search-icon"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="square"
-                strokeLinejoin="miter"
                 aria-hidden="true"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
+              />
               <input
                 type="text"
                 id="roster-search"

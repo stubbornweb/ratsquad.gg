@@ -2,6 +2,7 @@
 
 import { type JSX, useEffect, useState } from "react";
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import { navLinks, DISCORD_URL } from "@/consts/router";
 
 export default function Navbar(): JSX.Element {
@@ -27,18 +28,10 @@ export default function Navbar(): JSX.Element {
           aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+          <Menu
+            size={24}
+            strokeWidth={2}
+          />
         </button>
 
         <div className={`nav-links ${isMobileMenuOpen ? "active" : ""}`}>

@@ -115,7 +115,7 @@ export default function Home(): JSX.Element {
       {/* 2. Hero Section */}
       <header className="hero" id="hero">
         <div className="noise-overlay"></div>
-        <video className="hero-video-bg" autoPlay loop muted playsInline>
+        <video className="hero-video-bg" autoPlay loop muted playsInline preload="metadata">
           <source src="/assets/inspo-images/hero-bg.mp4" type="video/mp4" />
         </video>
         <div className="hero-bg-overlay"></div>

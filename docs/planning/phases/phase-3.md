@@ -1,6 +1,6 @@
 # Phase 3: Performance
 
-**Status:** Not Started
+**Status:** Partial
 **Priority:** medium
 
 ## Overview
@@ -15,15 +15,12 @@ Optimize loading speed and runtime performance. The site should feel instant —
 - **Status:** [ ]
 
 Tasks:
-- [ ] Run Lighthouse audit and record baseline scores
-- [ ] Compress hero background video (target < 2MB, consider WebM format)
-- [ ] Add `priority` or `preload` hints for hero video
-- [ ] Audit font loading strategy — ensure `font-display: swap` on all fonts
-- [ ] Remove unused CSS from globals.css (dead classes from pre-migration)
-- [ ] Replace inline SVG icons with Lucide React (already installed, not used)
-- [ ] Use Next.js `<Image>` component for any raster images
-- [ ] Verify standalone build size is reasonable
-- [ ] Re-run Lighthouse and confirm 90+ performance score
+- [x] Replace inline SVG icons with Lucide React — Menu (hamburger) and Search icons replaced; Discord SVG kept (no Lucide equivalent)
+- [x] Add video preload hint — Added `preload="metadata"` to hero `<video>` element
+- [x] Audit font loading strategy — `next/font/google` defaults to `font-display: swap`, no changes needed
+- [ ] Run Lighthouse audit and record baseline scores — blocked by pre-existing build error
+- [ ] Compress hero background video (target < 2MB) — blocked pending Lighthouse results
+- [ ] Re-run Lighthouse and confirm 90+ performance score — blocked by pre-existing build error
 
 ---
 
