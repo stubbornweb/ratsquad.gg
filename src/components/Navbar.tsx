@@ -2,14 +2,7 @@
 
 import { type JSX, useEffect, useState } from "react";
 import Link from "next/link";
-import { type NavLink } from "@/types";
-
-const navLinks: NavLink[] = [
-  { label: "ABOUT", href: "/#about" },
-  { label: "ROSTER", href: "/roster" },
-  { label: "FAQ", href: "/#faq" },
-  { label: "JOIN US", href: "/#join" },
-];
+import { navLinks, DISCORD_URL } from "@/consts/router";
 
 export default function Navbar(): JSX.Element {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -54,7 +47,7 @@ export default function Navbar(): JSX.Element {
               {label}
             </Link>
           ))}
-          <Link href="https://discord.gg/g2qP3fNk" className="btn btn-primary nav-cta" onClick={() => setIsMobileMenuOpen(false)}>
+          <Link href={DISCORD_URL} className="btn btn-primary nav-cta" onClick={() => setIsMobileMenuOpen(false)}>
             APPLY NOW
           </Link>
         </div>

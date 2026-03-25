@@ -6,6 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { type FaqItem } from "@/types";
+import { FEATURED_MEMBERS } from "@/data/roster";
 
 // Animation prop helpers — hero (immediate) vs scroll-triggered
 const heroUp = (delay: number) => ({
@@ -274,30 +275,16 @@ export default function Home(): JSX.Element {
           </motion.p>
 
           <motion.div className="roster-grid" {...scrollFade(0.3)}>
-            <div className="roster-card">
-              <div className="avatar-placeholder">
-                <span className="watermark">RATS</span>
+            {FEATURED_MEMBERS.map((member) => (
+              <div className="roster-card" key={member.callsign}>
+                <div className="avatar-placeholder">
+                  <span className="watermark">RATS</span>
+                </div>
+                <div className="role-tag">{member.role}</div>
+                <h3 className="member-name">{member.callsign}</h3>
+                <div className="member-stats">{member.hours}h &middot; Since {member.since}</div>
               </div>
-              <div className="role-tag">CLAN LEADER</div>
-              <h3 className="member-name">[CALLSIGN_1]</h3>
-              <div className="member-stats">1500h &middot; Since 2021</div>
-            </div>
-            <div className="roster-card">
-              <div className="avatar-placeholder">
-                <span className="watermark">RATS</span>
-              </div>
-              <div className="role-tag">SQUAD LEAD</div>
-              <h3 className="member-name">[CALLSIGN_2]</h3>
-              <div className="member-stats">1200h &middot; Since 2022</div>
-            </div>
-            <div className="roster-card">
-              <div className="avatar-placeholder">
-                <span className="watermark">RATS</span>
-              </div>
-              <div className="role-tag">SQUAD LEAD</div>
-              <h3 className="member-name">[CALLSIGN_3]</h3>
-              <div className="member-stats">850h &middot; Since 2022</div>
-            </div>
+            ))}
 
             <Link href="/roster" className="roster-card join-teaser">
               <div className="join-teaser-content">VIEW FULL ROSTER &rarr;</div>

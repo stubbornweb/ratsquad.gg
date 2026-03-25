@@ -1,5 +1,6 @@
 import { type JSX } from "react";
 import Link from "next/link";
+import { DISCORD_URL } from "@/consts/router";
 
 export default function Footer(): JSX.Element {
   return (
@@ -22,7 +23,7 @@ export default function Footer(): JSX.Element {
 
           <div className="footer-col">
             <h4 className="footer-col-title">COMMUNITY</h4>
-            <Link href="#" className="footer-link">Discord</Link>
+            <Link href={DISCORD_URL} className="footer-link" target="_blank" rel="noopener noreferrer">Discord</Link>
             <Link href="#" className="footer-link">Steam Group</Link>
           </div>
 
