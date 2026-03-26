@@ -59,6 +59,7 @@
 
 html {
     scroll-behavior: smooth;
+    background-color: var(--bg-footer);
 }
 
 body {
@@ -164,44 +165,34 @@ input:focus-visible {
 
 .glitch-text-wrapper {
     position: relative;
-    overflow: hidden;
 }
 
 .glitch-text {
     position: relative;
+    display: inline-block;
 }
 
-.glitch-text::before,
-.glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
+/* Glitch animation — text-shadow based, works with background-clip: text */
+@keyframes brandGlitch {
+    0%   { transform: translate(0);            text-shadow: none; }
+    10%  { transform: translate(-4px, 2px);    text-shadow: 4px 0 #0057B8, -4px 0 var(--accent); }
+    20%  { transform: translate(4px, -2px);    text-shadow: -4px 0 var(--accent), 4px 0 #0057B8; }
+    30%  { transform: translate(-3px, 0);      text-shadow: 3px 0 #0057B8, -3px 0 var(--accent); }
+    40%  { transform: translate(3px, 2px);     text-shadow: -3px 0 var(--accent), 3px 0 #0057B8; }
+    50%  { transform: translate(-2px, -1px);   text-shadow: 2px 0 #0057B8, -2px 0 var(--accent); }
+    60%  { transform: translate(1px, 1px);     text-shadow: -1px 0 var(--accent), 1px 0 #0057B8; }
+    70%  { transform: translate(0);            text-shadow: none; }
+    100% { transform: translate(0);            text-shadow: none; }
 }
 
-.glitch-text-wrapper:hover .glitch-text::before {
-    opacity: 0.8;
-    color: #ff0000;
-    animation: glitchShift 0.3s steps(2) 1;
-    clip-path: inset(20% 0 30% 0);
+/* Glitch fires when element scrolls into view, resets when scrolled away */
+.glitch-text-wrapper .glitch-text {
+    color: var(--accent);
+    transition: color 0.3s ease;
 }
 
-.glitch-text-wrapper:hover .glitch-text::after {
-    opacity: 0.8;
-    color: #00ffff;
-    animation: glitchShift 0.3s steps(2) reverse 1;
-    clip-path: inset(50% 0 10% 0);
-}
-
-@keyframes glitchShift {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-3px); }
-    50% { transform: translateX(3px); }
-    75% { transform: translateX(-1px); }
-    100% { transform: translateX(0); }
+.glitch-text-wrapper.glitch-active .glitch-text {
+    animation: brandGlitch 0.5s steps(3) 1;
 }
 
 .glitch-flash {
@@ -1302,7 +1293,8 @@ input:focus-visible {
 .footer {
     position: relative;
     background-color: var(--bg-footer);
-    padding: 80px 40px 40px;
+    padding: 80px 40px 0;
+    overflow: hidden;
 }
 
 .footer-border {
@@ -1365,17 +1357,12 @@ input:focus-visible {
     line-height: 1.6;
 }
 
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--border-subtle);
-    padding-top: 24px;
-}
-
-.footer-copy, .footer-legal {
-    font-size: 12px;
+.footer-copy {
+    font-size: 11px;
     color: #444444;
+    margin-top: 16px;
+    font-family: var(--font-mono), monospace;
+    letter-spacing: 0.1em;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1383,25 +1370,42 @@ input:focus-visible {
    ═══════════════════════════════════════════════════════ */
 
 .footer-brand-mark {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-top: 60px;
-    padding: 60px 0;
+    width: 100%;
+    padding-top: 150px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-top: 1px solid var(--border-subtle);
-    overflow: hidden;
+    background-color: var(--bg-footer);
 }
 
 .brand-mark-text {
     font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: clamp(125px, 22vw, 350px);
+    line-height: 1;
+    transform: translateY(0.18em);
     letter-spacing: 0.15em;
     color: var(--accent);
     line-height: 1;
     user-select: none;
     cursor: default;
+}
+
+/* Ukrainian flag colors — triggered on scroll into view, resets on scroll away */
+.footer-brand-mark .glitch-active .glitch-text {
+    background: linear-gradient(to bottom, #0057B8 50%, var(--accent) 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: brandGlitch 0.5s steps(3) 1;
+}
+
+/* Reset to yellow when scrolled away */
+.footer-brand-mark .glitch-text-wrapper:not(.glitch-active) .glitch-text {
+    color: var(--accent);
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    -webkit-text-fill-color: var(--accent);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1488,7 +1492,7 @@ input:focus-visible {
     }
 
     .footer {
-        padding: 60px 24px 32px;
+        padding: 60px 24px 0;
     }
 
     .footer-grid {
@@ -1496,14 +1500,8 @@ input:focus-visible {
         gap: 32px;
     }
 
-    .footer-bottom {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-    }
-
     .footer-brand-mark {
-        padding: 40px 0;
+        padding-top: 80px;
     }
 
     .brand-mark-text {

@@ -1,8 +1,9 @@
 "use client"
 
 import { type JSX } from "react"
-import { motion, useInView } from "framer-motion"
+import { useInView } from "framer-motion"
 import { useRef } from "react"
+import { cn } from "@/lib/utils"
 
 interface GlitchTextProps {
   children: string
@@ -16,27 +17,16 @@ export function GlitchText({
   as: Tag = "div",
 }: GlitchTextProps): JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.5 })
+  const isInView = useInView(ref, { once: false, amount: 0.3 })
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      className={`glitch-text-wrapper ${className ?? ""}`}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{ duration: 0.1 }}
+      className={cn("glitch-text-wrapper", isInView && "glitch-active", className)}
     >
       <Tag className="glitch-text" data-text={children}>
         {children}
       </Tag>
-      {isInView && (
-        <motion.div
-          className="glitch-flash"
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-      )}
-    </motion.div>
+    </div>
   )
 }

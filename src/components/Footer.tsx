@@ -24,6 +24,9 @@ export default function Footer(): JSX.Element {
           <motion.div className="footer-brand" variants={fadeUp}>
             <div className="footer-logo">RATS</div>
             <div className="footer-tagline">EU COMPETITIVE SQUAD CLAN</div>
+            <div className="footer-copy">
+              RATS &copy; {currentYear} &mdash; ALL RIGHTS RESERVED
+            </div>
           </motion.div>
 
           <motion.div className="footer-col" variants={fadeUp}>
@@ -51,34 +54,14 @@ export default function Footer(): JSX.Element {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          className="footer-bottom"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
-        >
-          <div className="footer-copy">
-            RATS &copy; {currentYear} &mdash; ALL RIGHTS RESERVED
-          </div>
-          <div className="footer-legal">
-            SQUAD IS A TRADEMARK OF OFFWORLD INDUSTRIES
-          </div>
-        </motion.div>
       </div>
 
-      {/* Giant brand mark — glitch reveal on scroll */}
-      <motion.div
-        className="footer-brand-mark"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      >
+      {/* Giant brand mark — glitch + Ukrainian flag on scroll to bottom */}
+      <div className="footer-brand-mark">
         <GlitchText className="brand-mark-text" as="div">
           RATS
         </GlitchText>
-      </motion.div>
+      </div>
     </footer>
   )
 }
