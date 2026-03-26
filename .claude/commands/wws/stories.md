@@ -91,7 +91,7 @@
    ```
    docs/planning/user-stories.md generated with [N] stories across [M] domains.
 
-   Review and edit? Changes will be captured in pending-sync.
+   Review the generated file and edit if needed.
 
    Next: /wws:schema — generate database schema (if needed)
           /wws:phases — generate implementation phases

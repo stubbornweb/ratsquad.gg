@@ -23,10 +23,12 @@
      ```
 
 2. **Run quality gates**
-   - Read lint and test commands from CLAUDE.md
-   - Run lint command
-   - Run test command
-   - Both must pass before proceeding
+   - If no files changed since last successful gate run (from `/ww:do`): skip
+     Print: "Quality gates already passed. Skipping."
+   - Otherwise, apply tiered gates:
+     - Only `.md` files → lint only
+     - Only config files → lint only
+     - Code files → lint + test
    - If fail: auto-fix retry (1x), then stop
 
 3. **Review changes**

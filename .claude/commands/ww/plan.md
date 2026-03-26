@@ -71,13 +71,25 @@
 
 6. **Present for approval**
    ```
-   PLAN.md created with N tasks. Review and approve?
+   Plan created with N tasks. Review and approve?
    → Approve | Edit | Re-grill | Cancel
    ```
 
+7. **Ask what to do next**
+
+   After user approves the plan:
+   ```
+   Plan approved. What next?
+   → Execute now (/ww:do) | Save to PLAN.md | Both (save + execute)
+   ```
+
+   - **Execute now:** proceed directly to /ww:do logic in same session (no file written)
+   - **Save to PLAN.md:** write `.workflow/core/PLAN.md` as described in step 5
+   - **Both:** write file + proceed to execution
+
 ## Doc Change Proposals
 
-7. **Propose doc changes** (if any needed and not `--plan-only`)
+8. **Propose structural doc changes** (if any needed and not `--plan-only`)
 
    **If planning introduces a new story:**
    - Write proposal to `.workflow/pending-sync.md`:
@@ -100,12 +112,4 @@
      - **Context:** "Tasks added from planning"
      ```
 
-   **If no doc changes needed:** skip proposal step
-
-8. **Final message**
-   ```
-   Plan ready.
-
-   Run /ww:do to execute this plan.
-   Run /ww:sync to apply pending doc changes.
-   ```
+   **If no structural doc changes needed:** skip proposal step

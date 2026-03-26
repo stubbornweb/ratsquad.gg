@@ -48,7 +48,12 @@
    Detected: [stack] with [lint] and [test] commands.
    Updated: rules/project/stack.md, CLAUDE.md
 
-   Next: /ww:plan — create task breakdown for implementation
+   Next steps:
+   → /ww:discover — capture business context and goals
+   → /wws:describe — generate project description
+   → /wws:stories — generate user stories
+   → /wws:phases — generate implementation phases
+   → /ww:plan — create task breakdown
    ```
 
 ## Deep Mode (--deep)

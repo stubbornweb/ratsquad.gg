@@ -40,8 +40,6 @@ If neither `--fresh` nor `--existing` is provided:
    → /wws:describe — generate project description from discovery
    → /wws:stories — generate user stories
    → /wws:phases — generate implementation phases
-
-   Run /ww:sync when ready to apply pending changes.
    ```
 
 ## Existing Mode (--existing)
@@ -80,8 +78,6 @@ If neither `--fresh` nor `--existing` is provided:
    → /wws:describe — generate project description from discovery
    → /wws:stories — generate user stories
    → /wws:phases — generate implementation phases
-
-   Run /ww:sync when ready to apply pending changes.
    ```
 
 ## Interview Rules

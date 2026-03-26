@@ -55,7 +55,7 @@
    **Approve:** mark for application
    **Reject:** skip, don't apply
    **Edit:** open editor, save → use edited version
-   **Skip:** defer to end of session
+   **Skip:** skipped proposals remain in pending-sync.md for the next `/ww:sync` run
 
 4. **Apply approved changes**
    - For each approved proposal:

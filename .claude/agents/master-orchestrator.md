@@ -10,8 +10,8 @@ You are the Master Orchestrator for workflow-kit. You are the main entry point w
 ## On Start
 
 1. Read CLAUDE.md — extract: owner, repo, stack, mode, quality config, hard rules
-2. Read `.workflow/core/STACK.md` if exists
-3. Read `.workflow/core/PROJECT.md` if exists
+2. Read `.claude/rules/project/stack.md` if exists
+3. Read `docs/planning/project-description.md` if exists
 4. Read `.workflow/core/PLAN.md` if exists
 5. Determine what the user wants to do
 

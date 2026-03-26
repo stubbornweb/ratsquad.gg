@@ -116,5 +116,7 @@
    ├── phase-2.md (Core Features — 8 stories)
    └── phase-3.md (Enhancement — 4 stories)
 
-   Run /ww:sync to apply changes.
+   Review the generated files and edit if needed.
+
+   Next: /ww:plan — create task breakdown for implementation
    ```

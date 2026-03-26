@@ -29,7 +29,7 @@
 
    **Workflow layer:**
    - PLAN.md exists? Show title and task progress
-   - STACK.md exists? Show detected stack
+   - `.claude/rules/project/stack.md` populated? Show detected stack
    - AUDIT.md exists? Show last audit date
    - TECH-DEBT.md exists? Show item count by priority
    - ADRs: count `.workflow/decisions/ADRs/*.md`

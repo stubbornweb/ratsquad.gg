@@ -64,6 +64,47 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
 | architecture, design | `architect-reviewer` |
 | refactor, debt, cleanup | `refactoring-analyzer` |
 
+## Skill & Agent Detection (runs before execution)
+
+Before executing, check if relevant skills and agents exist for this work:
+
+1. **Read project context**
+   - `.claude/rules/project/stack.md` → detected stack
+   - `docs/planning/project-description.md` → project type
+   - `CLAUDE.md` → stack section
+
+2. **Analyze task context**
+   - Scan plan tasks for domain indicators:
+
+   | Domain | Keywords | Suggested Skill | Suggested Agent |
+   |--------|----------|-----------------|-----------------|
+   | Frontend | component, UI, page, layout, CSS, style | frontend-design | — |
+   | API | endpoint, route, REST, GraphQL | api-design | — |
+   | Database | migration, model, schema, query | database-patterns | — |
+   | Auth | login, auth, permission, role | auth-patterns | security-auditor |
+   | Testing | test, coverage, mock, fixture | testing-patterns | qa-expert |
+   | Performance | optimize, cache, lazy, bundle | performance-patterns | performance-engineer |
+
+3. **Check stack skill**
+   - Is there a skill in `.claude/skills/stack/` matching the detected stack?
+   - If stack is "next" → check for `.claude/skills/stack/nextjs/SKILL.md`
+   - If stack is "laravel" → check for `.claude/skills/stack/laravel/SKILL.md`
+   - etc. for all supported stacks
+
+4. **Suggest missing skills**
+   - For each missing skill:
+     ```
+     Missing skill: [skill-name]
+     This plan involves [domain] work but no [skill-name] skill is installed.
+
+     Create it now? (fetches from VoltAgent + adapts to your project)
+     → Create | Skip | Skip all skill suggestions
+     ```
+   - If user says "Create": run `/ww:create skill [name]` inline (uses fetch-first flow)
+   - Created skills immediately load into context for the execution
+
+---
+
 ## Scratch Mode (no issue number)
 
 1. **Load plan**
@@ -83,9 +124,12 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
    - Respect dependencies
    - Mark tasks complete as they finish
 
-4. **Quality gates**
-   - Run lint command from CLAUDE.md
-   - Run test command from CLAUDE.md
+4. **Quality gates** (tiered by change type)
+   - Detect change type from `git diff --name-only`:
+     - Only `.md` files → lint only
+     - Only config files → lint only
+     - Code files changed → lint + test
+   - Run applicable gates from CLAUDE.md
    - If fail: auto-fix retry (1x)
    - If still failing: spawn `error-detective` agent for diagnosis
      - Check if agent exists → if not, install via `/ww:create agent error-detective`
@@ -96,22 +140,16 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
      - Check if agent exists → if not, install via `/ww:create agent code-reviewer`
    - Show agent's findings alongside self-review
 
-6. **Propose doc updates**
-   - Check which tasks from PLAN.md were completed
-   - For each completed task that belongs to a phase:
-     - Write to `.workflow/pending-sync.md`:
-     ```
-     ### [timestamp] — /ww:do
-     - **File:** docs/planning/phases/phase-X.md
-     - **Action:** update
-     - **Section:** ## Tasks
-     - **Content:** Mark task as [x] done
-     - **Context:** Task completed during /ww:do
-     ```
+6. **Update phase files**
+   - For each completed task:
+     - Read the corresponding phase file in `docs/planning/phases/`
+     - Mark the task as `[x]` directly in the file
+   - For story completion (all acceptance criteria met):
+     - Read `docs/planning/user-stories.md`
+     - Mark story as `[x]` directly
 
 7. **Done**
    - Show summary of what was implemented
-   - If proposals written: show count, suggest `/ww:sync`
    - Suggest: `/ww:commit` to commit changes
 
 ## Issues Mode (with issue number)
@@ -145,9 +183,13 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
    - Execute plan
    - Commit checkpoint every 3-5 tasks
 
-6. **Quality gates**
-   - Run lint + test
-   - If `--quick`: run lint only
+6. **Quality gates** (tiered by change type)
+   - Detect change type from `git diff --name-only`:
+     - Only `.md` files → lint only
+     - Only config files → lint only
+     - Code files changed → lint + test
+   - If `--quick`: run lint only regardless
+   - Run applicable gates from CLAUDE.md
    - If fail: auto-fix retry (1x)
    - If still failing: spawn `error-detective` agent for diagnosis
      - Check if agent exists → if not, install via `/ww:create agent error-detective`
@@ -159,22 +201,16 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
      - Show agent's findings alongside self-review
    - Show summary of all changes
 
-8. **Propose doc updates**
-   - Check which tasks were completed
-   - For each task:
-     - Write to `.workflow/pending-sync.md`:
-     ```
-     ### [timestamp] — /ww:do
-     - **File:** docs/planning/phases/phase-X.md
-     - **Action:** update
-     - **Section:** ## Tasks
-     - **Content:** Mark task as [x] done
-     - **Context:** Issue #N completed
-     ```
+8. **Update phase files**
+   - For each completed task:
+     - Read the corresponding phase file in `docs/planning/phases/`
+     - Mark the task as `[x]` directly in the file
+   - For story completion (all acceptance criteria met):
+     - Read `docs/planning/user-stories.md`
+     - Mark story as `[x]` directly
 
 9. **Done**
    - Show summary
-   - If proposals written: show count, suggest `/ww:sync`
    - Suggest: `/ww:commit --pr` to commit and create PR
 
 ## Story Completion Rule
@@ -184,16 +220,8 @@ Based on PLAN.md task keywords, these agents may be spawned mid-execution:
 After task completion:
 - Read `docs/planning/user-stories.md` for the story being worked
 - Check if all acceptance criteria are now satisfied
-- If yes: propose to pending-sync to mark story [x]
-
-```
-### [timestamp] — /ww:do
-- **File:** docs/planning/user-stories.md
-- **Action:** update
-- **Section:** ### US-X.Y
-- **Content:** Status changed from [~] to [x]
-- **Context:** All acceptance criteria met
-```
+- If yes: mark story as `[x]` directly in `docs/planning/user-stories.md`
+- If partial: mark story as `[~]` directly
 
 ## Worktree Mode (--worktree)
 

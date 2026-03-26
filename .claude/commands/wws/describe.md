@@ -141,7 +141,7 @@
    ```
    docs/planning/project-description.md generated from discovery.
 
-   Review and edit? Changes will be captured in pending-sync.
+   Review the generated file and edit if needed.
 
    Next: /wws:stories — generate user stories from description
    ```

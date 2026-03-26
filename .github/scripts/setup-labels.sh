@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
 # setup-labels.sh
-# Creates workflow-kit v2 label system on any GitHub repo.
+# Creates workflow-kit v3 label system on any GitHub repo.
 #
 # Usage:
 #   .github/scripts/setup-labels.sh               # uses current repo (gh auth required)
@@ -20,7 +20,7 @@ if [ -z "$REPO" ]; then
     exit 1
 fi
 
-echo "Setting up workflow-kit v2 labels on: $REPO"
+echo "Setting up workflow-kit v3 labels on: $REPO"
 echo ""
 
 create_label() {
