@@ -1,52 +1,55 @@
-# Plan: Hero Section Redesign
+# Footer & Brand Mark Redesign
 
-Updated: 2026-03-26
-Status: active
-
-## Topic
-Redesign the hero section with a wider headline, v2-style grid background, conditional video, no HUD, and scroll indicator — keeping English content.
+**Branch:** none (fast mode)
+**Created:** 2026-03-26
 
 ## Settings
+- Testing: no
+- Logging: standard
+- Docs: no
+- Roadmap Linkage: none
 
-| Setting | Value |
-|---------|-------|
-| Testing | No |
-| Logging | standard |
-| Docs | no |
-| Roadmap Linkage | none |
+## Design Direction
 
-## Research Context
+**Aesthetic:** Industrial Brutalist — raw, bold, unapologetic. The footer-brand-mark feels like a war stamp or military insignia, not decorative text.
 
-**Topic:** Redesign hero section to match v2 rats-site-v2 style
-**Goal:** Wider hero text, grid background with video fallback, no terminal/HUD, watermark + scroll indicator
-**Constraints:**
-- Keep English ("MOVE AS ONE / STRIKE AS ONE")
-- Remove HUD/terminal completely
-- Add grid background that shows when video is absent
-- Keep Framer Motion animations
-- Remove terminal typing effect (no longer applicable)
+**Key changes:**
+- Brand mark: Full-width, massive typography, edge-to-edge (no horizontal padding)
+- Footer: Compact, minimal padding, organized into clean columns
+- Animation: Brand mark reveals with dramatic entrance when scrolled into view, subtle pulse/glow on hover
+- Overall: Edge-to-edge design, modern "sticky bottom" feel
 
 ## Tasks
 
-### Phase 1 — CSS (globals.css)
+### Task 1: Restructure Footer CSS — Edge-to-Edge Brand Mark
+**Files:** `src/app/globals.css`
 
-- [x] **Task 1:** Update globals.css — add grid bg, vignette, watermark, scroll bounce; remove HUD CSS
+- [x] Make brand mark full-width with `width: 100vw` and center with `margin-left: calc(50% - 50vw)`
+- [x] Remove horizontal padding from `.footer-brand-mark`
+- [x] Reduce vertical padding for tighter composition
+- [x] Add CSS glow effect using `text-shadow` with accent color
+- [x] Make brand mark text more dramatic with enhanced letter-spacing
 
-### Phase 2 — Component (Hero.tsx)
+### Task 2: Animate Brand Mark on Scroll Reveal
+**Files:** `src/components/Footer.tsx`, `src/app/globals.css`
 
-- [x] **Task 2:** Update Hero.tsx — remove HUD, add conditional video/grid bg, watermark, scroll indicator, wider headline
+- [x] Add IntersectionObserver in Footer component to detect when brand mark enters viewport
+- [x] Apply `.brand-mark-visible` class to trigger entrance animation
+- [x] Entrance animation: Scale from 0.9 → 1.0, opacity 0 → 1, with slight blur dissolve
+- [x] Add continuous subtle glow pulse when visible
 
----
+### Task 3: Add Hover Interactions to Brand Mark
+**File:** `src/app/globals.css`
 
-## Implementation Notes
+- [x] On hover: Intensify glow, subtle scale (1.02), letter-spacing expansion
+- [x] CSS transition for smooth 0.3s ease
 
-**Key visual changes:**
-- Hero headline: `clamp(48px,8vw,110px)` → `clamp(72px,12vw,148px)`
-- Letter-spacing: `0.08em` → `0.03em`
-- Layout: split (content + HUD) → centered content + watermark
-- Background: grid always present; video overlays when available
-- Remove: terminal typing effect, HUD frame, corner accents, stats grid
+### Task 4: Reorganize Footer Grid for Better Hierarchy
+**Files:** `src/components/Footer.tsx`, `src/app/globals.css`
 
-**Files changed:**
-- `src/app/globals.css` — add/remove hero CSS classes
-- `src/components/sections/Hero.tsx` — restructure JSX, conditional video, remove terminal state
+- [x] Reduce footer top padding for tighter connection to content
+- [x] Ensure consistent spacing between columns
+- [x] Clean up mobile responsive breakpoints
+
+### Task 5: Lint & Verify
+- [x] Run `npm run lint` to ensure no errors

@@ -6,9 +6,9 @@ import Link from "next/link"
 import { spring } from "@/hooks/useAnimations"
 
 const heroUp = (delay: number) => ({
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" as const, delay },
+  initial: { opacity: 0, y: 20, clipPath: "inset(0 100% 0 0)" },
+  animate: { opacity: 1, y: 0, clipPath: "inset(0 0% 0 0)" },
+  transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const, delay },
 })
 
 export default function Hero(): JSX.Element {
@@ -29,7 +29,7 @@ export default function Hero(): JSX.Element {
       {/* Grid background — always visible */}
       <div
         className="hero-grid-bg"
-        style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+        style={{ transform: `translateY(${scrollY * 0.15}px)` }}
       />
 
       {/* Video — only shown once loaded, overlaid on grid */}
@@ -49,6 +49,10 @@ export default function Hero(): JSX.Element {
       {/* Vignette + bottom fade */}
       <div className="hero-vignette"></div>
       <div className="hero-bottom-fade"></div>
+
+      {/* Grain + scanlines overlays */}
+      <div className="hero-grain"></div>
+      <div className="hero-scanlines"></div>
 
       {/* Giant watermark */}
       <span className="hero-watermark">RATS</span>
@@ -99,6 +103,7 @@ export default function Hero(): JSX.Element {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.5 }}
         >
+          <span className="scroll-ping"></span>
           <span className="scroll-label">SCROLL</span>
           <svg
             width="16"
