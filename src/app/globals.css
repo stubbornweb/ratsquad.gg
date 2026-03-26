@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-/* --- 0. DESIGN SYSTEM & RESET --- */
+/* ═══════════════════════════════════════════════════════
+   0. DESIGN SYSTEM & RESET
+   ═══════════════════════════════════════════════════════ */
 
 /* NASTUP BASIC Font - Stencil Tactical Font */
 @font-face {
@@ -24,6 +26,7 @@
     --accent-dim: rgba(255, 215, 0, 0.6);
     --accent-glow: rgba(255, 215, 0, 0.15);
     --accent-pulse: rgba(255, 215, 0, 0.3);
+    --accent-subtle: rgba(255, 215, 0, 0.05);
 
     /* Text hierarchy */
     --text-main: #FAFAFA;
@@ -34,6 +37,7 @@
     --border-color: #18181B;
     --border-subtle: #27272A;
     --border-accent: rgba(255, 215, 0, 0.3);
+    --border-glow: rgba(255, 215, 0, 0.12);
 
     /* Status colors */
     --status-danger: #EF4444;
@@ -68,16 +72,17 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 ::-webkit-scrollbar-track {
     background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
+    background: var(--border-subtle);
+    border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-muted);
+    background: var(--text-dark);
 }
 
 a {
@@ -109,7 +114,108 @@ input:focus-visible {
     outline: none;
 }
 
-/* Buttons - Sharp Tactical Style */
+/* ═══════════════════════════════════════════════════════
+   SCROLL PROGRESS BAR
+   ═══════════════════════════════════════════════════════ */
+
+.scroll-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: 0%;
+    z-index: 200;
+    box-shadow: 0 0 8px var(--accent-glow), 0 0 20px var(--accent-subtle);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION DIVIDER
+   ═══════════════════════════════════════════════════════ */
+
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+}
+
+.section-divider-label {
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════
+   GLITCH TEXT EFFECT
+   ═══════════════════════════════════════════════════════ */
+
+.glitch-text-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.glitch-text {
+    position: relative;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.glitch-text-wrapper:hover .glitch-text::before {
+    opacity: 0.8;
+    color: #ff0000;
+    animation: glitchShift 0.3s steps(2) 1;
+    clip-path: inset(20% 0 30% 0);
+}
+
+.glitch-text-wrapper:hover .glitch-text::after {
+    opacity: 0.8;
+    color: #00ffff;
+    animation: glitchShift 0.3s steps(2) reverse 1;
+    clip-path: inset(50% 0 10% 0);
+}
+
+@keyframes glitchShift {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-1px); }
+    100% { transform: translateX(0); }
+}
+
+.glitch-flash {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS - Sharp Tactical Style
+   ═══════════════════════════════════════════════════════ */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -118,13 +224,14 @@ input:focus-visible {
     text-transform: uppercase;
     font-weight: 400;
     cursor: pointer;
-    border-radius: 0; /* Strict requirement: no rounded corners */
+    border-radius: 0;
     border: 2px solid transparent;
     position: relative;
     overflow: hidden;
-    transition: none; /* Instant tactical response */
+    transition: none;
 }
 
+/* Sweep effect on hover */
 .btn::before {
     content: '';
     position: absolute;
@@ -132,8 +239,8 @@ input:focus-visible {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.4s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transition: left 0.5s ease;
 }
 
 .btn:hover::before {
@@ -152,7 +259,7 @@ input:focus-visible {
     background-color: var(--text-main);
     color: var(--bg-main);
     border-color: var(--text-main);
-    box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+    box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-subtle);
 }
 
 .btn-primary:active {
@@ -183,7 +290,7 @@ input:focus-visible {
     width: 0;
     height: 1px;
     background-color: var(--accent);
-    transition: width 0.2s ease;
+    transition: width 0.3s ease;
 }
 
 .btn-text::before {
@@ -207,19 +314,23 @@ input:focus-visible {
     transform: translateY(-50%) translateX(0);
 }
 
-/* Noise overlay - Gritty Film Grain */
+/* ═══════════════════════════════════════════════════════
+   NOISE OVERLAY
+   ═══════════════════════════════════════════════════════ */
+
 .noise-overlay {
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.05;
+    opacity: 0.04;
     z-index: 1;
     pointer-events: none;
 }
 
-/* --- Visual Effects (consolidated) --- */
+/* ═══════════════════════════════════════════════════════
+   1. NAVIGATION BAR
+   ═══════════════════════════════════════════════════════ */
 
-/* --- 1. NAVIGATION BAR --- */
 .navbar {
     position: fixed;
     top: 0;
@@ -229,13 +340,14 @@ input:focus-visible {
     z-index: 100;
     background: transparent;
     border-bottom: 1px solid transparent;
-    transition: background 0.15s steps(2), border-color 0.15s steps(2);
+    transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
 }
 
 .navbar.scrolled {
-    background: rgba(10, 10, 10, 0.97);
-    border-bottom: 1px solid var(--border-accent);
-    backdrop-filter: blur(12px);
+    background: rgba(9, 9, 11, 0.85);
+    border-bottom: 1px solid var(--border-glow);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
 
 .nav-container {
@@ -254,7 +366,7 @@ input:focus-visible {
     color: var(--accent);
     letter-spacing: 0.15em;
     text-shadow: 0 0 10px var(--accent-glow);
-    transition: none;
+    transition: text-shadow 0.3s ease;
 }
 
 .nav-logo a:hover {
@@ -262,7 +374,8 @@ input:focus-visible {
     text-shadow: 0 0 15px var(--accent-pulse);
 }
 
-.nav-links {
+/* Desktop nav links */
+.nav-links-desktop {
     display: flex;
     align-items: center;
     gap: 40px;
@@ -277,7 +390,7 @@ input:focus-visible {
     color: var(--text-muted);
     position: relative;
     padding-bottom: 4px;
-    transition: color 0s;
+    transition: color 0.2s ease;
 }
 
 .nav-link::after {
@@ -288,7 +401,7 @@ input:focus-visible {
     width: 0;
     height: 2px;
     background-color: var(--accent);
-    transition: width 0.2s ease-out;
+    transition: width 0.25s ease-out;
 }
 
 .nav-link:hover {
@@ -311,9 +424,52 @@ input:focus-visible {
     border: none;
     color: var(--text-main);
     cursor: pointer;
+    z-index: 110;
+    position: relative;
 }
 
-/* --- 2. HERO SECTION --- */
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+    top: 0;
+    background: rgba(9, 9, 11, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-menu-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.mobile-nav-link {
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.1em;
+    color: var(--text-main);
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+    color: var(--accent);
+}
+
+.mobile-menu-cta {
+    margin-top: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   2. HERO SECTION
+   ═══════════════════════════════════════════════════════ */
+
 .hero {
     position: relative;
     height: 100vh;
@@ -325,7 +481,7 @@ input:focus-visible {
 
 .hero-grid-bg {
     position: absolute;
-    inset: 0;
+    inset: -100px; /* Extra space for parallax */
     background-color: #09090B;
     background-image:
         linear-gradient(rgba(255, 215, 0, 0.04) 1px, transparent 1px),
@@ -347,7 +503,7 @@ input:focus-visible {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 200px;
+    height: 250px;
     background: linear-gradient(to bottom, transparent, #09090B);
     z-index: 1;
 }
@@ -359,7 +515,7 @@ input:focus-visible {
     z-index: 3;
     pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    opacity: 0.06;
+    opacity: 0.05;
     mix-blend-mode: overlay;
 }
 
@@ -381,7 +537,7 @@ input:focus-visible {
 .hero-watermark {
     font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: clamp(180px, 40vw, 560px);
-    color: rgba(255, 255, 255, 0.035);
+    color: rgba(255, 255, 255, 0.03);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -391,33 +547,28 @@ input:focus-visible {
     user-select: none;
     line-height: 1;
     z-index: 1;
-    animation: glitch 3s ease-in-out 0.5s infinite;
+    animation: glitch 4s ease-in-out 1s infinite;
 }
 
 @keyframes glitch {
-    0%, 95%, 100% {
-        opacity: 0.035;
-        transform: translate(-50%, -50%);
+    0%, 94%, 100% {
+        opacity: 0.03;
         text-shadow: none;
     }
-    96% {
+    95% {
         opacity: 0.06;
-        transform: translate(-50.2%, -50%);
         text-shadow: -2px 0 #ff0000, 2px 0 #00ffff;
     }
-    97% {
+    96% {
         opacity: 0.04;
-        transform: translate(-49.8%, -50%);
         text-shadow: 2px 0 #ff0000, -2px 0 #00ffff;
     }
-    98% {
-        opacity: 0.035;
-        transform: translate(-50%, -50.1%);
+    97% {
+        opacity: 0.03;
         text-shadow: none;
     }
-    99% {
+    98% {
         opacity: 0.05;
-        transform: translate(-50.1%, -50%);
         text-shadow: -1px 0 #ff0000, 1px 0 #00ffff;
     }
 }
@@ -434,10 +585,6 @@ input:focus-visible {
     z-index: 0;
     object-fit: cover;
     filter: saturate(0.6) contrast(1.1) brightness(0.55);
-}
-
-.hero-bg-overlay {
-    /* Removed — vignette alone provides the darkening effect */
 }
 
 .hero-content {
@@ -472,6 +619,7 @@ input:focus-visible {
     width: 40px;
     height: 2px;
     background-color: var(--accent);
+    display: inline-block;
 }
 
 .hero-headline {
@@ -593,8 +741,10 @@ input:focus-visible {
     color: #555;
 }
 
+/* ═══════════════════════════════════════════════════════
+   3. SECTIONS (shared)
+   ═══════════════════════════════════════════════════════ */
 
-/* --- 3. ABOUT THE CLAN --- */
 .section {
     padding: 120px 40px;
     position: relative;
@@ -626,6 +776,17 @@ input:focus-visible {
     margin-bottom: 40px;
 }
 
+.section-sub {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: -24px;
+    margin-bottom: 64px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   4. ABOUT THE CLAN
+   ═══════════════════════════════════════════════════════ */
+
 .about {
     border-top: 1px solid var(--border-accent);
 }
@@ -653,6 +814,11 @@ input:focus-visible {
     position: relative;
     padding-top: 24px;
     border-top: 1px solid var(--border-subtle);
+    transition: border-color 0.3s ease;
+}
+
+.pillar:hover {
+    border-top-color: var(--accent-dim);
 }
 
 .ghost-number {
@@ -662,10 +828,15 @@ input:focus-visible {
     font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: 80px;
     color: var(--accent);
-    opacity: 0.12;
+    opacity: 0.1;
     line-height: 1;
     transform: translateY(-24px);
     z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.pillar:hover .ghost-number {
+    opacity: 0.2;
 }
 
 .pillar-title {
@@ -683,7 +854,10 @@ input:focus-visible {
     line-height: 1.6;
 }
 
-/* --- 4. ROSTER / MEMBERS --- */
+/* ═══════════════════════════════════════════════════════
+   5. ROSTER / MEMBERS
+   ═══════════════════════════════════════════════════════ */
+
 .roster-page-header {
     padding-top: 160px;
     padding-bottom: 60px;
@@ -708,51 +882,47 @@ input:focus-visible {
     background-color: var(--bg-main);
 }
 
-.section-sub {
-    font-size: 16px;
-    color: var(--text-muted);
-    margin-top: -24px;
-    margin-bottom: 64px;
-}
-
 .roster-card {
     position: relative;
     background-color: var(--bg-alt);
     border: 1px solid var(--border-subtle);
     padding: 24px;
-    transition: transform 0.2s ease-out, border-color 0.2s ease-out, box-shadow 0.2s ease-out;
     border-radius: 0;
     overflow: hidden;
+    transition: box-shadow 0.3s ease;
 }
 
+/* Accent top bar — appears on hover */
 .roster-card::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg,
-        var(--accent) 0%, var(--accent) 20%,
-        transparent 20%, transparent 25%,
-        var(--accent) 25%, var(--accent) 45%,
-        transparent 45%, transparent 50%,
-        var(--accent) 50%, var(--accent) 70%,
-        transparent 70%, transparent 75%,
-        var(--accent) 75%, var(--accent) 100%
-    );
-    opacity: 0;
-    transition: opacity 0s;
-}
-
-.roster-card:hover {
-    border-color: var(--accent);
-    transform: perspective(1000px) rotateX(2deg) rotateY(-2deg);
-    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
 }
 
 .roster-card:hover::before {
-    opacity: 1;
+    transform: scaleX(1);
+}
+
+/* Subtle edge glow */
+.roster-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid transparent;
+    pointer-events: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.roster-card:hover::after {
+    border-color: var(--border-glow);
+    box-shadow: inset 0 0 30px var(--accent-subtle);
 }
 
 .roster-controls {
@@ -780,7 +950,7 @@ input:focus-visible {
     font-size: 15px;
     border-radius: 0;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .search-input::placeholder {
@@ -789,6 +959,7 @@ input:focus-visible {
 
 .search-input:focus {
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
 }
 
 .search-icon {
@@ -812,18 +983,33 @@ input:focus-visible {
 .avatar-placeholder {
     width: 100%;
     aspect-ratio: 1;
-    background-color: #111111;
+    background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle tactical pattern inside avatar */
+.avatar-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 215, 0, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
+    background-size: 16px 16px;
 }
 
 .watermark {
     font-family: var(--font-heading), sans-serif;
-    color: #222222;
+    color: #1a1a1a;
     font-size: 48px;
     letter-spacing: 0.1em;
+    position: relative;
+    z-index: 1;
 }
 
 .role-tag {
@@ -861,16 +1047,20 @@ input:focus-visible {
     letter-spacing: 0.12em;
     color: var(--text-main);
     min-height: 200px;
+    transition: border-style 0.2s ease, background-color 0.3s ease, color 0.2s ease;
 }
 
 .join-teaser:hover {
     border-style: solid;
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(255, 215, 0, 0.03);
+    background: var(--accent-subtle);
 }
 
-/* --- 5. HOW TO JOIN --- */
+/* ═══════════════════════════════════════════════════════
+   6. HOW TO JOIN
+   ═══════════════════════════════════════════════════════ */
+
 .join {
     background-color: var(--bg-alt);
     position: relative;
@@ -916,6 +1106,19 @@ input:focus-visible {
     display: flex;
     flex-direction: column;
     gap: 32px;
+    position: relative;
+}
+
+/* Vertical connector line */
+.join-steps::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 20px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent-dim), transparent);
+    opacity: 0.3;
 }
 
 .step {
@@ -931,10 +1134,15 @@ input:focus-visible {
     font-family: 'NASTUP', var(--font-heading), sans-serif;
     font-size: 80px;
     color: var(--accent);
-    opacity: 0.12;
+    opacity: 0.1;
     line-height: 1;
     transform: translateY(-24px);
     z-index: 0;
+    transition: opacity 0.3s ease;
+}
+
+.step:hover .step-ghost-number {
+    opacity: 0.2;
 }
 
 .step-title {
@@ -969,7 +1177,10 @@ input:focus-visible {
     color: var(--text-muted);
 }
 
-/* --- 6. FAQ SECTION --- */
+/* ═══════════════════════════════════════════════════════
+   7. FAQ SECTION
+   ═══════════════════════════════════════════════════════ */
+
 .faq {
     background-color: var(--bg-alt);
     position: relative;
@@ -1003,13 +1214,13 @@ input:focus-visible {
     letter-spacing: 0.12em;
     cursor: pointer;
     text-align: left;
-    transition: none;
+    transition: color 0.2s ease;
+    gap: 16px;
 }
 
-.faq-question:hover, .faq-question.active {
+.faq-question:hover,
+.faq-question.active {
     color: var(--accent);
-    background-color: var(--bg-alt);
-    border: 1px solid var(--accent);
 }
 
 .faq-icon {
@@ -1017,36 +1228,48 @@ input:focus-visible {
     font-family: var(--font-mono), monospace;
     font-size: 22px;
     font-weight: 400;
-    transition: transform 0s;
+    flex-shrink: 0;
+    display: inline-block;
 }
 
-.faq-question.active .faq-icon {
-    transform: rotate(45deg);
-}
-
-.faq-answer {
-    max-height: 0;
+/* Pure Framer Motion accordion — no CSS max-height */
+.faq-answer-motion {
     overflow: hidden;
-    transition: max-height 0.3s steps(4), padding 0.3s steps(4);
+}
+
+.faq-answer-inner {
+    padding-bottom: 24px;
     color: var(--text-muted);
     font-size: 15px;
     line-height: 1.7;
 }
 
-.faq-answer.active {
-    max-height: 500px;
-    padding-bottom: 24px;
-}
+/* ═══════════════════════════════════════════════════════
+   8. DISCORD BANNER
+   ═══════════════════════════════════════════════════════ */
 
-/* --- 7. DISCORD BANNER --- */
 .discord-banner {
     position: relative;
     background-color: var(--bg-alt);
     padding: 100px 40px;
+    overflow: hidden;
 }
 
 .discord-banner .section-border-top {
     opacity: 0.4;
+}
+
+/* Ambient glow behind discord section */
+.discord-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, var(--accent-subtle) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .center-tag {
@@ -1069,15 +1292,13 @@ input:focus-visible {
     width: 48px;
     height: 48px;
     color: var(--text-main);
-    transition: transform 0.15s ease-out;
+    transition: color 0.2s ease;
 }
 
-.social-icon:hover {
-    color: var(--accent);
-    transform: scale(1.15);
-}
+/* ═══════════════════════════════════════════════════════
+   9. FOOTER
+   ═══════════════════════════════════════════════════════ */
 
-/* --- 8. FOOTER --- */
 .footer {
     position: relative;
     background-color: var(--bg-footer);
@@ -1130,11 +1351,12 @@ input:focus-visible {
     font-size: 14px;
     color: #666666;
     margin-bottom: 12px;
-    transition: color 0s;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .footer-link:hover {
     color: var(--text-main);
+    transform: translateX(4px);
 }
 
 .footer-text {
@@ -1156,7 +1378,10 @@ input:focus-visible {
     color: #444444;
 }
 
-/* --- 9. BIG FOOTER BRAND MARK --- */
+/* ═══════════════════════════════════════════════════════
+   10. FOOTER BRAND MARK
+   ═══════════════════════════════════════════════════════ */
+
 .footer-brand-mark {
     width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -1176,18 +1401,13 @@ input:focus-visible {
     color: var(--accent);
     line-height: 1;
     user-select: none;
+    cursor: default;
 }
 
-.brand-mark-tagline {
-    font-family: var(--font-mono), monospace;
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-dark);
-    margin-top: 16px;
-}
+/* ═══════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS
+   ═══════════════════════════════════════════════════════ */
 
-/* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 992px) {
     .footer-grid {
         grid-template-columns: 1fr 1fr;
@@ -1196,9 +1416,13 @@ input:focus-visible {
 
 @media (max-width: 768px) {
     .section {
-        padding: 60px 24px;
+        padding: 80px 24px;
     }
-    
+
+    .section-divider {
+        padding: 0 24px;
+    }
+
     .navbar {
         height: 56px;
     }
@@ -1206,41 +1430,15 @@ input:focus-visible {
     .nav-container {
         padding: 0 24px;
     }
-    
+
     .mobile-menu-btn {
         display: block;
     }
-    
-    .nav-links {
-        position: fixed;
-        top: 56px;
-        left: 0;
-        width: 100%;
-        max-height: 0;
-        overflow: hidden;
-        flex-direction: column;
-        background-color: var(--bg-alt);
-        gap: 0;
-        transition: max-height 0.3s ease, padding 0.3s ease;
-        border-bottom: 1px solid var(--border-color);
+
+    .nav-links-desktop {
+        display: none;
     }
 
-    .nav-links.active {
-        max-height: 400px;
-        padding: 24px 0;
-    }
-    
-    .nav-link, .nav-cta {
-        width: 100%;
-        text-align: center;
-        padding: 16px;
-    }
-
-    .nav-cta {
-        margin: 16px 24px 0;
-        width: auto;
-    }
-    
     .hero {
         padding-left: 24px;
         padding-right: 24px;
@@ -1275,7 +1473,24 @@ input:focus-visible {
         grid-template-columns: 1fr;
         gap: 40px;
     }
-    
+
+    .join-steps::before {
+        display: none;
+    }
+
+    .faq-question {
+        font-size: 15px;
+        letter-spacing: 0.08em;
+    }
+
+    .discord-banner {
+        padding: 80px 24px;
+    }
+
+    .footer {
+        padding: 60px 24px 32px;
+    }
+
     .footer-grid {
         grid-template-columns: 1fr;
         gap: 32px;
@@ -1294,9 +1509,21 @@ input:focus-visible {
     .brand-mark-text {
         font-size: clamp(75px, 25vw, 150px);
     }
+
+    .mobile-nav-link {
+        font-size: 28px;
+    }
+
+    .discord-glow {
+        width: 300px;
+        height: 200px;
+    }
 }
 
-/* Reduced Motion Support */
+/* ═══════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════ */
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -1305,10 +1532,5 @@ input:focus-visible {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
-    }
-
-    .roster-card:hover {
-        transform: none;
-        box-shadow: none;
     }
 }

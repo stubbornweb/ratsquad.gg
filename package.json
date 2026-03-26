@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "ai-factory": "^2.8.0",
     "clsx": "^2.1.1",
     "framer-motion": "12.38.0",
     "lucide-react": "^0.577.0",

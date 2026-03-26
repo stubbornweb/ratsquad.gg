@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Bebas_Neue, Barlow_Condensed, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { PageTransition } from "@/components/PageTransition";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${bebasNeue.variable} ${barlowCondensed.variable} ${ibmPlexMono.variable} antialiased`}
       >
+        <ScrollProgress />
         <PageTransition>
           {children}
         </PageTransition>

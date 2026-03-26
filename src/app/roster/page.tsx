@@ -1,20 +1,21 @@
 "use client"
 
-import { type JSX, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Search } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { rosterData } from "@/data/roster";
-import { spring } from "@/hooks/useAnimations";
+import { type JSX, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Search } from "lucide-react"
+import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
+import { rosterData } from "@/data/roster"
+import { spring, clipReveal, fadeUp } from "@/hooks/useAnimations"
 
 export default function RosterPage(): JSX.Element {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredMembers = rosterData.filter((member) =>
-    member.callsign.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.role.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMembers = rosterData.filter(
+    (member) =>
+      member.callsign.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.role.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <>
@@ -25,28 +26,28 @@ export default function RosterPage(): JSX.Element {
         <div className="section-container">
           <motion.div
             className="section-tag"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            variants={clipReveal}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <span className="tag-line"></span> THE UNIT
+            <span className="tag-line" /> THE UNIT
           </motion.div>
           <motion.h1
             className="section-headline"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            variants={clipReveal}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
           >
             ACTIVE ROSTER
           </motion.h1>
           <motion.p
             className="section-sub"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           >
             Our full roster of active, competitive, and dedicated Squad players.
           </motion.p>
@@ -59,10 +60,10 @@ export default function RosterPage(): JSX.Element {
           {/* Controls (Search & Stats) */}
           <motion.div
             className="roster-controls"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <div className="search-wrapper">
               <Search
@@ -91,7 +92,11 @@ export default function RosterPage(): JSX.Element {
           {/* Dynamic Grid Container */}
           <AnimatePresence mode="popLayout">
             {filteredMembers.length > 0 ? (
-              <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6" id="roster-grid" layout>
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6"
+                id="roster-grid"
+                layout
+              >
                 {filteredMembers.map((member) => (
                   <motion.div
                     className="roster-card"
@@ -100,7 +105,12 @@ export default function RosterPage(): JSX.Element {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    whileHover={{ scale: 1.02, borderColor: "var(--accent)" }}
+                    whileHover={{
+                      scale: 1.02,
+                      borderColor: "var(--accent)",
+                      boxShadow:
+                        "0 0 30px rgba(255, 215, 0, 0.08), 0 8px 32px rgba(0,0,0,0.4)",
+                    }}
                     whileTap={{ scale: 0.98 }}
                     transition={spring.gentle}
                   >
@@ -125,7 +135,9 @@ export default function RosterPage(): JSX.Element {
                 <h3 className="member-name roster-no-results-title">
                   NO OPERATORS FOUND
                 </h3>
-                <p className="roster-no-results-sub">Try adjusting your search terms.</p>
+                <p className="roster-no-results-sub">
+                  Try adjusting your search terms.
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -134,5 +146,5 @@ export default function RosterPage(): JSX.Element {
 
       <Footer />
     </>
-  );
+  )
 }
