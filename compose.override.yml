@@ -1,0 +1,25 @@
+# compose.override.yml — Development overrides (auto-merged with docker compose up)
+# Hot reload enabled via bind mount
+
+services:
+  app:
+    image: oven/bun:alpine
+    build:
+      context: .
+      target: development
+    container_name: rats-site-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    command: bun run dev
+    tty: true
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

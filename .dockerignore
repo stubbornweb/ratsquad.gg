@@ -5,6 +5,7 @@
 .env.production.local
 
 .next
+.next/cache
 node_modules
 .git
 .cursor
@@ -12,6 +13,11 @@ docs
 README.md
 Dockerfile
 docker-compose.yml
+compose.yml
+compose.override.yml
+compose.production.yml
 Makefile
 website-guidelines
 website-sections
+variant-v1
+.claude

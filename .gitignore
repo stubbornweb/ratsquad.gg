@@ -13,7 +13,9 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+.claude
+.ai-factiry
+.workflow
 # testing
 /coverage
 

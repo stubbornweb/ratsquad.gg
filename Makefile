@@ -1,40 +1,40 @@
-!.PHONY: install dev add build up down logs clean shell
+.PHONY: install dev add build up down logs clean shell
 
-# Run bun install inside docker
+# Install dependencies
 install:
-	docker compose run --rm dev bun install
+	docker compose run --rm app bun install
 
-# Start development server
+# Start development server (hot reload)
 dev:
-	docker compose up dev
+	docker compose up
 
 # Add a package (Usage: make add pkg=framer-motion)
 add:
-	docker compose run --rm dev bun add $(pkg)
+	docker compose run --rm app bun add $(pkg)
 
 # Get a shell inside the dev container
 shell:
-	docker compose run --rm dev sh
+	docker compose run --rm app sh
 
 # --- Production Commands ---
 
 # Build the standalone production Docker image
 build:
-	docker build -t rats-site-prod .
+	docker compose -f compose.yml -f compose.production.yml build app
 
 # Start the production container
 up:
-	docker run -d -p 3000:3000 --name rats-site-prod rats-site-prod
+	docker compose -f compose.yml -f compose.production.yml up -d
 
 # Stop the production container
 down:
-	docker rm -f rats-site-prod
-	docker compose down
+	docker compose -f compose.yml -f compose.production.yml down
 
 # Follow logs of the production container
 logs:
-	docker logs -f rats-site-prod
+	docker compose -f compose.yml -f compose.production.yml logs -f
 
-# Clean up local generated files
+# Clean up containers and volumes
 clean:
-	rm -rf node_modules .next bun.lockb
+	docker compose -f compose.yml -f compose.production.yml down -v
+	rm -rf .next
