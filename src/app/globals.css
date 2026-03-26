@@ -198,114 +198,7 @@ input:focus-visible {
     pointer-events: none;
 }
 
-/* Scanline Effect - CRT/Tactical Monitor */
-.scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.1) 2px,
-        rgba(0, 0, 0, 0.1) 4px
-    );
-    z-index: 2;
-    pointer-events: none;
-    animation: scanlines 8s linear infinite;
-}
-
-@keyframes scanlines {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(4px); }
-}
-
-/* Glitch Effect for Tactical Text */
-.glitch-text {
-    position: relative;
-}
-
-.glitch-text:hover {
-    animation: glitch 0.3s steps(2) infinite;
-}
-
-@keyframes glitch {
-    0% {
-        text-shadow: 2px 0 var(--accent), -2px 0 var(--status-danger);
-        transform: translate(0);
-    }
-    25% {
-        text-shadow: -2px 0 var(--accent), 2px 0 var(--status-danger);
-        transform: translate(-1px, 1px);
-    }
-    50% {
-        text-shadow: 2px 0 var(--status-danger), -2px 0 var(--accent);
-        transform: translate(1px, -1px);
-    }
-    75% {
-        text-shadow: -1px 0 var(--accent), 1px 0 var(--status-danger);
-        transform: translate(-1px, 0);
-    }
-    100% {
-        text-shadow: 2px 0 var(--accent), -2px 0 var(--status-danger);
-        transform: translate(0);
-    }
-}
-
-/* Stenciled Border - Interrupted Border Effect */
-.stencil-border {
-    position: relative;
-}
-
-.stencil-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 2px solid transparent;
-    background:
-        linear-gradient(var(--border-color), var(--border-color)) padding-box,
-        repeating-linear-gradient(
-            90deg,
-            var(--border-subtle) 0px,
-            var(--border-subtle) 8px,
-            transparent 8px,
-            transparent 12px
-        ) border-box;
-    pointer-events: none;
-}
-
-/* Tactical Grid Background */
-.tactical-grid {
-    background-image:
-        linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
-}
-
-/* Hazard Stripe Pattern */
-.hazard-stripe {
-    background: repeating-linear-gradient(
-        -45deg,
-        var(--accent),
-        var(--accent) 10px,
-        var(--bg-main) 10px,
-        var(--bg-main) 20px
-    );
-    height: 4px;
-}
-
-/* Pulsing Glow Animation */
-@keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 0 0 5px var(--accent-glow), 0 0 10px var(--accent-glow);
-    }
-    50% {
-        box-shadow: 0 0 15px var(--accent-pulse), 0 0 30px var(--accent-pulse);
-    }
-}
-
-.pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-}
+/* --- Visual Effects (consolidated) --- */
 
 /* --- 1. NAVIGATION BAR --- */
 .navbar {
@@ -482,10 +375,6 @@ input:focus-visible {
 
 .hero-headline .block {
     display: block;
-}
-
-.hero-headline:hover .block {
-    animation: glitch 0.3s steps(2) infinite;
 }
 
 .hero-sub {
@@ -832,12 +721,6 @@ input:focus-visible {
     color: var(--text-muted);
     margin-top: -24px;
     margin-bottom: 64px;
-}
-
-.roster-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
 }
 
 .roster-card {
@@ -1312,10 +1195,6 @@ input:focus-visible {
 
 /* --- MOBILE RESPONSIVENESS --- */
 @media (max-width: 992px) {
-    .roster-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
     .footer-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -1403,10 +1282,6 @@ input:focus-visible {
     .about-grid, .join-grid {
         grid-template-columns: 1fr;
         gap: 40px;
-    }
-    
-    .roster-grid {
-        grid-template-columns: 1fr;
     }
     
     .footer-grid {

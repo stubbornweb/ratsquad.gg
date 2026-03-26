@@ -91,7 +91,7 @@ export default function RosterPage(): JSX.Element {
           {/* Dynamic Grid Container */}
           <AnimatePresence mode="popLayout">
             {filteredMembers.length > 0 ? (
-              <motion.div className="roster-grid" id="roster-grid" layout>
+              <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6" id="roster-grid" layout>
                 {filteredMembers.map((member) => (
                   <motion.div
                     className="roster-card"
