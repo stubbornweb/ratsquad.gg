@@ -92,11 +92,12 @@ export default function Hero(): JSX.Element {
             </Link>
           </motion.div>
           <motion.div
-            whileHover={{ x: 4 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             transition={spring.snappy}
           >
-            <Link href="/#about" className="btn btn-text">
-              LEARN MORE &darr;
+            <Link href="/#about" className="btn btn-secondary">
+              LEARN MORE <span className="btn-arrow">&#8595;</span>
             </Link>
           </motion.div>
         </motion.div>
