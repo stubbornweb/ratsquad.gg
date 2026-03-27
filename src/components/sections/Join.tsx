@@ -84,7 +84,7 @@ export default function Join(): JSX.Element {
               <ul className="requirements-list">
                 {requirements.map((req, i) => (
                   <motion.li key={i} variants={fadeUp}>
-                    <span className="check">&check;</span> {req}
+                    <span className="check">&#x2713;</span> {req}
                   </motion.li>
                 ))}
               </ul>

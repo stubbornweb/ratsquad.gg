@@ -4,6 +4,7 @@ import { type JSX, useState } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { spring, ease } from "@/hooks/useAnimations"
+import { HeroGlitchLine } from "@/components/ui/HeroGlitchLine"
 
 const boot = (delay: number) => ({
   initial: { opacity: 0, y: 24, clipPath: "inset(0 100% 0 0)" },
@@ -64,12 +65,15 @@ export default function Hero(): JSX.Element {
         </motion.div>
 
         <h1 className="hero-headline">
-          <motion.span className="block" {...boot(0.5)}>
+          <HeroGlitchLine bootDelay={0.5} delay={2500} interval={7000}>
             MOVE AS ONE.
-          </motion.span>
-          <motion.span className="block" {...boot(0.65)}>
-            STRIKE AS ONE.
-          </motion.span>
+          </HeroGlitchLine>
+          <HeroGlitchLine bootDelay={0.65} delay={2700} interval={7000}>
+            STRIKE AS
+          </HeroGlitchLine>
+          <HeroGlitchLine bootDelay={0.8} delay={2900} interval={7000}>
+            ONE.
+          </HeroGlitchLine>
         </h1>
 
         <motion.p className="hero-sub" {...boot(0.85)}>

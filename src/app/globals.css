@@ -615,7 +615,7 @@ input:focus-visible {
 
 .hero-headline {
     font-family: 'NASTUP', var(--font-heading), sans-serif;
-    font-size: clamp(48px, 10vw, 148px);
+    font-size: clamp(42px, 7.5vw, 120px);
     line-height: 0.88;
     text-transform: uppercase;
     letter-spacing: 0.03em;
