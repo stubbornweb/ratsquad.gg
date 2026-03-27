@@ -7,11 +7,13 @@ interface SectionDividerProps {
   label?: string
 }
 
+const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.1 },
+    transition: { duration: 0.6, ease: easeOut, staggerChildren: 0.1 },
   },
 }
 
@@ -19,7 +21,7 @@ const lineExpand = {
   hidden: { scaleX: 0 },
   visible: {
     scaleX: 1,
-    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.9, ease: easeOut },
   },
 }
 
@@ -27,7 +29,7 @@ const labelReveal = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: { duration: 0.5, ease: "easeOut" as const },
   },
 }
 
