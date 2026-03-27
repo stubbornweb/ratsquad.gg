@@ -1,6 +1,6 @@
 "use client"
 
-import { type JSX, useEffect, useRef, useState } from "react"
+import { type JSX, useEffect, useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 
 /**
@@ -38,11 +38,13 @@ export function HeroGlitchLine({
   delay = 2500,
 }: HeroGlitchLineProps): JSX.Element {
   const [frameIdx, setFrameIdx] = useState<number | null>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const prefersReduced = useReducedMotion()
 
   useEffect(() => {
     if (prefersReduced) return
+
+    let burstTimer: ReturnType<typeof setTimeout> | null = null
+    let loopTimer: ReturnType<typeof setInterval> | null = null
 
     const runBurst = () => {
       let i = 0
@@ -50,7 +52,7 @@ export function HeroGlitchLine({
         if (i < GLITCH_FRAMES.length) {
           setFrameIdx(i)
           i++
-          timerRef.current = setTimeout(step, FRAME_DURATION)
+          burstTimer = setTimeout(step, FRAME_DURATION)
         } else {
           setFrameIdx(null)
         }
@@ -61,14 +63,13 @@ export function HeroGlitchLine({
     // Initial delay, then repeat
     const initialTimer = setTimeout(() => {
       runBurst()
-      const loop = setInterval(runBurst, interval)
-      timerRef.current = loop as unknown as ReturnType<typeof setTimeout>
-      return () => clearInterval(loop)
+      loopTimer = setInterval(runBurst, interval)
     }, delay)
 
     return () => {
       clearTimeout(initialTimer)
-      if (timerRef.current) clearTimeout(timerRef.current)
+      if (burstTimer) clearTimeout(burstTimer)
+      if (loopTimer) clearInterval(loopTimer)
     }
   }, [delay, interval, prefersReduced])
 
@@ -91,7 +92,7 @@ export function HeroGlitchLine({
 
       {/* Upper glitch slice */}
       <span
-        aria-hidden
+        aria-hidden="true"
         style={{
           position: "absolute",
           top: 0,
@@ -111,7 +112,7 @@ export function HeroGlitchLine({
 
       {/* Lower glitch slice */}
       <span
-        aria-hidden
+        aria-hidden="true"
         style={{
           position: "absolute",
           top: 0,

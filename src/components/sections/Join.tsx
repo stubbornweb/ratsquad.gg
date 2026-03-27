@@ -3,6 +3,7 @@
 import { type JSX } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import { DISCORD_URL } from "@/consts/router"
 import { fadeUp, clipReveal, staggerSlow, spring } from "@/hooks/useAnimations"
 import { SectionDivider } from "@/components/ui/SectionDivider"
 
@@ -122,8 +123,9 @@ export default function Join(): JSX.Element {
               transition={spring.snappy}
             >
               <Link
-                href="https://discord.gg/"
+                href={DISCORD_URL}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="btn btn-primary btn-massive"
               >
                 JOIN OUR DISCORD

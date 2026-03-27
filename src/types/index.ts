@@ -1,8 +1,8 @@
 export interface Member {
   callsign: string;
   role: string;
-  hours: string;
-  since: string;
+  hours: number;
+  since: number;
 }
 
 export interface FaqItem {
