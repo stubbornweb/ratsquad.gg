@@ -3,7 +3,6 @@
 import { type JSX } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { DiscordIcon } from "@/components/DiscordIcon"
 import { clipReveal, fadeUp, spring, staggerContainer } from "@/hooks/useAnimations"
 export default function Discord(): JSX.Element {
   return (
@@ -31,21 +30,6 @@ export default function Discord(): JSX.Element {
           Ops planning, scrims, clan news, and the RATS community — all in one
           place.
         </motion.p>
-
-        <motion.div className="social-links" variants={fadeUp}>
-          <motion.a
-            href="https://discord.gg/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Discord"
-            className="social-icon"
-            whileHover={{ scale: 1.2, color: "var(--accent)" }}
-            whileTap={{ scale: 0.9 }}
-            transition={spring.snappy}
-          >
-            <DiscordIcon size={28} strokeWidth={2} />
-          </motion.a>
-        </motion.div>
 
         <motion.div variants={fadeUp}>
           <motion.div
