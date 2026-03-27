@@ -35,6 +35,7 @@ export default function Hero(): JSX.Element {
         loop
         muted
         playsInline
+        poster="/assets/inspo-images/hero-poster.jpg"
         preload="metadata"
         onCanPlayThrough={() => setVideoLoaded(true)}
         initial={{ opacity: 0 }}

@@ -9,8 +9,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }): JSX.Element {
-  // Log error for debugging (error.digest contains Next.js error hash)
-  console.error(error)
+  // Error digest contains Next.js error hash for debugging
+  // In production, errors should be logged to a service (e.g., Sentry)
+  void error;
   return (
     <html lang="en">
       <body

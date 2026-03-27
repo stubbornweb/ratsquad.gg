@@ -5,37 +5,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { DISCORD_URL } from "@/consts/router"
 import { fadeUp, clipReveal, staggerSlow, spring } from "@/hooks/useAnimations"
-
-const requirements = [
-  "100+ hours in Squad",
-  "Working microphone \u2014 communication is mandatory",
-  "Age 18 or older",
-  "EU based (or able to play EU servers with low ping)",
-  "Willingness to learn, adapt, and put the team first",
-]
-
-const steps = [
-  {
-    num: "01",
-    title: "APPLY ON DISCORD",
-    body: "Join our Discord server and open a recruitment ticket to start your application.",
-  },
-  {
-    num: "02",
-    title: "INTERVIEW",
-    body: "A brief voice interview with clan leadership. We want to know how you think and play \u2014 not your stats.",
-  },
-  {
-    num: "03",
-    title: "TRIAL PERIOD",
-    body: "Approved applicants join as Recruit for a trial period playing alongside the unit.",
-  },
-  {
-    num: "04",
-    title: "FULL MEMBER",
-    body: "Pass the trial and you\u2019re in. Welcome to RATS.",
-  },
-]
+import { requirements, steps } from "@/data/join"
 
 export default function Join(): JSX.Element {
   return (

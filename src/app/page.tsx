@@ -1,5 +1,3 @@
-"use client"
-
 import { type JSX } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
