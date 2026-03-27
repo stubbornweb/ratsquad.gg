@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { FaqAccordion } from "@/components/FaqAccordion"
 import { type FaqItem } from "@/types"
 import { clipReveal, fadeUp } from "@/hooks/useAnimations"
-import { SectionDivider } from "@/components/ui/SectionDivider"
 
 const faqs: FaqItem[] = [
   {
@@ -32,9 +31,8 @@ const faqs: FaqItem[] = [
 
 export default function FAQ(): JSX.Element {
   return (
-    <>
-      <SectionDivider label="INTEL" />
-      <section className="section faq" id="faq">
+    <section className="section faq" id="faq">
+      <div className="section-border-top" />
         <div className="section-container">
           <motion.div
             className="section-tag"
@@ -68,6 +66,5 @@ export default function FAQ(): JSX.Element {
           <FaqAccordion faqs={faqs} />
         </div>
       </section>
-    </>
   )
 }

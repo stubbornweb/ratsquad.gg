@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { DISCORD_URL } from "@/consts/router"
 import { fadeUp, clipReveal, staggerSlow, spring } from "@/hooks/useAnimations"
-import { SectionDivider } from "@/components/ui/SectionDivider"
 
 const requirements = [
   "100+ hours in Squad",
@@ -40,10 +39,8 @@ const steps = [
 
 export default function Join(): JSX.Element {
   return (
-    <>
-      <SectionDivider label="RECRUITMENT" />
-      <section className="section join" id="join">
-        <div className="section-border-top" />
+    <section className="section join" id="join">
+      <div className="section-border-top" />
         <div className="section-container">
           <motion.div
             className="section-tag"
@@ -137,6 +134,5 @@ export default function Join(): JSX.Element {
           </motion.div>
         </div>
       </section>
-    </>
   )
 }

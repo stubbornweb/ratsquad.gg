@@ -3,7 +3,6 @@
 import { type JSX } from "react"
 import { motion } from "framer-motion"
 import { fadeUp, clipReveal, staggerSlow, slideInLeft } from "@/hooks/useAnimations"
-import { SectionDivider } from "@/components/ui/SectionDivider"
 
 const pillars = [
   {
@@ -25,9 +24,8 @@ const pillars = [
 
 export default function About(): JSX.Element {
   return (
-    <>
-      <SectionDivider label="INTEL" />
-      <section className="section about" id="about">
+    <section className="section about" id="about">
+      <div className="section-border-top" />
         <div className="section-container">
           <div className="about-grid">
             {/* Left — copy */}
@@ -75,6 +73,5 @@ export default function About(): JSX.Element {
           </div>
         </div>
       </section>
-    </>
   )
 }

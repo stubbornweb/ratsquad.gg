@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { DiscordIcon } from "@/components/DiscordIcon"
 import { clipReveal, fadeUp, spring, staggerContainer } from "@/hooks/useAnimations"
-
 export default function Discord(): JSX.Element {
   return (
     <section className="discord-banner" id="discord">

@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { FEATURED_MEMBERS } from "@/data/roster"
 import { fadeUp, clipReveal, staggerContainer, spring } from "@/hooks/useAnimations"
-import { SectionDivider } from "@/components/ui/SectionDivider"
 
 const cardVariant = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -19,9 +18,8 @@ const cardVariant = {
 
 export default function RosterPreview(): JSX.Element {
   return (
-    <>
-      <SectionDivider label="UNIT" />
-      <section className="section roster" id="roster">
+    <section className="section roster" id="roster">
+      <div className="section-border-top" />
         <div className="section-container">
           <motion.div
             className="section-tag"
@@ -90,6 +88,5 @@ export default function RosterPreview(): JSX.Element {
           </motion.div>
         </div>
       </section>
-    </>
   )
 }

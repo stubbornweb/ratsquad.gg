@@ -147,16 +147,19 @@ input:focus-visible {
 .section-divider-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+    background: var(--accent);
+    opacity: 0.2;
 }
 
 .section-divider-label {
     font-family: var(--font-mono), monospace;
     font-size: 10px;
+    font-weight: 500;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--text-dark);
+    color: var(--accent);
     white-space: nowrap;
+    opacity: 0.4;
 }
 
 /* ═══════════════════════════════════════════════════════
