@@ -77,7 +77,7 @@ export default function RosterPreview(): JSX.Element {
                 <div className="role-tag">{member.role}</div>
                 <h3 className="member-name">{member.callsign}</h3>
                 <div className="member-stats">
-                  {member.hours}h &middot; Since {member.since}
+                  {member.hours > 0 ? <>{member.hours}h &middot; Since {member.since}</> : <>&mdash;</>}
                 </div>
               </motion.div>
             ))}

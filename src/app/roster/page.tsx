@@ -5,17 +5,53 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Search } from "lucide-react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
-import { rosterData } from "@/data/roster"
+import { squadLeads, members } from "@/data/roster"
 import { spring, clipReveal, fadeUp } from "@/hooks/useAnimations"
+import { type Member } from "@/types"
+
+function MemberCard({ member }: { member: Member }): JSX.Element {
+  return (
+    <motion.div
+      className="roster-card"
+      key={member.callsign}
+      layoutId={`card-${member.callsign}`}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{
+        scale: 1.02,
+        borderColor: "var(--accent)",
+        boxShadow:
+          "0 0 30px rgba(255, 215, 0, 0.08), 0 8px 32px rgba(0,0,0,0.4)",
+      }}
+      whileTap={{ scale: 0.98 }}
+      transition={spring.gentle}
+    >
+      <div className="avatar-placeholder">
+        <span className="watermark">RATS</span>
+      </div>
+      <div className="role-tag">{member.role}</div>
+      <h3 className="member-name">{member.callsign}</h3>
+      <div className="member-stats">
+        {member.hours > 0 ? <>{member.hours}h &middot; Since {member.since}</> : <>&mdash;</>}
+      </div>
+    </motion.div>
+  )
+}
 
 export default function RosterPage(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState("")
 
-  const filteredMembers = rosterData.filter(
-    (member) =>
-      member.callsign.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.role.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filterBySearch = (list: Member[]): Member[] =>
+    list.filter(
+      (member) =>
+        member.callsign.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.role.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+
+  const filteredSLs = filterBySearch(squadLeads)
+  const filteredMembers = filterBySearch(members)
+  const totalFiltered = filteredSLs.length + filteredMembers.length
 
   return (
     <>
@@ -84,47 +120,72 @@ export default function RosterPage(): JSX.Element {
             <div className="stats-summary" id="stats-summary">
               TOTAL ACTIVE:{" "}
               <span id="total-count" style={{ color: "var(--accent)" }}>
-                {filteredMembers.length}
+                {totalFiltered}
               </span>
             </div>
           </motion.div>
 
-          {/* Dynamic Grid Container */}
           <AnimatePresence mode="popLayout">
-            {filteredMembers.length > 0 ? (
-              <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6"
-                id="roster-grid"
-                layout
-              >
-                {filteredMembers.map((member) => (
+            {totalFiltered > 0 ? (
+              <>
+                {/* Squad Leads Grid */}
+                {filteredSLs.length > 0 && (
                   <motion.div
-                    className="roster-card"
-                    key={member.callsign}
-                    layoutId={`card-${member.callsign}`}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    whileHover={{
-                      scale: 1.02,
-                      borderColor: "var(--accent)",
-                      boxShadow:
-                        "0 0 30px rgba(255, 215, 0, 0.08), 0 8px 32px rgba(0,0,0,0.4)",
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={spring.gentle}
+                    key="sl-section"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                   >
-                    <div className="avatar-placeholder">
-                      <span className="watermark">RATS</span>
-                    </div>
-                    <div className="role-tag">{member.role}</div>
-                    <h3 className="member-name">{member.callsign}</h3>
-                    <div className="member-stats">
-                      {member.hours}h &middot; Since {member.since}
-                    </div>
+                    <motion.h2
+                      className="section-tag"
+                      style={{ marginBottom: "1.5rem", marginTop: "1rem" }}
+                      variants={clipReveal}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.15 }}
+                    >
+                      <span className="tag-line" /> SQUAD LEADS
+                    </motion.h2>
+                    <motion.div
+                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6"
+                      layout
+                    >
+                      {filteredSLs.map((member) => (
+                        <MemberCard key={member.callsign} member={member} />
+                      ))}
+                    </motion.div>
                   </motion.div>
-                ))}
-              </motion.div>
+                )}
+
+                {/* Members Grid */}
+                {filteredMembers.length > 0 && (
+                  <motion.div
+                    key="members-section"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <motion.h2
+                      className="section-tag"
+                      style={{ marginBottom: "1.5rem", marginTop: "2.5rem" }}
+                      variants={clipReveal}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.15 }}
+                    >
+                      <span className="tag-line" /> MEMBERS
+                    </motion.h2>
+                    <motion.div
+                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6"
+                      layout
+                    >
+                      {filteredMembers.map((member) => (
+                        <MemberCard key={member.callsign} member={member} />
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                )}
+              </>
             ) : (
               <motion.div
                 className="roster-no-results"
