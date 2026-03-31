@@ -62,24 +62,24 @@ export default function Hero(): JSX.Element {
       <motion.div className="hero-content" style={{ opacity: contentOpacity, y: contentY }}>
         <motion.div className="hero-tag" {...boot(0.3)}>
           <span className="tag-line" />
-          <span>SQUAD — EU COMPETITIVE CLAN</span>
+          <span>RATS — КОНКУРЕНТНИЙ EU КЛАН</span>
         </motion.div>
 
         <h1 className="hero-headline">
           <HeroGlitchLine bootDelay={0.5} delay={2500} interval={7000}>
-            MOVE AS ONE.
+            ДІЄМО ЯК ОДИН.
           </HeroGlitchLine>
           <HeroGlitchLine bootDelay={0.65} delay={2700} interval={7000}>
-            STRIKE AS
+            ПЕРЕМАГАЄМО
           </HeroGlitchLine>
           <HeroGlitchLine bootDelay={0.8} delay={2900} interval={7000}>
-            ONE.
+            РАЗОМ.
           </HeroGlitchLine>
         </h1>
 
         <motion.p className="hero-sub" {...boot(0.85)}>
-          RATS is a competitive EU mil-sim clan for Squad. We don&apos;t play for
-          fun. We play to win — together.
+            RATS — конкурентний EU клан у Squad. Тут грають ті, з ким хочеться грати ще.
+            Приємна гра починається з приємних людей.
         </motion.p>
 
         <motion.div className="hero-actions" {...boot(1.05)}>
@@ -89,7 +89,7 @@ export default function Hero(): JSX.Element {
             transition={spring.snappy}
           >
             <Link href="/#join" className="btn btn-primary btn-large">
-              APPLY TO JOIN
+              ПОДАТИ ЗАЯВКУ
             </Link>
           </motion.div>
           <motion.div
@@ -98,15 +98,15 @@ export default function Hero(): JSX.Element {
             transition={spring.snappy}
           >
             <Link href="/#about" className="btn btn-secondary">
-              LEARN MORE <span className="btn-arrow">&#8595;</span>
+              ДІЗНАТИСЬ БІЛЬШЕ <span className="btn-arrow">&#8595;</span>
             </Link>
           </motion.div>
         </motion.div>
 
         <motion.div className="hero-stats" {...boot(1.25)}>
-          <div className="stat-item">EU BASED</div>
-          <div className="stat-item">SQUAD ONLY</div>
-          <div className="stat-item">SELECTIVE RECRUITMENT</div>
+          <div className="stat-item">EU</div>
+          <div className="stat-item">SQUAD</div>
+          <div className="stat-item">ВИБІРКОВИЙ НАБІР</div>
         </motion.div>
       </motion.div>
 
@@ -119,7 +119,7 @@ export default function Hero(): JSX.Element {
         transition={{ delay: 1.8, duration: 0.6 }}
       >
         <span className="scroll-ping" />
-        <span className="scroll-label">SCROLL</span>
+        <span className="scroll-label">ГОРТАЙ</span>
         <svg
           width="16"
           height="16"

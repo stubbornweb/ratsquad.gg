@@ -13,7 +13,7 @@ export default function GlobalError({
   // In production, errors should be logged to a service (e.g., Sentry)
   void error;
   return (
-    <html lang="en">
+    <html lang="uk">
       <body
         style={{
           backgroundColor: "#09090B",
@@ -36,7 +36,7 @@ export default function GlobalError({
               marginBottom: 16,
             }}
           >
-            ERROR // RATS COMMAND TERMINAL
+            ПОМИЛКА // RATS КОМАНДНИЙ ТЕРМІНАЛ
           </div>
           <h1
             style={{
@@ -46,7 +46,7 @@ export default function GlobalError({
               marginBottom: 16,
             }}
           >
-            SYSTEM FAILURE
+            ЗБІЙ СИСТЕМИ
           </h1>
           <p
             style={{
@@ -56,7 +56,7 @@ export default function GlobalError({
               lineHeight: 1.6,
             }}
           >
-            Something went wrong. The mission cannot continue.
+            Щось пішло не так. Місію неможливо продовжити.
           </p>
           <button
             onClick={reset}
@@ -73,7 +73,7 @@ export default function GlobalError({
               textTransform: "uppercase",
             }}
           >
-            RETRY OPERATION
+            ПОВТОРИТИ ОПЕРАЦІЮ
           </button>
         </div>
       </body>

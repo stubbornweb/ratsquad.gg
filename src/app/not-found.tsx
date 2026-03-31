@@ -33,7 +33,7 @@ export default function NotFound() {
             letterSpacing: "0.1em",
           }}
         >
-          MISSION ABORTED
+          МІСІЮ СКАСОВАНО
         </h2>
         <p
           style={{
@@ -42,7 +42,7 @@ export default function NotFound() {
             marginBottom: "2rem",
           }}
         >
-          The target location doesn&apos;t exist or has been relocated.
+          Ціль не існує або була переміщена.
         </p>
         <Link
           href="/"
@@ -58,7 +58,7 @@ export default function NotFound() {
             transition: "all 0.2s ease",
           }}
         >
-          RETURN TO BASE
+          ПОВЕРНУТИСЬ НА БАЗУ
         </Link>
       </div>
     </div>

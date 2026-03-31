@@ -1,40 +1,78 @@
-.PHONY: install dev add build up down logs clean shell
+# rats-site — Next.js 16 App Router
+# Usage: make help
 
-# Install dependencies
-install:
-	docker compose run --rm app bun install
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
+.DELETE_ON_ERROR:
+.SHELLFLAGS := -euo pipefail -c
+MAKEFLAGS += --warn-undefined-variables --no-print-directory
 
-# Start development server (hot reload)
-dev:
-	docker compose up
+# ── Variables ──────────────────────────────────────────────
+APP_NAME   := rats-site
+PORT       := 3000
+COMPOSE    := docker compose -f .docker/compose.yml
 
-# Add a package (Usage: make add pkg=framer-motion)
-add:
-	docker compose run --rm app bun add $(pkg)
+# ── Help ───────────────────────────────────────────────────
+.PHONY: help
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-# Get a shell inside the dev container
-shell:
-	docker compose run --rm app sh
+# ── Development ────────────────────────────────────────────
+.PHONY: dev install clean
 
-# --- Production Commands ---
+dev: ## Start Next.js dev server
+	npm run dev
 
-# Build the standalone production Docker image
-build:
-	docker compose -f compose.yml -f compose.production.yml build app
+install: ## Install dependencies
+	npm install
 
-# Start the production container
-up:
-	docker compose -f compose.yml -f compose.production.yml up -d
+clean: ## Remove build artifacts
+	rm -rf .next out node_modules/.cache
 
-# Stop the production container
-down:
-	docker compose -f compose.yml -f compose.production.yml down
+# ── Quality ────────────────────────────────────────────────
+.PHONY: lint lint-fix typecheck check
 
-# Follow logs of the production container
-logs:
-	docker compose -f compose.yml -f compose.production.yml logs -f
+lint: ## Run ESLint
+	npm run lint
 
-# Clean up containers and volumes
-clean:
-	docker compose -f compose.yml -f compose.production.yml down -v
-	rm -rf .next
+lint-fix: ## Run ESLint with auto-fix
+	npx eslint --fix .
+
+typecheck: ## Run TypeScript type checking
+	npx tsc --noEmit
+
+check: lint typecheck ## Run lint + typecheck
+
+# ── Build ──────────────────────────────────────────────────
+.PHONY: build start
+
+build: ## Build for production (standalone)
+	npm run build
+
+start: build ## Build and start production server
+	npm run start
+
+# ── Docker ─────────────────────────────────────────────────
+.PHONY: up up-build down logs shell
+
+up: ## Start dev environment in Docker
+	$(COMPOSE) up
+
+up-build: ## Rebuild and start dev containers
+	$(COMPOSE) up --build
+
+down: ## Stop dev environment
+	$(COMPOSE) down
+
+logs: ## Tail container logs
+	$(COMPOSE) logs -f
+
+shell: ## Open shell in running container
+	$(COMPOSE) exec app sh
+
+# ── Utilities ──────────────────────────────────────────────
+.PHONY: nuke
+
+nuke: ## Full clean — remove node_modules, .next, out
+	rm -rf node_modules .next out

@@ -2,23 +2,23 @@ import { type FaqItem } from "@/types";
 
 export const faqs: FaqItem[] = [
   {
-    question: "What timezones do you operate in?",
+    question: "В яких часових поясах ви граєте?",
     answer:
-      "We primarily operate in EU timezones (CET/CEST), with dedicated operations running during EU evening hours.",
+      "Ми граємо за київським часом (EET/UTC+2), бо більшість команди з України. Головне — щоб ти міг грати разом з нами без великого пінгу.",
   },
   {
-    question: "Do I need DLC or specific mods?",
+    question: "Як проходить процес набору?",
     answer:
-      "We play vanilla Squad for most of our competitive matches, but occasionally participate in modded events. We will announce any required mods well in advance.",
+      "Все просто і прозоро: ти подаєш заявку, проходиш коротку співбесіду, стаєш на випробувальний період і, якщо все ок, приєднуєшся до команди. Ми звертаємо увагу не на твою статистику, а на твій підхід, цінності та готовність працювати в команді.",
   },
   {
-    question: "How does the recruitment process work?",
+    question: "Ви конкурентний/кіберспортивний клан?",
     answer:
-      "Join our Discord, submit an application ticket, and you will be invited to a voice interview. If approved, you enter a trial phase where we assess your communication and teamwork in-game.",
+      "Ми не отримуємо грошей і не граємо лише заради рейтингу. Наш фокус — командна робота, розвиток і вдосконалення підрозділу. Ми любимо змагальний Squad і цінуємо результат, але завжди через координацію, аналіз і взаємодію команди.",
   },
   {
-    question: "Are you a competitive/esports clan?",
+    question: "Яке ставлення RATS до українсько-російської війни та гравців, які її підтримують?",
     answer:
-      "Yes. While we enjoy standard matches, our primary focus is structured, competitive 50v50 scrims and tournaments.",
+      "Ми категорично не підтримуємо людей, які відкрито чи приховано підтримують російську агресію — через меми, чати, пропаганду або участь у російських кланах.",
   },
 ];
