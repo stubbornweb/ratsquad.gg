@@ -23,7 +23,7 @@ Premium dark-themed tactical landing page for RATS, an elite European competitiv
 
 ## Architecture
 
-See `.ai-factory/ARCHITECTURE.md` for detailed architecture guidelines.
+See `.ww-kit/ARCHITECTURE.md` for detailed architecture guidelines.
 Pattern: Component-Based (Next.js App Router)
 
 **Key architectural decisions:**
@@ -50,33 +50,8 @@ Pattern: Component-Based (Next.js App Router)
 
 ## Project Structure
 
-```
-rats-site/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with fonts
-│   ├── page.tsx           # Homepage (649 lines)
-│   ├── globals.css        # 1378 lines of custom CSS
-│   └── roster/
-│       └── page.tsx       # Roster page (276 lines)
-├── public/
-│   └── fonts/nastup/     # Local brand font
-├── docs/                  # Project documentation
-│   └── planning/         # Discovery and project description
-├── website-sections/      # Section design specs
-├── variant-v1/           # Archived static HTML version
-├── package.json
-├── next.config.ts
-├── tailwind.config.ts
-└── tsconfig.json
-```
+See `AGENTS.md` for the full directory tree.
 
 ## Data Storage
 
-All content is hardcoded in source files. Roster data lives directly in page components. Content updates require code changes and redeployment.
-
-## Priority Assessment
-
-1. Finish remaining sections/pages
-2. Visual polish — animations, transitions, micro-interactions
-3. Performance — loading speed, image optimization
-4. Code quality — extract components, reduce globals.css
+All content is hardcoded in `src/data/` files (roster.ts, faq.ts, about.ts, join.ts). Content updates require code changes and redeployment.
