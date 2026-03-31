@@ -28,7 +28,7 @@ export default function RosterPreview(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <span className="tag-line" /> THE UNIT
+            <span className="tag-line" /> НАША КОМАНДА
           </motion.div>
           <motion.h2
             className="section-headline"
@@ -37,7 +37,7 @@ export default function RosterPreview(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            MEET THE RATS.
+            ЛІДЕРИ RATS
           </motion.h2>
           <motion.p
             className="section-sub"
@@ -46,7 +46,7 @@ export default function RosterPreview(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            A small, selective unit of serious Squad players.
+            Спільнота людей, що цінують координацію та взаємопідтримку.
           </motion.p>
 
           <motion.div
@@ -75,14 +75,14 @@ export default function RosterPreview(): JSX.Element {
                 <div className="role-tag">{member.role}</div>
                 <h3 className="member-name">{member.callsign}</h3>
                 <div className="member-stats">
-                  {member.hours > 0 ? <>{member.hours}h &middot; Since {member.since}</> : <>&mdash;</>}
+                  {member.hours > 0 ? <>{member.hours}г &middot; З {member.since}</> : <>&mdash;</>}
                 </div>
               </motion.div>
             ))}
 
             <motion.div variants={cardVariant}>
               <Link href="/roster" className="roster-card join-teaser">
-                <div className="join-teaser-content">VIEW FULL ROSTER &rarr;</div>
+                <div className="join-teaser-content">ПОВНИЙ СКЛАД &rarr;</div>
               </Link>
             </motion.div>
           </motion.div>

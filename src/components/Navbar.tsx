@@ -216,7 +216,7 @@ export default function Navbar(): JSX.Element {
           </div>
           <span className="nav-status">
             <span className="nav-status-dot" />
-            <span className="nav-status-label">ONLINE</span>
+            <span className="nav-status-label">ACTIVE</span>
           </span>
         </motion.div>
 
@@ -241,7 +241,7 @@ export default function Navbar(): JSX.Element {
             transition={spring.snappy}
           >
             <Link href={DISCORD_URL} className="btn btn-primary nav-cta">
-              APPLY NOW
+              ПОДАТИ ЗАЯВКУ
             </Link>
           </motion.div>
         </motion.div>
@@ -249,7 +249,7 @@ export default function Navbar(): JSX.Element {
         {/* Mobile toggle */}
         <button
           className="mobile-menu-btn"
-          aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
+          aria-label={isMobileMenuOpen ? "Закрити меню" : "Відкрити меню"}
           aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
@@ -292,7 +292,7 @@ export default function Navbar(): JSX.Element {
             <div className="mobile-menu-inner">
               {/* Header */}
               <div className="mobile-menu-header">
-                <span className="mobile-menu-label">{"// NAVIGATION"}</span>
+                <span className="mobile-menu-label">{"// НАВІГАЦІЯ"}</span>
               </div>
 
               {/* Links */}
@@ -340,7 +340,7 @@ export default function Navbar(): JSX.Element {
                   className="btn btn-primary btn-large"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  APPLY NOW
+                  ПОДАТИ ЗАЯВКУ
                 </Link>
               </motion.div>
             </div>

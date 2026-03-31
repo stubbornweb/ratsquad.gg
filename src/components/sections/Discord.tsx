@@ -21,14 +21,14 @@ export default function Discord(): JSX.Element {
         viewport={{ once: true, amount: 0.2 }}
       >
         <motion.div className="section-tag center-tag" variants={clipReveal}>
-          <span className="tag-line" /> COMMUNITY <span className="tag-line" />
+          <span className="tag-line" /> СПІЛЬНОТА <span className="tag-line" />
         </motion.div>
         <motion.h2 className="section-headline" variants={clipReveal}>
-          THE MISSION CONTINUES IN DISCORD.
+          МІСІЯ ПРОДОВЖУЄТЬСЯ В DISCORD.
         </motion.h2>
         <motion.p className="section-sub mx-auto" variants={fadeUp}>
-          Ops planning, scrims, clan news, and the RATS community — all in one
-          place.
+          Планування операцій, скрими, новини клану та спільнота RATS — все в
+          одному місці.
         </motion.p>
 
         <motion.div variants={fadeUp}>
@@ -44,7 +44,7 @@ export default function Discord(): JSX.Element {
               rel="noopener noreferrer"
               className="btn btn-primary btn-large discord-btn"
             >
-              JOIN DISCORD
+              ПРИЄДНАТИСЬ ДО DISCORD
             </Link>
           </motion.div>
         </motion.div>

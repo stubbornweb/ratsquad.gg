@@ -1,23 +1,27 @@
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-.next
-.next/cache
-node_modules
 .git
+.next
+node_modules
+.env
+.env.*
+!.env.example
+
+# Docker files
+.docker
+
+# IDE / editor
 .cursor
+.claude
+.vscode
+*.swp
+
+# Docs / non-runtime
 docs
 README.md
-Dockerfile
-docker-compose.yml
-compose.yml
-compose.override.yml
-compose.production.yml
-Makefile
+variant-v1
 website-guidelines
 website-sections
-variant-v1
-.claude
+
+# AI context
+.ww-kit
+AGENTS.md
+CLAUDE.md

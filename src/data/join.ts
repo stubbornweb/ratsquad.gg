@@ -5,32 +5,33 @@ export interface Step {
 }
 
 export const requirements: string[] = [
-  "100+ hours in Squad",
-  "Working microphone — communication is mandatory",
-  "Age 18 or older",
-  "EU based (or able to play EU servers with low ping)",
-  "Willingness to learn, adapt, and put the team first",
+  "Активний і готовий розвиватися разом із командою",
+  "Вміє поєднувати свій лайфстайл з командними обов'язками",
+  "Комунікує через мікрофон і координується з squadmates",
+  "Вік від 18+",
+  "Базування в EU або можливість грати на EU серверах із низьким пінгом",
+  "Підтримує культуру спільноти, та її цінності",
 ];
 
 export const steps: Step[] = [
   {
     num: "01",
-    title: "APPLY ON DISCORD",
-    body: "Join our Discord server and open a recruitment ticket to start your application.",
+    title: "ПОДАЙ ЗАЯВКУ В DISCORD",
+    body: "Зайди на наш Discord сервер і створи тікет на рекрутинг, щоб розпочати процес.",
   },
   {
     num: "02",
-    title: "INTERVIEW",
-    body: "A brief voice interview with clan leadership. We want to know how you think and play — not your stats.",
+    title: "СПІВБЕСІДА",
+    body: "Коротка голосова зустріч з керівництвом. Нас цікавлять твої мотиви та цінності, а не статистика.",
   },
   {
     num: "03",
-    title: "TRIAL PERIOD",
-    body: "Approved applicants join as Recruit for a trial period playing alongside the unit.",
+    title: "ВИПРОБУВАЛЬНИЙ ПЕРІОД",
+    body: "Схвалені кандидати стають Recruit і грають разом із підрозділом, щоб показати свої навички та відповідність нашій спільноті.",
   },
   {
     num: "04",
-    title: "FULL MEMBER",
-    body: "Pass the trial and you're in. Welcome to RATS.",
+    title: "ПОВНОПРАВНИЙ УЧАСНИК",
+    body: "Пройшов випробування? Ласкаво просимо до RATS — ти стаєш частиною команди та нашої спільноти.",
   },
 ];

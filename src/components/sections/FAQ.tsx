@@ -18,7 +18,7 @@ export default function FAQ(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <span className="tag-line" /> INTELLIGENCE
+            <span className="tag-line" /> РОЗВІДКА
           </motion.div>
           <motion.h2
             className="section-headline"
@@ -27,7 +27,7 @@ export default function FAQ(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            FREQUENTLY ASKED QUESTIONS
+            ЧАСТІ ЗАПИТАННЯ
           </motion.h2>
           <motion.p
             className="section-sub"
@@ -37,7 +37,7 @@ export default function FAQ(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            Need intel before committing? Read our standard operating procedures.
+            Потрібно знати більше перед тим, як приєднатися? Тут зібрана вся важлива інформація.
           </motion.p>
 
           <FaqAccordion faqs={faqs} />

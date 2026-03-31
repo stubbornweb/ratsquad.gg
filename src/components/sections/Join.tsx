@@ -19,7 +19,7 @@ export default function Join(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            <span className="tag-line" /> RECRUITMENT
+            <span className="tag-line" /> НАБІР
           </motion.div>
           <motion.h2
             className="section-headline"
@@ -28,7 +28,7 @@ export default function Join(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            THINK YOU HAVE WHAT IT TAKES?
+            ШУКАЄМО АКТИВНИХ ПАЦЮКІВ
           </motion.h2>
           <motion.p
             className="section-sub"
@@ -37,7 +37,7 @@ export default function Join(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
           >
-            We recruit selectively. We don&apos;t fill seats — we build a unit.
+            Вважаєш, що можеш стати частиною команди? У RATS ми цінуємо людей, які активні, адекватні та готові поєднувати реальне життя з грою. Тут важлива не тільки кількість годин у Squad, а й командна культура, бажання вчитися та взаємодіяти.
           </motion.p>
 
           <div className="join-grid">
@@ -49,6 +49,7 @@ export default function Join(): JSX.Element {
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
             >
+              <h3 className="join-requirements-title">Ми шукаємо тих, хто:</h3>
               <ul className="requirements-list">
                 {requirements.map((req, i) => (
                   <motion.li key={i} variants={fadeUp}>
@@ -70,7 +71,24 @@ export default function Join(): JSX.Element {
                 <motion.div className="step" key={s.num} variants={fadeUp}>
                   <div className="step-ghost-number">{s.num}</div>
                   <h3 className="step-title">{s.title}</h3>
-                  <p className="step-body">{s.body}</p>
+                  <p className="step-body">
+                    {s.num === "01" ? (
+                      <>
+                        Зайди на наш{" "}
+                        <Link
+                          href={DISCORD_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="discord-link"
+                        >
+                          Discord
+                        </Link>{" "}
+                        сервер і створи тікет на рекрутинг, щоб розпочати процес.
+                      </>
+                    ) : (
+                      s.body
+                    )}
+                  </p>
                   <div className="step-connector" />
                 </motion.div>
               ))}
@@ -95,11 +113,11 @@ export default function Join(): JSX.Element {
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-massive"
               >
-                JOIN OUR DISCORD
+                ПРИЄДНАТИСЬ ДО DISCORD
               </Link>
             </motion.div>
             <p className="join-cta-sub">
-              Already a member? Find us in Discord &rarr; #recruitment
+              Вже учасник? Знайди нас у Discord &rarr; #recruitment
             </p>
           </motion.div>
         </div>

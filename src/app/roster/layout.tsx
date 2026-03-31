@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Roster",
-  description: "View our active roster of competitive Squad players.",
+  title: "Склад",
+  description: "Переглянь активний склад конкурентних гравців у Squad.",
 };
 
 export default function RosterLayout({

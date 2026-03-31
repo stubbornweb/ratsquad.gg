@@ -33,7 +33,7 @@ function MemberCard({ member }: { member: Member }): JSX.Element {
       <div className="role-tag">{member.role}</div>
       <h3 className="member-name">{member.callsign}</h3>
       <div className="member-stats">
-        {member.hours > 0 ? <>{member.hours}h &middot; Since {member.since}</> : <>&mdash;</>}
+        {member.hours > 0 ? <>{member.hours}г &middot; З {member.since}</> : <>&mdash;</>}
       </div>
     </motion.div>
   )
@@ -67,7 +67,7 @@ export default function RosterPage(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
           >
-            <span className="tag-line" /> THE UNIT
+            <span className="tag-line" /> КОМАНДА
           </motion.div>
           <motion.h1
             className="section-headline"
@@ -76,7 +76,7 @@ export default function RosterPage(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
           >
-            ACTIVE ROSTER
+            АКТИВНИЙ СКЛАД
           </motion.h1>
           <motion.p
             className="section-sub"
@@ -85,7 +85,7 @@ export default function RosterPage(): JSX.Element {
             whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
           >
-            Our full roster of active, competitive, and dedicated Squad players.
+            Готові до викликів.
           </motion.p>
         </div>
       </header>
@@ -112,13 +112,13 @@ export default function RosterPage(): JSX.Element {
                 type="text"
                 id="roster-search"
                 className="search-input"
-                placeholder="SEARCH BY CALLSIGN..."
+                placeholder="ПОШУК ЗА ПОЗИВНИМ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="stats-summary" id="stats-summary">
-              TOTAL ACTIVE:{" "}
+              ВСЬОГО АКТИВНИХ:{" "}
               <span id="total-count" style={{ color: "var(--accent)" }}>
                 {totalFiltered}
               </span>
@@ -194,10 +194,10 @@ export default function RosterPage(): JSX.Element {
                 exit={{ opacity: 0 }}
               >
                 <h3 className="member-name roster-no-results-title">
-                  NO OPERATORS FOUND
+                  ОПЕРАТОРІВ НЕ ЗНАЙДЕНО
                 </h3>
                 <p className="roster-no-results-sub">
-                  Try adjusting your search terms.
+                  Спробуй змінити пошуковий запит.
                 </p>
               </motion.div>
             )}

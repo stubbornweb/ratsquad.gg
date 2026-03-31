@@ -1,0 +1,20 @@
+# Dev-only compose — production deploys to Vercel
+# Usage: docker compose -f .docker/compose.yml up
+
+name: rats-site
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ..:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - WATCHPACK_POLLING=true
+    restart: unless-stopped

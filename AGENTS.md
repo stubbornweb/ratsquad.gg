@@ -31,10 +31,19 @@ rats-site/
 │   ├── components/
 │   │   ├── Navbar.tsx         # Navigation bar
 │   │   ├── Footer.tsx         # Footer
-│   │   ├── MotionDiv.tsx       # Animation wrapper
+│   │   ├── motion/
+│   │   └── MotionDiv.tsx      # Animation wrapper
 │   │   ├── PageTransition.tsx  # Page transition component
 │   │   ├── FaqAccordion.tsx    # FAQ accordion
 │   │   ├── DiscordIcon.tsx     # Discord icon
+│   │   ├── LoadingScreen.tsx   # Loading screen with animations
+│   │   ├── SmoothScroll.tsx    # Lenis smooth scroll provider
+│   │   ├── ui/                # UI primitives
+│   │   │   ├── GlitchText.tsx
+│   │   │   ├── HeroGlitchLine.tsx
+│   │   │   ├── AnimatedCounter.tsx
+│   │   │   ├── ScrollProgress.tsx
+│   │   │   └── SectionDivider.tsx
 │   │   └── sections/          # Page sections
 │   │       ├── Hero.tsx
 │   │       ├── About.tsx
@@ -43,18 +52,24 @@ rats-site/
 │   │       ├── FAQ.tsx
 │   │       └── Discord.tsx
 │   ├── data/
-│   │   └── roster.ts          # Roster data
+│   │   ├── roster.ts          # Roster member data
+│   │   ├── faq.ts             # FAQ items data
+│   │   ├── about.ts           # About pillars data
+│   │   └── join.ts            # Join requirements data
 │   ├── hooks/
-│   │   └── useAnimations.ts   # Animation hooks
+│   │   └── useAnimations.ts   # Centralized Framer Motion variants
 │   ├── types/
-│   │   └── index.ts           # TypeScript types
+│   │   └── index.ts           # TypeScript interfaces
 │   ├── lib/
-│   │   └── utils.ts           # Utility functions (cn)
+│   │   └── utils.ts           # cn() utility (clsx + tailwind-merge)
 │   └── consts/
-│       └── router.ts          # Route constants
+│       └── router.ts          # Nav links, Discord URL constants
 ├── public/
 │   └── fonts/nastup/          # NASTUP brand font
 ├── docs/                      # Project documentation
+├── .ww-kit/                   # AI agent context
+│   ├── DESCRIPTION.md         # Project specification
+│   └── ARCHITECTURE.md        # Architecture guidelines
 ├── package.json
 ├── next.config.ts
 ├── tailwind.config.ts
@@ -73,7 +88,12 @@ rats-site/
 | `src/components/Navbar.tsx` | Shared navigation component |
 | `src/components/Footer.tsx` | Shared footer component |
 | `src/data/roster.ts` | Roster member data |
+| `src/data/faq.ts` | FAQ items data |
+| `src/data/about.ts` | About section pillars |
+| `src/data/join.ts` | Join requirements data |
 | `src/lib/utils.ts` | `cn()` utility for class merging |
+| `src/app/sitemap.ts` | Dynamic sitemap generation |
+| `src/app/robots.ts` | Robots.txt configuration |
 
 ## Documentation
 
@@ -90,8 +110,8 @@ rats-site/
 | File | Purpose |
 |------|---------|
 | AGENTS.md | This file — project structure map |
-| .ai-factory/DESCRIPTION.md | Project specification and tech stack |
-| .ai-factory/ARCHITECTURE.md | Architecture decisions and guidelines |
+| .ww-kit/DESCRIPTION.md | Project specification and tech stack |
+| .ww-kit/ARCHITECTURE.md | Architecture decisions and guidelines |
 | CLAUDE.md | Agent instructions and preferences |
 
 ## Design System

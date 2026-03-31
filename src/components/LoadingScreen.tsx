@@ -258,7 +258,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps): JSX.Element {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.2 }}
             >
-              {"RATS TACTICAL NETWORK".split("").map((char, i) => (
+              {"RATS ТАКТИЧНА МЕРЕЖА".split("").map((char, i) => (
                 <motion.span
                   key={i}
                   initial={{ opacity: 0 }}
@@ -275,7 +275,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps): JSX.Element {
               animate={{ opacity: [0, 1, 0] }}
               transition={{ duration: 0.8, repeat: Infinity, repeatType: "loop" }}
             >
-              ESTABLISHING UPLINK...
+              ВСТАНОВЛЕННЯ ЗВ&apos;ЯЗКУ...
             </motion.div>
           </div>
 
@@ -340,7 +340,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps): JSX.Element {
                     initial="hidden"
                     animate="visible"
                   >
-                    SIGNAL ACQUIRED
+                    СИГНАЛ ОТРИМАНО
                   </motion.span>
                 )}
               </>
@@ -381,7 +381,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps): JSX.Element {
                   animate="visible"
                   transition={{ delay: 0.2 }}
                 >
-                  EU COMPETITIVE SQUAD CLAN
+                  КОНКУРЕНТНИЙ EU КЛАН У SQUAD
                 </motion.span>
               </>
             )}
