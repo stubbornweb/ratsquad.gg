@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     default: "RATS | Конкурентний EU клан у Squad",
     template: "%s | RATS Clan",
   },
-  description: "RATS — конкурентний EU клан у Squad. Ми граємо не заради розваги. Ми граємо, щоб перемагати — разом.",
+  description: "RATS — конкурентний EU клан у Squad. Тут грають ті, з ким хочеться грати ще.",
   keywords: ["Squad", "military simulation", "milsim", "competitive gaming", "EU clan", "tactical shooter", "RATS", "клан", "конкурентний", "тактичний шутер"],
   authors: [{ name: "RATS Clan" }],
   openGraph: {
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     url: "https://ratsquad.vercel.app",
     siteName: "RATS Clan",
     title: "RATS | Конкурентний EU клан у Squad",
-    description: "RATS — конкурентний EU клан у Squad. Ми граємо не заради розваги. Ми граємо, щоб перемагати — разом.",
+    description: "RATS — конкурентний EU клан у Squad. Тут грають ті, з ким хочеться грати ще.",
     images: [
       {
         url: "/og-image.png",
@@ -63,12 +63,6 @@ export const metadata: Metadata = {
         alt: "RATS Clan — конкурентний EU клан у Squad",
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "RATS | Конкурентний EU клан у Squad",
-    description: "RATS — конкурентний EU клан у Squad. Ми граємо не заради розваги. Ми граємо, щоб перемагати — разом.",
-    images: ["/og-image.png"],
   },
   robots: {
     index: true,
