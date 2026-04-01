@@ -1,4 +1,4 @@
-export const DISCORD_URL = "https://discord.gg/ANKhvu3U8";
+export const DISCORD_URL = "https://discord.gg/hTD8QbqEAG";
 
 export const navLinks = [
   { label: "ПРО НАС", href: "/#about", description: "Хто ми" },
