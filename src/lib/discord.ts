@@ -34,9 +34,9 @@ async function fetchAllGuildMembers(): Promise<DiscordGuildMember[]> {
 
   while (true) {
     const url = `${API_BASE}/guilds/${DISCORD_GUILD_ID}/members?limit=1000&after=${after}`;
+    // Inherit revalidation from page-level config (300s ISR)
     const res = await fetch(url, {
       headers: { Authorization: `Bot ${token}` },
-      next: { revalidate: 0 },
     });
 
     if (!res.ok) {

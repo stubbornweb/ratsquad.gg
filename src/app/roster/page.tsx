@@ -5,7 +5,6 @@ import RosterHeader from "@/components/RosterHeader"
 import RosterClient from "@/components/RosterClient"
 import { fetchRosterFromDiscord } from "@/lib/discord"
 import { squadLeads as fallbackSLs, members as fallbackMembers } from "@/data/roster"
-import { REVALIDATE_INTERVAL } from "@/consts/discord"
 
 export const revalidate = 300;
 
