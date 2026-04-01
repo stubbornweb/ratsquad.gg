@@ -169,117 +169,120 @@ export default function Navbar(): JSX.Element {
   }
 
   return (
-    <motion.nav
-      className={cn("navbar", navState.scrolled && "scrolled")}
-      id="navbar"
-      animate={{ y: navState.visible ? 0 : -100 }}
-      transition={spring.snappy}
-      style={{
-        background: `rgba(9, 9, 11, ${0.85 * navState.progress})`,
-        backdropFilter: `blur(${16 * navState.progress}px)`,
-        WebkitBackdropFilter: `blur(${16 * navState.progress}px)`,
-      }}
-    >
-      {/* Noise texture */}
-      <div
-        className="nav-noise"
-        style={{ opacity: 0.03 * navState.progress }}
-      />
-
-      {/* Scanline */}
-      <div
-        className="nav-scanline"
-        style={{ opacity: navState.progress }}
-      />
-
-      <motion.div
-        className="nav-container"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
+    <>
+      <motion.nav
+        className={cn("navbar", navState.scrolled && "scrolled")}
+        id="navbar"
+        animate={{ y: navState.visible ? 0 : -100 }}
+        transition={spring.snappy}
+        style={{
+          background: `rgba(9, 9, 11, ${0.85 * navState.progress})`,
+          backdropFilter: `blur(${16 * navState.progress}px)`,
+          WebkitBackdropFilter: `blur(${16 * navState.progress}px)`,
+        }}
       >
-        {/* Zone 1: Brand + Status */}
-        <motion.div className="nav-brand" variants={fadeIn}>
-          <div
-            onMouseEnter={triggerGlitch}
-          >
-            <Link
-              href="/"
-              className={cn(
-                "nav-logo-text",
-                logoGlitching && "glitch-active",
-              )}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              RATS
-            </Link>
-          </div>
-          <span className="nav-status">
-            <span className="nav-status-dot" />
-            <span className="nav-status-label">ACTIVE</span>
-          </span>
-        </motion.div>
+        {/* Noise texture */}
+        <div
+          className="nav-noise"
+          style={{ opacity: 0.03 * navState.progress }}
+        />
 
-        {/* Zone 2: Centered nav links */}
-        <motion.div className="nav-links-desktop" variants={fadeIn}>
-          {navLinks.map(({ label, href }) => (
-            <MagneticLink
-              key={href}
-              href={href}
-              isActive={isLinkActive(href)}
-            >
-              {label}
-            </MagneticLink>
-          ))}
-        </motion.div>
+        {/* Scanline */}
+        <div
+          className="nav-scanline"
+          style={{ opacity: navState.progress }}
+        />
 
-        {/* Zone 3: CTA */}
-        <motion.div className="nav-actions" variants={fadeIn}>
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            transition={spring.snappy}
-          >
-            <Link href={DISCORD_URL} className="btn btn-primary nav-cta">
-              ПОДАТИ ЗАЯВКУ
-            </Link>
+        <motion.div
+          className="nav-container"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* Zone 1: Brand + Status */}
+          <motion.div className="nav-brand" variants={fadeIn}>
+            <div
+              onMouseEnter={triggerGlitch}
+            >
+              <Link
+                href="/"
+                className={cn(
+                  "nav-logo-text",
+                  logoGlitching && "glitch-active",
+                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                RATS
+              </Link>
+            </div>
+            <span className="nav-status">
+              <span className="nav-status-dot" />
+              <span className="nav-status-label">ACTIVE</span>
+            </span>
+          </motion.div>
+
+          {/* Zone 2: Centered nav links */}
+          <motion.div className="nav-links-desktop" variants={fadeIn}>
+            {navLinks.map(({ label, href }) => (
+              <MagneticLink
+                key={href}
+                href={href}
+                isActive={isLinkActive(href)}
+              >
+                {label}
+              </MagneticLink>
+            ))}
+          </motion.div>
+
+          {/* Zone 3: CTA */}
+          <motion.div className="nav-actions" variants={fadeIn}>
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={spring.snappy}
+            >
+              <Link href={DISCORD_URL} className="btn btn-primary nav-cta">
+                ПОДАТИ ЗАЯВКУ
+              </Link>
+            </motion.div>
           </motion.div>
         </motion.div>
+      </motion.nav>
 
-        {/* Mobile toggle */}
-        <button
-          className="mobile-menu-btn"
-          aria-label={isMobileMenuOpen ? "Закрити меню" : "Відкрити меню"}
-          aria-expanded={isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {isMobileMenuOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <X size={24} strokeWidth={2} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="menu"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Menu size={24} strokeWidth={2} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </button>
-      </motion.div>
+      {/* Mobile toggle button — outside navbar to be above overlay */}
+      <button
+        className={cn("mobile-menu-btn", isMobileMenuOpen && "menu-open")}
+        aria-label={isMobileMenuOpen ? "Закрити меню" : "Відкрити меню"}
+        aria-expanded={isMobileMenuOpen}
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {isMobileMenuOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <X size={24} strokeWidth={2} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="menu"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Menu size={24} strokeWidth={2} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </button>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu overlay — rendered outside navbar to avoid
+          backdrop-filter creating a containing block that clips it */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -347,6 +350,6 @@ export default function Navbar(): JSX.Element {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </>
   )
 }

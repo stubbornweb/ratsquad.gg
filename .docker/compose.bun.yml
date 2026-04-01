@@ -1,25 +1,26 @@
-# compose.override.yml — Development overrides (auto-merged with docker compose up)
-# Hot reload enabled via bind mount
+# compose.bun.yml — Standalone Bun dev environment
+# Usage: make bun-dev OR docker compose -f .docker/compose.bun.yml up
+
+name: rats-site
 
 services:
   app:
-    image: oven/bun:alpine
-    build:
-      context: .
-      target: development
+    image: oven/bun
     container_name: rats-site-dev
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ../:/app
     working_dir: /app
     environment:
       - NODE_ENV=development
       - PORT=3000
-    command: bun run dev
+      - WATCHPACK_POLLING=true
+    command: sh -c "bun install && bun run dev"
     tty: true
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
+    restart: unless-stopped

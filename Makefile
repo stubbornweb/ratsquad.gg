@@ -10,7 +10,8 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 # ── Variables ──────────────────────────────────────────────
 APP_NAME   := rats-site
 PORT       := 3000
-COMPOSE    := docker compose -f .docker/compose.yml
+# Docker Compose (Bun dev environment)
+COMPOSE    := docker compose -f .docker/compose.bun.yml
 
 # ── Help ───────────────────────────────────────────────────
 .PHONY: help
