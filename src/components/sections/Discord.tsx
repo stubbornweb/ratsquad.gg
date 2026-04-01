@@ -27,8 +27,7 @@ export default function Discord(): JSX.Element {
           МІСІЯ ПРОДОВЖУЄТЬСЯ В DISCORD.
         </motion.h2>
         <motion.p className="section-sub mx-auto" variants={fadeUp}>
-          Планування операцій, скрими, новини клану та спільнота RATS — все в
-          одному місці.
+            Планування матчів, новини клану та спільнота RATS — все в одному місці.
         </motion.p>
 
         <motion.div variants={fadeUp}>
