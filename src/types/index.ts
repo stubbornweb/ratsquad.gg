@@ -3,6 +3,7 @@ export interface Member {
   role: string;
   hours: number;
   since: number;
+  discordId?: string;
 }
 
 export interface FaqItem {
