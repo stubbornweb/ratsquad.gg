@@ -32,7 +32,6 @@ async function fetchAllGuildMembers(): Promise<DiscordGuildMember[]> {
   const all: DiscordGuildMember[] = [];
   let after = "0";
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const url = `${API_BASE}/guilds/${DISCORD_GUILD_ID}/members?limit=1000&after=${after}`;
     const res = await fetch(url, {

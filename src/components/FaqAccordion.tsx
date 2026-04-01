@@ -13,7 +13,7 @@ export function FaqAccordion({ faqs }: FaqAccordionProps): JSX.Element {
   const [openIndex, setOpenIndex] = useState<number>(0)
 
   const toggleFaq = (index: number): void => {
-    setOpenIndex(openIndex === index ? null : index)
+    setOpenIndex(openIndex === index ? -1 : index)
   }
 
   return (

@@ -9,9 +9,8 @@ import FAQ from "@/components/sections/FAQ"
 import Discord from "@/components/sections/Discord"
 import { fetchRosterFromDiscord } from "@/lib/discord"
 import { FEATURED_MEMBERS } from "@/data/roster"
-import { REVALIDATE_INTERVAL } from "@/consts/discord"
 
-export const revalidate = REVALIDATE_INTERVAL;
+export const revalidate = 300;
 
 export default async function Home(): Promise<JSX.Element> {
   const roster = await fetchRosterFromDiscord();

@@ -7,7 +7,7 @@ import { fetchRosterFromDiscord } from "@/lib/discord"
 import { squadLeads as fallbackSLs, members as fallbackMembers } from "@/data/roster"
 import { REVALIDATE_INTERVAL } from "@/consts/discord"
 
-export const revalidate = REVALIDATE_INTERVAL;
+export const revalidate = 300;
 
 export default async function RosterPage(): Promise<JSX.Element> {
   const roster = await fetchRosterFromDiscord();
