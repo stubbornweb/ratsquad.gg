@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Oswald, Roboto_Condensed, IBM_Plex_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
@@ -91,6 +93,8 @@ export default function RootLayout({
             {children}
           </PageTransition>
         </LoadingScreenWrapper>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
