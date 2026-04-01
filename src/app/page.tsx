@@ -7,14 +7,22 @@ import RosterPreview from "@/components/sections/RosterPreview"
 import Join from "@/components/sections/Join"
 import FAQ from "@/components/sections/FAQ"
 import Discord from "@/components/sections/Discord"
+import { fetchRosterFromDiscord } from "@/lib/discord"
+import { FEATURED_MEMBERS } from "@/data/roster"
+import { REVALIDATE_INTERVAL } from "@/consts/discord"
 
-export default function Home(): JSX.Element {
+export const revalidate = REVALIDATE_INTERVAL;
+
+export default async function Home(): Promise<JSX.Element> {
+  const roster = await fetchRosterFromDiscord();
+  const featured = roster.featured.length > 0 ? roster.featured : FEATURED_MEMBERS;
+
   return (
     <>
       <Navbar />
       <Hero />
       <About />
-      <RosterPreview />
+      <RosterPreview members={featured} />
       <Join />
       <FAQ />
       <Discord />

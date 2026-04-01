@@ -1,6 +1,11 @@
 import { type Member } from "@/types";
 
-// Squad Leads
+/**
+ * Fallback roster data — used when the Discord API is unavailable.
+ * Primary data source is now the Discord bot integration (src/lib/discord.ts).
+ */
+
+// Squad Leads (fallback)
 export const squadLeads: Member[] = [
   { callsign: "belkooo875", role: "SQUAD LEAD", hours: 0, since: 0 },
   { callsign: "BYKA", role: "SQUAD LEAD", hours: 0, since: 0 },
@@ -10,7 +15,7 @@ export const squadLeads: Member[] = [
   { callsign: "Zompa", role: "SQUAD LEAD", hours: 0, since: 0 },
 ];
 
-// Members (all other RATS roles)
+// Members (fallback)
 export const members: Member[] = [
   { callsign: "Agent_4SV", role: "MEMBER", hours: 0, since: 0 },
   { callsign: "Andrik264", role: "MEMBER", hours: 0, since: 0 },
@@ -37,6 +42,7 @@ export const members: Member[] = [
 // Combined for backwards compatibility
 export const rosterData: Member[] = [...squadLeads, ...members];
 
+// Featured members (fallback for RosterPreview)
 export const FEATURED_MEMBERS: Member[] = [
   { callsign: "belkooo875", role: "SQUAD LEAD", hours: 0, since: 0 },
   { callsign: "BYKA", role: "SQUAD LEAD", hours: 0, since: 0 },

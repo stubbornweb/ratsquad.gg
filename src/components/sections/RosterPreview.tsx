@@ -3,7 +3,7 @@
 import { type JSX } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { FEATURED_MEMBERS } from "@/data/roster"
+import { type Member } from "@/types"
 import { fadeUp, clipReveal, staggerContainer, spring } from "@/hooks/useAnimations"
 
 const cardVariant = {
@@ -16,7 +16,11 @@ const cardVariant = {
   },
 }
 
-export default function RosterPreview(): JSX.Element {
+interface RosterPreviewProps {
+  members: Member[];
+}
+
+export default function RosterPreview({ members }: RosterPreviewProps): JSX.Element {
   return (
     <section className="section roster" id="roster">
       <div className="section-border-top" />
@@ -50,13 +54,13 @@ export default function RosterPreview(): JSX.Element {
           </motion.p>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[40px] md:gap-6 items-stretch"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.15 }}
           >
-            {FEATURED_MEMBERS.map((member) => (
+            {members.map((member) => (
               <motion.div
                 className="roster-card"
                 key={member.callsign}
@@ -80,9 +84,9 @@ export default function RosterPreview(): JSX.Element {
               </motion.div>
             ))}
 
-            <motion.div variants={cardVariant}>
-              <Link href="/roster" className="roster-card join-teaser">
-                <div className="join-teaser-content">ПОВНИЙ СКЛАД &rarr;</div>
+            <motion.div variants={cardVariant} className="flex items-end">
+              <Link href="/roster" className="roster-card join-teaser w-full">
+                <div className="join-teaser-content">ПОВНИЙ СКЛАД →</div>
               </Link>
             </motion.div>
           </motion.div>
