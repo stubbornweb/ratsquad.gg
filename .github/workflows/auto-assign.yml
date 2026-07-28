@@ -8,6 +8,10 @@ on:
 
 jobs:
   assign:
+    # Dependabot PRs get a read-only token no matter what permissions this
+    # job requests, so addAssignees 403s. Assigning a bot to its own PR is
+    # pointless anyway.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
