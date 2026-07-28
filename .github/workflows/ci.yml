@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Superseded runs on the same ref are pointless; cancel them.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint and typecheck
+        run: make check
+
+      # No DISCORD_BOT_TOKEN here on purpose: fetchRosterFromDiscord falls
+      # back to src/data/roster.ts, so the build must pass without it.
+      - name: Build
+        run: make build
