@@ -1,0 +1,44 @@
+# Dependabot version updates.
+# Security updates are a separate repo setting (Settings > Code security)
+# and are not configured by this file.
+
+version: 2
+
+updates:
+  # ── npm ────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Kyiv
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Everything routine arrives as one PR. Majors are deliberately left
+      # out of the group so each lands on its own and can be reverted alone.
+      routine:
+        update-types:
+          - minor
+          - patch
+
+  # ── GitHub Actions ─────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+
+  # ── Docker base images ─────────────────────────────────────
+  # Covers .docker/Dockerfile only. The image in compose.bun.yml is not
+  # tracked by this ecosystem.
+  - package-ecosystem: docker
+    directory: /.docker
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: chore
