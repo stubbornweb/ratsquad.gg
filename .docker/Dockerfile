@@ -13,7 +13,15 @@ RUN --mount=type=cache,target=/root/.npm \
 
 # --- Development (hot-reload) ---
 FROM deps AS development
+# Match the host user so files written into the bind mount stay host-owned.
+# Docker seeds anonymous volumes with the image directory's ownership, so
+# chowning here is what keeps /app/node_modules and /app/.next writable.
+ARG UID=1001
+ARG GID=1001
 ENV NODE_ENV=development
+ENV HOME=/tmp
+RUN mkdir -p /app/.next && chown -R ${UID}:${GID} /app
+USER ${UID}:${GID}
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
 
