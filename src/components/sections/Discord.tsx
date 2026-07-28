@@ -4,6 +4,7 @@ import { type JSX } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { clipReveal, fadeUp, spring, staggerContainer } from "@/hooks/useAnimations"
+import { DISCORD_URL } from "@/consts/router"
 export default function Discord(): JSX.Element {
   return (
     <section className="discord-banner" id="discord">
@@ -38,7 +39,7 @@ export default function Discord(): JSX.Element {
             style={{ display: "inline-block" }}
           >
             <Link
-              href="https://discord.gg/"
+              href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary btn-large discord-btn"
