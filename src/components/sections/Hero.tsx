@@ -1,6 +1,6 @@
 "use client"
 
-import { type JSX, useState } from "react"
+import { type JSX } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { spring, ease } from "@/hooks/useAnimations"
@@ -13,7 +13,6 @@ const boot = (delay: number) => ({
 })
 
 export default function Hero(): JSX.Element {
-  const [videoLoaded, setVideoLoaded] = useState(false)
   const { scrollY } = useScroll()
 
   // Parallax transforms
@@ -27,23 +26,6 @@ export default function Hero(): JSX.Element {
     <header className="hero" id="hero">
       {/* Grid background — parallax */}
       <motion.div className="hero-grid-bg" style={{ y: gridY }} />
-
-      {/* Video — fades in once loaded */}
-      <motion.video
-        className="hero-video-bg"
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster="/assets/inspo-images/hero-poster.jpg"
-        preload="metadata"
-        onCanPlayThrough={() => setVideoLoaded(true)}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: videoLoaded ? 1 : 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      >
-        <source src="/assets/inspo-images/hero-bg.mp4" type="video/mp4" />
-      </motion.video>
 
       {/* Vignette + bottom fade */}
       <div className="hero-vignette" />
