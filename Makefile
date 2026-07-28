@@ -11,6 +11,9 @@ MAKEFLAGS += --warn-undefined-variables --no-print-directory
 APP_NAME   := rats-site
 PORT       := 3000
 # Docker Compose (Bun dev environment)
+# UID/GID are passed through so the container writes host-owned files.
+export DOCKER_UID := $(shell id -u)
+export DOCKER_GID := $(shell id -g)
 COMPOSE    := docker compose -f .docker/compose.bun.yml
 
 # ── Help ───────────────────────────────────────────────────
@@ -55,12 +58,23 @@ start: build ## Build and start production server
 	npm run start
 
 # ── Docker ─────────────────────────────────────────────────
-.PHONY: up up-build down logs shell
+.PHONY: up up-build down logs shell bun-perms
 
-up: ## Start dev environment in Docker
+# Docker creates named volumes owned by root; the container runs as the host
+# user and could not otherwise write into them. Idempotent — safe to re-run.
+BUN_VOLUMES := rats-site_bun_node_modules rats-site_bun_next
+
+bun-perms: ## Make the bun container's volumes writable by the host user
+	@$(COMPOSE) create >/dev/null 2>&1
+	@for v in $(BUN_VOLUMES); do \
+		docker run --rm -u 0 -v $$v:/mnt oven/bun \
+			chown $(DOCKER_UID):$(DOCKER_GID) /mnt; \
+	done
+
+up: bun-perms ## Start dev environment in Docker
 	$(COMPOSE) up
 
-up-build: ## Rebuild and start dev containers
+up-build: bun-perms ## Rebuild and start dev containers
 	$(COMPOSE) up --build
 
 down: ## Stop dev environment
