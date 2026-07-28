@@ -1,6 +1,6 @@
 name: "Chore"
 description: Refactor, tooling, dependencies, config
-labels: ["workflow:refactor", "type:chore", "status:ready"]
+labels: ["needs-triage"]
 body:
   - type: input
     id: summary

@@ -47,3 +47,13 @@ yarn-error.log*
 next-env.d.ts
 # next-agents-md
 .next-docs/
+
+.ww-kit/
+.ww-kit.json
+skills-lock.json
+
+# npm is canonical — bun.lock is a dev-container artifact
+bun.lock
+
+# editors
+.idea/

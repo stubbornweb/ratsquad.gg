@@ -1,6 +1,6 @@
 name: "Documentation"
 description: Missing, wrong, or outdated docs
-labels: ["workflow:task", "type:docs", "status:ready"]
+labels: ["needs-triage"]
 body:
   - type: input
     id: summary

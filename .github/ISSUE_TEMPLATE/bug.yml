@@ -1,6 +1,6 @@
 name: "Bug Report"
 description: Something is broken
-labels: ["workflow:bugfix", "type:bug", "status:ready"]
+labels: ["needs-triage"]
 body:
   - type: input
     id: summary

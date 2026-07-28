@@ -1,6 +1,6 @@
 name: "Feature Request"
 description: New feature or improvement
-labels: ["workflow:feature", "type:feature", "status:ready"]
+labels: ["needs-triage"]
 body:
   - type: input
     id: summary
