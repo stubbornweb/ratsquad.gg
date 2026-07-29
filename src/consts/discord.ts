@@ -50,14 +50,18 @@ export const ROSTER_ROLES = {
 export const CHANNEL_APPLICATIONS = "1249820817827692645";
 
 /**
- * The channel carrying Apollo's RSVP embeds. The bot's Send Messages and
- * Manage Messages grant is scoped to this channel and nowhere else — see
- * `make check-provisioning`, which fails if that grant leaks wider.
+ * «Календар 1.1» — one text channel per scrim, each carrying Apollo's RSVP
+ * embed. There is no single event channel: the set changes every week, so the
+ * event channels are resolved from this category at read time by
+ * `listEventChannels()` in `src/lib/event-channels.ts`.
  *
- * Empty until a human fills it in: RATS opens a channel per event, so which
- * one is authoritative is a clan decision, not something to detect.
+ * The category's first channel is the «зразок-дд-мм-рр» template new event
+ * channels are copied from; it holds no RSVP and is excluded.
+ *
+ * The bot's Send Messages and Manage Messages grant belongs on this category
+ * and nowhere else — `make check-provisioning` fails if it leaks wider.
  */
-export const CHANNEL_EVENT = "";
+export const CATEGORY_EVENTS = "1251110806225948722";
 
 /**
  * Custom display order for featured members on RosterPreview.

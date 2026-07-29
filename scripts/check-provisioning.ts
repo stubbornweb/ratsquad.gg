@@ -6,9 +6,9 @@
  *
  *   1. every credential is present, and none leaked into NEXT_PUBLIC_*
  *   2. the Turso database answers with the recorded token
- *   3. the recorded channel IDs resolve to real channels
- *   4. the bot has Send Messages + Manage Messages in the event channel
- *      and NOWHERE else
+ *   3. the recorded channel and category IDs resolve to real channels
+ *   4. the bot has Send Messages + Manage Messages in every «Календар 1.1»
+ *      event channel and NOWHERE else
  *   5. the MESSAGE_CONTENT intent is on (embeds come back populated)
  *
  * Run: make check-provisioning
@@ -18,8 +18,8 @@
  */
 
 import {
+  CATEGORY_EVENTS,
   CHANNEL_APPLICATIONS,
-  CHANNEL_EVENT,
   DISCORD_GUILD_ID,
 } from "../src/consts/discord";
 import {
@@ -28,6 +28,10 @@ import {
   can,
   type GuildChannel,
 } from "../src/lib/discord-permissions";
+import {
+  listEventChannels,
+  type CategorisedChannel,
+} from "../src/lib/event-channels";
 import { readServerEnv } from "../src/lib/env";
 
 const API = "https://discord.com/api/v10";
@@ -162,7 +166,7 @@ async function checkDiscord(token: string): Promise<void> {
   const [member, roles, allChannels] = await Promise.all([
     discord<GuildMember>(`/guilds/${DISCORD_GUILD_ID}/members/${me.id}`, token),
     discord<GuildRole[]>(`/guilds/${DISCORD_GUILD_ID}/roles`, token),
-    discord<(GuildChannel & { type: number })[]>(
+    discord<(GuildChannel & CategorisedChannel)[]>(
       `/guilds/${DISCORD_GUILD_ID}/channels`,
       token,
     ),
@@ -188,18 +192,23 @@ async function checkDiscord(token: string): Promise<void> {
     fail(`CHANNEL_APPLICATIONS (${CHANNEL_APPLICATIONS}) is not in this guild`);
   }
 
-  if (!CHANNEL_EVENT) {
+  const category = allChannels.find((c) => c.id === CATEGORY_EVENTS);
+  if (!category) {
+    fail(`CATEGORY_EVENTS (${CATEGORY_EVENTS}) is not in this guild`);
+    return;
+  }
+  const events = listEventChannels(channels, CATEGORY_EVENTS);
+  if (events.length === 0) {
     fail(
-      "CHANNEL_EVENT is empty — record the Apollo RSVP channel ID in src/consts/discord.ts",
+      `CATEGORY_EVENTS → «${category.name}», but it holds no event channels ` +
+        "beyond the зразок template — nothing to verify",
     );
-    return;
+  } else {
+    pass(
+      `CATEGORY_EVENTS → «${category.name}», ${events.length} event channel(s): ` +
+        events.map((c) => `#${c.name}`).join(", "),
+    );
   }
-  const event = channels.find((c) => c.id === CHANNEL_EVENT);
-  if (!event) {
-    fail(`CHANNEL_EVENT (${CHANNEL_EVENT}) is not in this guild`);
-    return;
-  }
-  pass(`CHANNEL_EVENT → #${event.name}`);
 
   section("Bot permissions (the escalation)");
   const audit = auditBotChannelGrant({
@@ -207,7 +216,7 @@ async function checkDiscord(token: string): Promise<void> {
     userId: me.id,
     roleIds: member.roles,
     basePermissions,
-    eventChannelId: CHANNEL_EVENT,
+    eventChannelIds: events.map((c) => c.id),
     channels,
   });
 
@@ -222,22 +231,24 @@ async function checkDiscord(token: string): Promise<void> {
     console.log(`          via role(s): ${adminRoles.join(", ")}`);
   }
 
-  if (audit.eventChannel.canSend) {
-    pass(`Send Messages in #${event.name}`);
-  } else {
-    fail(`no Send Messages in #${event.name}`);
-  }
-  if (audit.eventChannel.canManage) {
-    pass(`Manage Messages in #${event.name}`);
-  } else {
-    fail(`no Manage Messages in #${event.name}`);
+  for (const channel of audit.eventChannels) {
+    const missing = [
+      !channel.canSend && "Send Messages",
+      !channel.canManage && "Manage Messages",
+    ].filter(Boolean);
+    if (missing.length === 0) {
+      pass(`Send + Manage Messages in #${channel.name}`);
+    } else {
+      fail(`#${channel.name} is missing ${missing.join(" and ")}`);
+    }
   }
 
   if (audit.overreach.length === 0) {
-    pass("no write access in any other channel");
+    pass("no write access outside the event channels");
   } else {
     fail(
-      `write access leaks into ${audit.overreach.length} other channel(s) — the grant must be scoped to the event channel:`,
+      `write access leaks into ${audit.overreach.length} channel(s) outside ` +
+        "«Календар 1.1» — the grant must be scoped to the event category:",
     );
     for (const channel of audit.overreach.slice(0, 10)) {
       const granted = [
@@ -254,22 +265,29 @@ async function checkDiscord(token: string): Promise<void> {
   }
 
   section("MESSAGE_CONTENT intent");
+  // Read the newest event channel: it is the one Apollo has posted in most
+  // recently, so it is the likeliest to hold an embed to inspect.
+  const probe = events.at(-1);
+  if (!probe) {
+    skip("no event channel to read — cannot tell whether embeds come back");
+    return;
+  }
   const messages = await discord<
     { id: string; content: string; embeds: unknown[] }[]
-  >(`/channels/${CHANNEL_EVENT}/messages?limit=25`, token);
+  >(`/channels/${probe.id}/messages?limit=25`, token);
   if (!messages) return;
   if (messages.length === 0) {
-    skip(`#${event.name} is empty — cannot tell whether embeds come back`);
+    skip(`#${probe.name} is empty — cannot tell whether embeds come back`);
     return;
   }
   // Without the intent Discord blanks content, embeds and attachments on
   // REST reads. Any populated field proves the intent is on.
   const populated = messages.some((m) => m.content || m.embeds.length > 0);
   if (populated) {
-    pass("embeds and content come back populated — intent is enabled");
+    pass(`#${probe.name} returns populated content — intent is enabled`);
   } else {
     fail(
-      `every message in #${event.name} came back blank — enable Message Content in the Developer Portal`,
+      `every message in #${probe.name} came back blank — enable Message Content in the Developer Portal`,
     );
   }
 }

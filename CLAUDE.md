@@ -24,6 +24,7 @@ RATS is a competitive EU clan in **Squad**, the hardcore tactical shooter. This 
 - `src/hooks/useAnimations.ts` — shared Framer Motion variants. Reuse these before writing new ones.
 - `src/lib/env.ts` — the server-side credential surface, and the only place that decides what "provisioned" means.
 - `src/lib/discord-permissions.ts` — pure Discord permission-overwrite resolution, used to prove the bot's write access is scoped.
+- `src/lib/event-channels.ts` — resolves the event channels from the «Календар 1.1» category. There is no single event channel: RATS opens one per scrim. Never hardcode an event channel ID.
 
 Tests are Vitest, co-located as `*.test.ts` beside the module they cover.
 

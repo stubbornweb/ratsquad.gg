@@ -102,26 +102,29 @@ export interface BotChannelGrantAudit {
    * root cause of a fully-overreaching audit, not one finding among many.
    */
   isAdministrator: boolean;
-  eventChannel: Omit<ChannelWriteAccess, "name">;
-  /** Channels other than the event channel where the bot can write. */
+  /** Write access in each event channel, in the order they were given. */
+  eventChannels: ChannelWriteAccess[];
+  /** Channels outside the event set where the bot can write. */
   overreach: ChannelWriteAccess[];
   ok: boolean;
 }
 
 /**
  * Verify the bot's write access is exactly what issue #14 authorises:
- * Send Messages + Manage Messages in the event channel, and nowhere else.
+ * Send Messages + Manage Messages in the event channels, and nowhere else.
  *
- * Write access anywhere else is a finding, not a warning — the bot is
- * otherwise read-only and this grant is a deliberate escalation.
+ * The event channels are a set, not one ID — RATS opens a channel per scrim
+ * (see `listEventChannels`). Write access outside that set is a finding, not a
+ * warning: the bot is meant to be read-only everywhere else.
  */
 export function auditBotChannelGrant(
   args: Omit<ChannelPermissionContext, "overwrites"> & {
-    eventChannelId: string;
+    eventChannelIds: string[];
     channels: GuildChannel[];
   },
 ): BotChannelGrantAudit {
-  const { eventChannelId, channels, ...ctx } = args;
+  const { eventChannelIds, channels, ...ctx } = args;
+  const isEvent = new Set(eventChannelIds);
 
   const access = channels.map((channel): ChannelWriteAccess => {
     const permissions = resolveChannelPermissions({
@@ -139,27 +142,32 @@ export function auditBotChannelGrant(
     };
   });
 
-  const event = access.find((c) => c.id === eventChannelId);
-  const eventChannel = {
-    id: eventChannelId,
-    canSend: event?.canSend ?? false,
-    canManage: event?.canManage ?? false,
-  };
+  // An event channel the guild fetch did not return cannot be written to, and
+  // saying so beats dropping it silently.
+  const eventChannels = eventChannelIds.map(
+    (id): ChannelWriteAccess =>
+      access.find((c) => c.id === id) ?? {
+        id,
+        name: "",
+        canSend: false,
+        canManage: false,
+      },
+  );
 
   const overreach = access.filter(
-    (c) => c.id !== eventChannelId && (c.canSend || c.canManage),
+    (c) => !isEvent.has(c.id) && (c.canSend || c.canManage),
   );
 
   const isAdministrator = can(ctx.basePermissions, PERMISSION.ADMINISTRATOR);
 
   return {
     isAdministrator,
-    eventChannel,
+    eventChannels,
     overreach,
     ok:
       !isAdministrator &&
-      eventChannel.canSend &&
-      eventChannel.canManage &&
+      eventChannels.length > 0 &&
+      eventChannels.every((c) => c.canSend && c.canManage) &&
       overreach.length === 0,
   };
 }

@@ -125,8 +125,9 @@ describe("resolveChannelPermissions", () => {
 });
 
 describe("auditBotChannelGrant", () => {
-  const EVENT_CHANNEL = "600000000000000001";
-  const ANKETA_CHANNEL = "600000000000000002";
+  const EVENT_A = "600000000000000001";
+  const EVENT_B = "600000000000000003";
+  const APPLICATIONS = "600000000000000002";
 
   const allowIn = (channelId: string, permissions: bigint) => ({
     id: channelId,
@@ -147,6 +148,8 @@ describe("auditBotChannelGrant", () => {
     permission_overwrites: [],
   });
 
+  const WRITE = PERMISSION.SEND_MESSAGES | PERMISSION.MANAGE_MESSAGES;
+
   const context = {
     guildId: GUILD_ID,
     userId: BOT_USER_ID,
@@ -155,118 +158,135 @@ describe("auditBotChannelGrant", () => {
     basePermissions: PERMISSION.VIEW_CHANNEL,
   };
 
-  it("passes when the bot can post and manage in the event channel only", () => {
+  it("passes when the bot can write in every event channel and nowhere else", () => {
     const audit = auditBotChannelGrant({
       ...context,
-      eventChannelId: EVENT_CHANNEL,
+      eventChannelIds: [EVENT_A, EVENT_B],
       channels: [
-        allowIn(
-          EVENT_CHANNEL,
-          PERMISSION.SEND_MESSAGES | PERMISSION.MANAGE_MESSAGES,
-        ),
-        readOnly(ANKETA_CHANNEL),
+        allowIn(EVENT_A, WRITE),
+        allowIn(EVENT_B, WRITE),
+        readOnly(APPLICATIONS),
       ],
     });
 
     expect(audit.ok).toBe(true);
-    expect(audit.eventChannel).toEqual({
-      id: EVENT_CHANNEL,
-      canSend: true,
-      canManage: true,
-    });
+    expect(audit.eventChannels).toEqual([
+      { id: EVENT_A, name: `channel-${EVENT_A}`, canSend: true, canManage: true },
+      { id: EVENT_B, name: `channel-${EVENT_B}`, canSend: true, canManage: true },
+    ]);
     expect(audit.overreach).toEqual([]);
   });
 
-  it("fails when the event channel is missing Manage Messages", () => {
+  it("fails when only some event channels carry the grant", () => {
     const audit = auditBotChannelGrant({
       ...context,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [
-        allowIn(EVENT_CHANNEL, PERMISSION.SEND_MESSAGES),
-        readOnly(ANKETA_CHANNEL),
-      ],
+      eventChannelIds: [EVENT_A, EVENT_B],
+      channels: [allowIn(EVENT_A, WRITE), readOnly(EVENT_B)],
     });
 
     expect(audit.ok).toBe(false);
-    expect(audit.eventChannel.canSend).toBe(true);
-    expect(audit.eventChannel.canManage).toBe(false);
+    expect(audit.eventChannels[1]).toMatchObject({
+      id: EVENT_B,
+      canSend: false,
+      canManage: false,
+    });
   });
 
-  it("reports write access in any other channel as overreach", () => {
+  it("fails when an event channel is missing Manage Messages", () => {
     const audit = auditBotChannelGrant({
       ...context,
-      eventChannelId: EVENT_CHANNEL,
+      eventChannelIds: [EVENT_A],
+      channels: [allowIn(EVENT_A, PERMISSION.SEND_MESSAGES)],
+    });
+
+    expect(audit.ok).toBe(false);
+    expect(audit.eventChannels[0]).toMatchObject({
+      canSend: true,
+      canManage: false,
+    });
+  });
+
+  it("reports write access in a non-event channel as overreach", () => {
+    const audit = auditBotChannelGrant({
+      ...context,
+      eventChannelIds: [EVENT_A],
       channels: [
-        allowIn(
-          EVENT_CHANNEL,
-          PERMISSION.SEND_MESSAGES | PERMISSION.MANAGE_MESSAGES,
-        ),
-        allowIn(ANKETA_CHANNEL, PERMISSION.SEND_MESSAGES),
+        allowIn(EVENT_A, WRITE),
+        allowIn(APPLICATIONS, PERMISSION.SEND_MESSAGES),
       ],
     });
 
     expect(audit.ok).toBe(false);
     expect(audit.overreach).toEqual([
-      { id: ANKETA_CHANNEL, name: `channel-${ANKETA_CHANNEL}`, canSend: true, canManage: false },
+      {
+        id: APPLICATIONS,
+        name: `channel-${APPLICATIONS}`,
+        canSend: true,
+        canManage: false,
+      },
     ]);
   });
 
-  it("treats a guild-wide Send Messages grant as overreach in every channel", () => {
+  it("treats a guild-wide Send Messages grant as overreach outside the events", () => {
     const audit = auditBotChannelGrant({
       ...context,
       basePermissions: PERMISSION.VIEW_CHANNEL | PERMISSION.SEND_MESSAGES,
-      eventChannelId: EVENT_CHANNEL,
+      eventChannelIds: [EVENT_A],
       channels: [
-        allowIn(EVENT_CHANNEL, PERMISSION.MANAGE_MESSAGES),
-        readOnly(ANKETA_CHANNEL),
+        allowIn(EVENT_A, PERMISSION.MANAGE_MESSAGES),
+        readOnly(APPLICATIONS),
       ],
     });
 
     expect(audit.ok).toBe(false);
-    expect(audit.overreach.map((c) => c.id)).toEqual([ANKETA_CHANNEL]);
+    expect(audit.overreach.map((c) => c.id)).toEqual([APPLICATIONS]);
   });
 
-  it("fails when the event channel is not among the channels read", () => {
+  it("reports an event channel that is not in the guild as unwritable", () => {
     const audit = auditBotChannelGrant({
       ...context,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [readOnly(ANKETA_CHANNEL)],
+      eventChannelIds: [EVENT_A],
+      channels: [readOnly(APPLICATIONS)],
     });
 
     expect(audit.ok).toBe(false);
-    expect(audit.eventChannel).toEqual({
-      id: EVENT_CHANNEL,
-      canSend: false,
-      canManage: false,
+    expect(audit.eventChannels).toEqual([
+      { id: EVENT_A, name: "", canSend: false, canManage: false },
+    ]);
+  });
+
+  it("fails when there are no event channels to verify", () => {
+    const audit = auditBotChannelGrant({
+      ...context,
+      eventChannelIds: [],
+      channels: [readOnly(APPLICATIONS)],
     });
+
+    expect(audit.eventChannels).toEqual([]);
+    expect(audit.ok).toBe(false);
   });
 
   it("flags a guild-wide Administrator grant as the root cause", () => {
     const audit = auditBotChannelGrant({
       ...context,
       basePermissions: PERMISSION.ADMINISTRATOR,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [readOnly(EVENT_CHANNEL), readOnly(ANKETA_CHANNEL)],
+      eventChannelIds: [EVENT_A],
+      channels: [readOnly(EVENT_A), readOnly(APPLICATIONS)],
     });
 
-    // Administrator satisfies the event channel and every other channel at
+    // Administrator satisfies the event channels and every other channel at
     // once, which is exactly why it is a finding and not a pass.
     expect(audit.isAdministrator).toBe(true);
-    expect(audit.eventChannel.canSend).toBe(true);
-    expect(audit.overreach.map((c) => c.id)).toEqual([ANKETA_CHANNEL]);
+    expect(audit.eventChannels[0].canSend).toBe(true);
+    expect(audit.overreach.map((c) => c.id)).toEqual([APPLICATIONS]);
     expect(audit.ok).toBe(false);
   });
 
   it("is not an administrator when permissions are scoped", () => {
     const audit = auditBotChannelGrant({
       ...context,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [
-        allowIn(
-          EVENT_CHANNEL,
-          PERMISSION.SEND_MESSAGES | PERMISSION.MANAGE_MESSAGES,
-        ),
-      ],
+      eventChannelIds: [EVENT_A],
+      channels: [allowIn(EVENT_A, WRITE)],
     });
 
     expect(audit.isAdministrator).toBe(false);
@@ -275,7 +295,7 @@ describe("auditBotChannelGrant", () => {
 
   it("does not count a channel the bot cannot even see as overreach", () => {
     const hidden = {
-      id: ANKETA_CHANNEL,
+      id: APPLICATIONS,
       name: "hidden",
       permission_overwrites: [
         {
@@ -291,32 +311,23 @@ describe("auditBotChannelGrant", () => {
       ...context,
       // Send Messages guild-wide, but this channel is invisible to the bot.
       basePermissions: PERMISSION.VIEW_CHANNEL | PERMISSION.SEND_MESSAGES,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [
-        allowIn(EVENT_CHANNEL, PERMISSION.MANAGE_MESSAGES),
-        hidden,
-      ],
+      eventChannelIds: [EVENT_A],
+      channels: [allowIn(EVENT_A, PERMISSION.MANAGE_MESSAGES), hidden],
     });
 
     expect(audit.overreach).toEqual([]);
     expect(audit.ok).toBe(true);
   });
 
-  it("does not credit the event channel with write access it cannot use", () => {
+  it("does not credit an event channel with write access it cannot use", () => {
     const audit = auditBotChannelGrant({
       ...context,
       basePermissions: 0n,
-      eventChannelId: EVENT_CHANNEL,
-      channels: [
-        allowIn(
-          EVENT_CHANNEL,
-          PERMISSION.SEND_MESSAGES | PERMISSION.MANAGE_MESSAGES,
-        ),
-      ],
+      eventChannelIds: [EVENT_A],
+      channels: [allowIn(EVENT_A, WRITE)],
     });
 
-    expect(audit.eventChannel).toEqual({
-      id: EVENT_CHANNEL,
+    expect(audit.eventChannels[0]).toMatchObject({
       canSend: false,
       canManage: false,
     });

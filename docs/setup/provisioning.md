@@ -83,14 +83,14 @@ self-serve toggle with no review.
 
 **Already enabled** — measured on 2026-07-29 by reading a real channel with the
 bot token: `content` and `embeds` came back populated, which is impossible
-without the intent. `make check-provisioning` re-proves it on every run, but
-only once `CHANNEL_EVENT` is filled in — it reads that channel to test.
+without the intent. `make check-provisioning` re-proves it on every run by
+reading the newest channel in «Календар 1.1».
 
 ---
 
-## 4. Bot write access — scoped to the event channel
+## 4. Bot write access — scoped to the event category
 
-**Where:** Discord client → Server Settings → Roles, then the event channel.
+**Where:** Discord client → Server Settings → Roles, then «Календар 1.1».
 
 > **The bot is not read-only today.** Its role, **Integration Helper**, holds
 > guild-wide **Administrator**: it can already post in, and delete from, all 390
@@ -98,16 +98,18 @@ only once `CHANNEL_EVENT` is filled in — it reads that channel to test.
 > 2026-07-29, not assumed: `GET /guilds/{id}/roles` shows Integration Helper
 > with the `ADMINISTRATOR` bit set. So this step is a *reduction* in access, not
 > the escalation the ticket anticipated. `make check-provisioning` reports it as
-> its own finding once `CHANNEL_EVENT` is set.
+> its own finding.
 
 1. **Server Settings → Roles → Integration Helper → remove Administrator.**
    Leave it with `View Channels` and `Read Message History` only.
-2. Open the **event channel** (the one carrying Apollo's RSVP embeds) →
-   Edit Channel → Permissions.
+2. Open the **«Календар 1.1» category** → Edit Category → Permissions.
 3. Add **Integration Helper** as an override and allow exactly
    **Send Messages** and **Manage Messages**. Leave everything else neutral.
-4. Grant nothing on the guild-wide role — a guild-wide grant is what the check
-   below exists to catch.
+4. Grant it on the **category**, not on each channel and not on the role. New
+   event channels are created inside the category and inherit it, so a
+   per-channel grant would have to be repeated every scrim — and forgotten once.
+5. Grant nothing guild-wide — a guild-wide grant is what the check below exists
+   to catch.
 
 Removing Administrator may break other things the token is used for. The roster
 fetch (`src/lib/discord.ts`) needs only `View Channels` plus the Server Members
@@ -115,11 +117,11 @@ intent, so it is unaffected; anything else using this token has to be checked
 before flipping it.
 
 `make check-provisioning` resolves the bot's effective permissions in **every**
-channel and fails if it can write anywhere but the event channel.
+channel and fails if it can write anywhere outside «Календар 1.1».
 
 ---
 
-## 5. Channel IDs
+## 5. Channel and category IDs
 
 Discover them with:
 
@@ -130,15 +132,27 @@ make discord-channels
 Record them in `src/consts/discord.ts` — they are IDs, not secrets, and belong
 beside the guild and role IDs rather than in the environment.
 
-| Constant | Channel | Status |
+| Constant | Meaning | Status |
 | --- | --- | --- |
 | `CHANNEL_APPLICATIONS` | «📁・для-анкет» — where the Discord form posts recruit анкети | `1249820817827692645` ✅ |
-| `CHANNEL_EVENT` | the Apollo RSVP channel | **empty — needs a human decision** |
+| `CATEGORY_EVENTS` | «Календар 1.1» — the category holding one channel per scrim | `1251110806225948722` ✅ |
 
-`CHANNEL_EVENT` is blank on purpose. RATS opens a **channel per event** (the
-«Календар» categories), so which channel is the authoritative RSVP source is a
-clan decision, not something to detect. Pick it, paste the ID, and the check
-turns green.
+**There is no single event channel.** RATS opens a **text channel per scrim**
+inside «Календар 1.1», each carrying its own Apollo RSVP embed, so the event
+channels are a set that changes every week. They are resolved at read time by
+`listEventChannels()` in `src/lib/event-channels.ts`, which takes the category's
+text channels in Discord's own order and **drops the first** — that is the
+«🔖・зразок-дд-мм-рр» template new event channels are copied from, and it holds
+no RSVP.
+
+Anything that needs "the event channel" should call `listEventChannels()`, never
+hardcode an ID. As of 2026-07-29 the category holds two live event channels
+(`🍺・хх-07-26-анті`, `🍺・09-08-26-sph`) plus the template.
+
+> «Arma Календар 1.4» is a second calendar with the same shape, for Arma rather
+> than Squad. It is deliberately **not** in scope: `CATEGORY_EVENTS` is a single
+> ID today, and widening it to a list is trivial if Arma scrims ever need the
+> roster builder.
 
 ---
 
