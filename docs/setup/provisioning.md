@@ -64,19 +64,31 @@ make turso ARGS="db tokens create rats-site"   # → TURSO_AUTH_TOKEN, shown onc
 > `make turso ARGS="db locations"` for the list; `aws-eu-west-1` is the default
 > and the only EU option.
 
-**Region caveat, not yet resolved.** The database is in Ireland. Vercel Functions
-default to `iad1` (Washington) unless the project pins a region, and this repo
-has no `vercel.json`. If the functions run in the US, every query crosses the
-Atlantic. Either pin the functions to `dub1` (Dublin) in `vercel.json`, or accept
-the latency — worth checking once the Vercel CLI is authenticated.
+**Region caveat — flagged, not yet actionable.** The database is in Ireland.
+The project pins no function region (no `vercel.json`, and neither
+`vercel project inspect` nor `vercel inspect` reports one), so it runs on
+Vercel's default — `iad1`, Washington — unless the dashboard says otherwise.
+
+It costs nothing *today*: every route is prerendered, and the only server work
+is ISR regeneration hitting Discord, not Turso. It starts costing on the first
+DB read, when each query becomes a transatlantic round trip.
+
+**Do this when the first Turso query ships** (#13/#15), not before: pin the
+functions to `dub1` (Dublin) via `vercel.json` `"regions"` or the project's
+Function Region setting. Changing it is cheap; moving the Turso group is not —
+region is fixed at group creation.
 
 **Plan:** the Free tier (500M row reads, 10M writes, 5 GB, 1 group) is far
 beyond 40 players. Its one real limit is a **1-day** point-in-time restore
 window; Developer ($4.99/mo) raises that to 10 days. See
 `docs/research/turso-on-vercel.md`.
 
-**Still to do:** the same two values must go into Vercel's environment
-variables — see the table at the bottom. `.env.local` is already written.
+Both values are in `.env.local` **and** in Vercel for Production, Preview and
+Development — verified by pulling them back down and comparing:
+
+```bash
+make vercel ARGS="env ls"
+```
 
 ---
 
@@ -205,8 +217,8 @@ hardcode an ID. As of 2026-07-29 the category holds two live event channels
 | `DISCORD_CLIENT_ID` | `.env.local` | env var, all envs | not a secret, kept together with the rest |
 | `DISCORD_CLIENT_SECRET` | `.env.local` | env var, all envs | shown once on reset |
 | `DISCORD_REDIRECT_URI` | `.env.local` | env var, **per environment** | must match a registered redirect exactly |
-| `TURSO_DATABASE_URL` | `.env.local` ✅ | env var, all envs ⬜ | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
-| `TURSO_AUTH_TOKEN` | `.env.local` ✅ | env var, all envs ⬜ | shown once on creation; re-mint with `make turso ARGS="db tokens create rats-site"` |
+| `TURSO_DATABASE_URL` | `.env.local` ✅ | env var, all envs ✅ | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
+| `TURSO_AUTH_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | shown once on creation; re-mint with `make turso ARGS="db tokens create rats-site"` |
 | Guild / role / channel IDs | — | — | `src/consts/discord.ts`, in git |
 
 None of these may ever carry a `NEXT_PUBLIC_` prefix.
