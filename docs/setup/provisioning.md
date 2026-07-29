@@ -157,16 +157,16 @@ matches character for character:
 
 ```
 http://localhost:3000/api/auth/callback
-https://ratsquad-git-preview-stubbornweb-1370s-projects.vercel.app/api/auth/callback
+https://ratsquad-git-develop-stubbornweb-1370s-projects.vercel.app/api/auth/callback
 https://ratsquad.vercel.app/api/auth/callback
 ```
 
 **On the preview one.** Vercel gives every deployment a fresh generated
 hostname, and Discord cannot wildcard — but Vercel also aliases every *branch*
-to a stable `ratsquad-git-<branch>-stubbornweb-1370s-projects.vercel.app`. So
-one branch is designated the OAuth preview: **`preview`**. Push there to test
-login on a deployment. Any other branch gets a preview URL that Discord will
-reject, by design.
+to a stable `ratsquad-git-<branch>-stubbornweb-1370s-projects.vercel.app`. The
+OAuth preview is therefore pinned to the integration branch, **`develop`**,
+which every branch merges into. Any other branch gets a preview URL Discord will
+reject, by design — test login on `develop`.
 
 **On the production one.** `ratsquad.vercel.app` is the real production domain —
 `vercel domains ls` reports **0 custom domains** on this account, so despite the
@@ -201,7 +201,7 @@ The redirect URI is set **per environment**, since each one differs:
 | Environment | `DISCORD_REDIRECT_URI` |
 | --- | --- |
 | Development | `http://localhost:3000/api/auth/callback` |
-| Preview | `https://ratsquad-git-preview-stubbornweb-1370s-projects.vercel.app/api/auth/callback` |
+| Preview | `https://ratsquad-git-develop-stubbornweb-1370s-projects.vercel.app/api/auth/callback` |
 | Production | `https://ratsquad.vercel.app/api/auth/callback` |
 
 Scopes are requested by the app at login (`identify`, `guilds.members.read`) —
