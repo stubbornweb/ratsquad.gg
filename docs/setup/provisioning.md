@@ -12,30 +12,71 @@ document, as the definition of "done".
 
 ---
 
-## 1. Turso
+## 0. The CLIs
 
-**Where:** <https://app.turso.tech> (or the `turso` CLI).
+`turso` and `vercel` are pinned in the project's Docker image, so provisioning
+does not depend on what happens to be installed on somebody's laptop:
 
-1. Create a group and a database — one region, EU, matching the clan's players.
-   ```bash
-   turso auth login
-   turso group create rats --location fra
-   turso db create rats-site --group rats
-   ```
-2. Read the connection URL and mint a token:
-   ```bash
-   turso db show rats-site --url        # → libsql://rats-site-<org>.turso.io
-   turso db tokens create rats-site     # → the auth token, shown once
-   ```
-3. Record both:
-   - `.env.local` → `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
-   - Vercel → Settings → Environment Variables → the same two names, for
-     **Production, Preview and Development**.
+```bash
+make tools-build                    # once
+make turso  ARGS="db list"
+make vercel ARGS="env ls"
+make tools-shell                    # or just get a shell with both
+```
+
+Logins persist in a named volume. Authenticate once:
+
+```bash
+make turso ARGS="auth login --headless"   # or: config set token "<token>"
+make vercel ARGS="login"
+```
+
+> Two different projects are called Turso. `tursodatabase/turso` is the Rust
+> SQLite rewrite — its CLI is `tursodb`, a local shell with **no** cloud
+> commands. Groups, databases and tokens come from `tursodatabase/turso-cli`,
+> which is what the image pins.
+
+---
+
+## 1. Turso — ✅ done
+
+**Provisioned 2026-07-29.** Group `rats`, database `rats-site`, both live and
+verified by `make check-provisioning` (it runs a real `select 1` over the same
+Hrana-over-HTTP path Vercel Functions will use).
+
+| | |
+| --- | --- |
+| Org | `smereka` (personal) |
+| Group | `rats` @ `aws-eu-west-1` (AWS EU West, Ireland) |
+| Database | `rats-site` |
+| URL | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
+
+The CLIs live in the project, not on a laptop — see §0. What was run:
+
+```bash
+make turso ARGS="group create rats --location aws-eu-west-1"
+make turso ARGS="db create rats-site --group rats"
+make turso ARGS="db show rats-site --url"      # → TURSO_DATABASE_URL
+make turso ARGS="db tokens create rats-site"   # → TURSO_AUTH_TOKEN, shown once
+```
+
+> **Locations are AWS regions**, not the old fly.io three-letter codes. Run
+> `make turso ARGS="db locations"` for the list; `aws-eu-west-1` is the default
+> and the only EU option.
+
+**Region caveat, not yet resolved.** The database is in Ireland. Vercel Functions
+default to `iad1` (Washington) unless the project pins a region, and this repo
+has no `vercel.json`. If the functions run in the US, every query crosses the
+Atlantic. Either pin the functions to `dub1` (Dublin) in `vercel.json`, or accept
+the latency — worth checking once the Vercel CLI is authenticated.
 
 **Plan:** the Free tier (500M row reads, 10M writes, 5 GB, 1 group) is far
 beyond 40 players. Its one real limit is a **1-day** point-in-time restore
 window; Developer ($4.99/mo) raises that to 10 days. See
 `docs/research/turso-on-vercel.md`.
+
+**Still to do:** the same two values must go into Vercel's environment
+variables — see the table at the bottom. `.env.local` is already written.
 
 ---
 
@@ -160,12 +201,12 @@ hardcode an ID. As of 2026-07-29 the category holds two live event channels
 
 | Credential | Local | Vercel | Notes |
 | --- | --- | --- | --- |
-| `DISCORD_BOT_TOKEN` | `.env.local` | env var, all envs | already provisioned |
+| `DISCORD_BOT_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | already provisioned |
 | `DISCORD_CLIENT_ID` | `.env.local` | env var, all envs | not a secret, kept together with the rest |
 | `DISCORD_CLIENT_SECRET` | `.env.local` | env var, all envs | shown once on reset |
 | `DISCORD_REDIRECT_URI` | `.env.local` | env var, **per environment** | must match a registered redirect exactly |
-| `TURSO_DATABASE_URL` | `.env.local` | env var, all envs | `libsql://…` |
-| `TURSO_AUTH_TOKEN` | `.env.local` | env var, all envs | shown once on creation |
+| `TURSO_DATABASE_URL` | `.env.local` ✅ | env var, all envs ⬜ | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
+| `TURSO_AUTH_TOKEN` | `.env.local` ✅ | env var, all envs ⬜ | shown once on creation; re-mint with `make turso ARGS="db tokens create rats-site"` |
 | Guild / role / channel IDs | — | — | `src/consts/discord.ts`, in git |
 
 None of these may ever carry a `NEXT_PUBLIC_` prefix.
