@@ -113,6 +113,43 @@ portal needed, and it is not a secret. Everything below is not so lucky:
 ignores it. Verified: the write returns 200 and a re-read still shows `[]`.
 Redirect URIs are portal-only.
 
+### ⚠️ Access blocker — the application is personally owned
+
+`GET /applications/@me` reports `team: null` and `owner: creepachok`
+(**Creep-ak**). The application sits on one person's personal Discord account,
+so nobody else can add a redirect URI, reset the client secret, or **rotate the
+bot token that is already in production**.
+
+That last one is the real problem. It is not an OAuth inconvenience: if that
+account is lost, or its owner leaves, `DISCORD_BOT_TOKEN` can never be rotated
+and the roster integration cannot be recovered. This is worth fixing regardless
+of what #14 needed.
+
+**Recommended: move the app to a Discord Team.** Teams exist for exactly this —
+several people administer one application, and ownership survives any one
+account. Creep-ak does it once:
+
+> Developer Portal → the profile menu → **Teams** → *Create Team* → then
+> **RATS Integration Helper** → Settings → **Transfer ownership** → to the team →
+> then Team → *Members* → invite the other maintainers as **Developer** (enough
+> to manage secrets and redirects) or **Admin**.
+
+After that, everything in §2 is self-serve and this blocker never returns.
+
+**Fallback: Creep-ak performs §2a and §2b directly.** Faster, but every future
+secret rotation or redirect change needs them again, and the token-rotation risk
+above stays open.
+
+**Last resort: a second, OAuth-only application** owned by whoever maintains the
+site. Login does not need a bot — the `identify` and `guilds.members.read`
+scopes read the *user's* own token — so **do not invite its bot to the guild**
+and no second bot appears. Costs: the Discord consent screen shows the new
+application's name rather than the clan's, there are two apps to keep straight,
+and `guilds.members.read` against a guild the app has no bot in is **untested
+here** — the docs do not state whether it is allowed, so verify it before
+committing to this path. The bot token, and §4's permission work, still depend
+on Creep-ak either way.
+
 ### 2a. Add the three redirect URIs
 
 OAuth2 → **Redirects** → Add. Exactly these, no trailing slash — Discord
