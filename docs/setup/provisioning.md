@@ -92,31 +92,80 @@ make vercel ARGS="env ls"
 
 ---
 
-## 2. Discord OAuth application
+## 2. Discord OAuth application — ⬜ one step left
 
-**Where:** <https://discord.com/developers/applications>.
+**Where:** <https://discord.com/developers/applications> → **RATS Integration
+Helper** → OAuth2.
 
-Use the **existing** RATS application — the one whose bot token already powers
-the roster. A second application would mean a second bot in the guild.
+Use the **existing** application — the one whose bot token already powers the
+roster. A second application would mean a second bot in the guild.
 
-1. **OAuth2 → Redirects.** Add all three, exactly, with no trailing slash.
-   Discord matches redirect URIs character for character.
-   - `http://localhost:3000/api/auth/callback`
-   - `https://<stable-preview-alias>/api/auth/callback`
-   - `https://ratsquad.gg/api/auth/callback`
+| | |
+| --- | --- |
+| Application | `RATS Integration Helper` (owner `creepachok`) |
+| **Client ID** | `1304040209725521950` ✅ recorded |
+| Client Secret | ⬜ **needs the portal** |
+| Redirect URIs | ⬜ **needs the portal** |
 
-   > Vercel gives every preview deployment its own generated hostname, and
-   > Discord cannot wildcard. Assign one **stable preview alias** in Vercel and
-   > register only that; previews on other hostnames will not be able to log in.
+The client ID is the application ID, so it was read straight off the API — no
+portal needed, and it is not a secret. Everything below is not so lucky:
+`PATCH /applications/@me` **accepts** a `redirect_uris` field and then silently
+ignores it. Verified: the write returns 200 and a re-read still shows `[]`.
+Redirect URIs are portal-only.
 
-2. **OAuth2 → Client information.** Copy the **Client ID**; press **Reset
-   Secret** and copy the **Client Secret** (shown once).
+### 2a. Add the three redirect URIs
 
-3. Record them:
-   - `.env.local` → `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`,
-     `DISCORD_REDIRECT_URI` (the localhost one)
-   - Vercel → the same three, with `DISCORD_REDIRECT_URI` set **per
-     environment** to the matching URL above.
+OAuth2 → **Redirects** → Add. Exactly these, no trailing slash — Discord
+matches character for character:
+
+```
+http://localhost:3000/api/auth/callback
+https://ratsquad-git-preview-stubbornweb-1370s-projects.vercel.app/api/auth/callback
+https://ratsquad.vercel.app/api/auth/callback
+```
+
+**On the preview one.** Vercel gives every deployment a fresh generated
+hostname, and Discord cannot wildcard — but Vercel also aliases every *branch*
+to a stable `ratsquad-git-<branch>-stubbornweb-1370s-projects.vercel.app`. So
+one branch is designated the OAuth preview: **`preview`**. Push there to test
+login on a deployment. Any other branch gets a preview URL that Discord will
+reject, by design.
+
+**On the production one.** `ratsquad.vercel.app` is the real production domain —
+`vercel domains ls` reports **0 custom domains** on this account, so despite the
+repo being named `ratsquad.gg`, that domain is not wired to this project. It
+matches what the site already declares in `src/app/layout.tsx` (`metadataBase`),
+`sitemap.ts` and `robots.ts`. **If `ratsquad.gg` is ever pointed at Vercel, a
+fourth redirect URI has to be added here** — and those three files updated.
+
+### 2b. Copy the client secret
+
+OAuth2 → Client information → **Reset Secret** → copy it (shown once).
+
+Then record it in both places:
+
+```bash
+# .env.local
+DISCORD_CLIENT_SECRET=<the secret>
+
+# Vercel, all three environments
+make vercel ARGS='env add DISCORD_CLIENT_SECRET production'
+make vercel ARGS='env add DISCORD_CLIENT_SECRET preview'
+make vercel ARGS='env add DISCORD_CLIENT_SECRET development'
+```
+
+`make check-provisioning` goes green on this group once it is set.
+
+### Already done
+
+`DISCORD_CLIENT_ID` and `DISCORD_REDIRECT_URI` are in `.env.local` and in Vercel.
+The redirect URI is set **per environment**, since each one differs:
+
+| Environment | `DISCORD_REDIRECT_URI` |
+| --- | --- |
+| Development | `http://localhost:3000/api/auth/callback` |
+| Preview | `https://ratsquad-git-preview-stubbornweb-1370s-projects.vercel.app/api/auth/callback` |
+| Production | `https://ratsquad.vercel.app/api/auth/callback` |
 
 Scopes are requested by the app at login (`identify`, `guilds.members.read`) —
 nothing to configure in the portal. See `docs/research/discord-oauth-nextjs.md`.
@@ -214,9 +263,9 @@ hardcode an ID. As of 2026-07-29 the category holds two live event channels
 | Credential | Local | Vercel | Notes |
 | --- | --- | --- | --- |
 | `DISCORD_BOT_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | already provisioned |
-| `DISCORD_CLIENT_ID` | `.env.local` | env var, all envs | not a secret, kept together with the rest |
-| `DISCORD_CLIENT_SECRET` | `.env.local` | env var, all envs | shown once on reset |
-| `DISCORD_REDIRECT_URI` | `.env.local` | env var, **per environment** | must match a registered redirect exactly |
+| `DISCORD_CLIENT_ID` | `.env.local` ✅ | env var, all envs ✅ | `1304040209725521950` — the application ID, not a secret |
+| `DISCORD_CLIENT_SECRET` | `.env.local` ⬜ | env var, all envs ⬜ | shown once on reset — the last missing credential |
+| `DISCORD_REDIRECT_URI` | `.env.local` ✅ | env var, **per environment** ✅ | must match a registered redirect exactly |
 | `TURSO_DATABASE_URL` | `.env.local` ✅ | env var, all envs ✅ | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
 | `TURSO_AUTH_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | shown once on creation; re-mint with `make turso ARGS="db tokens create rats-site"` |
 | Guild / role / channel IDs | — | — | `src/consts/discord.ts`, in git |
