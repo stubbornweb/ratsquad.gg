@@ -18,6 +18,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { MOCK_DISCORD_USER } from "./_data";
+import { ease } from "@/hooks/useAnimations";
 
 const DISCORD_MARK = (
   <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden>
@@ -41,6 +42,7 @@ export function Login({
 
   const button = (
     <button
+      type="button"
       onClick={start}
       disabled={pending}
       className="btn btn-primary btn-large"
@@ -52,23 +54,21 @@ export function Login({
   );
 
   const note = (
-    <p className="max-w-[380px] font-[family-name:var(--font-mono)] text-[11px] leading-relaxed tracking-wider text-[var(--text-dark)] uppercase">
+    <p className="pt-note" style={{ maxWidth: 380, lineHeight: 1.8 }}>
       Ми читаємо тільки твій нік і ролі на сервері RATS. Нічого не постимо.
     </p>
   );
 
   if (mode === "gate") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center">
-        <p className="flex items-center gap-4 font-[family-name:var(--font-label)] text-[11px] tracking-[0.25em] text-[var(--accent)] uppercase">
-          <span className="inline-block h-0.5 w-8 bg-[var(--accent)]" />
+      <div className="pt-gate">
+        <p className="pt-eyebrow" style={{ marginBottom: 0 }}>
           Доступ до анкети
-          <span className="inline-block h-0.5 w-8 bg-[var(--accent)]" />
         </p>
-        <h1 className="font-[family-name:var(--font-heading)] text-5xl tracking-[0.06em] uppercase">
+        <h1 className="pt-display pt-title" style={{ marginBottom: 0 }}>
           Спершу — вхід
         </h1>
-        <p className="max-w-[440px] text-[15px] text-[var(--text-muted)]">
+        <p className="pt-lede" style={{ marginBottom: 0, maxWidth: 440 }}>
           Профіль редагує тільки його власник. Тому потрібен Discord.
         </p>
         {button}
@@ -79,59 +79,55 @@ export function Login({
 
   if (mode === "step") {
     return (
-      <div className="mx-auto max-w-[820px] px-6 pt-28 pb-40">
-        <div className="mb-14 flex items-stretch gap-px bg-[var(--border-subtle)]">
-          {["Вхід", "Ролі", "Топ-3", "Напрямок"].map((label, i) => (
-            <div
-              key={label}
-              className={`flex-1 px-3 py-4 ${
-                i === 0 ? "bg-[var(--accent-subtle)]" : "bg-[var(--bg-alt)]"
-              }`}
-            >
-              <span
-                className={`block font-[family-name:var(--font-mono)] text-[10px] tracking-[0.25em] ${
-                  i === 0 ? "text-[var(--accent)]" : "text-[var(--text-dark)]"
-                }`}
+      <div className="pt-page">
+        <div className="pt-shell" style={{ maxWidth: 820 }}>
+          <nav className="pt-rail">
+            {["Вхід", "Ролі", "Топ-3", "Напрямок"].map((label, i) => (
+              <div
+                key={label}
+                className="pt-rail-step"
+                data-state={i === 0 ? "current" : "todo"}
               >
-                {String(i).padStart(2, "0")}
-              </span>
-              <span
-                className={`mt-1 block font-[family-name:var(--font-label)] text-[12px] font-bold tracking-[0.14em] uppercase ${
-                  i === 0 ? "text-[var(--text-main)]" : "text-[var(--text-dark)]"
-                }`}
-              >
-                {label}
-              </span>
-            </div>
-          ))}
+                <span className="pt-rail-index">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="pt-rail-label">{label}</span>
+              </div>
+            ))}
+          </nav>
+
+          <h2
+            className="pt-display pt-title"
+            style={{ fontSize: "clamp(30px, 4vw, 40px)" }}
+          >
+            Впізнай себе
+          </h2>
+          <p className="pt-lede" style={{ marginBottom: 40 }}>
+            Один клік — і решту анкети ми прив&apos;яжемо до твого ніка в Discord.
+          </p>
+          {button}
+          <div className="mt-6">{note}</div>
         </div>
-        <h2 className="mb-2 font-[family-name:var(--font-heading)] text-4xl tracking-[0.08em] uppercase">
-          Впізнай себе
-        </h2>
-        <p className="mb-10 max-w-[560px] text-[15px] text-[var(--text-muted)]">
-          Один клік — і решту анкети ми прив&apos;яжемо до твого ніка в Discord.
-        </p>
-        {button}
-        <div className="mt-6">{note}</div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[400] flex items-center justify-center bg-[rgba(9,9,11,0.92)] px-6 backdrop-blur-md">
+    <div className="pt-modal-backdrop">
       <motion.div
+        className="pt-modal"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-        className="flex w-full max-w-[440px] flex-col items-start gap-6 border border-[var(--border-subtle)] bg-[var(--bg-alt)] p-10"
+        transition={{ duration: 0.18, ease: ease.sharp }}
       >
-        <p className="font-[family-name:var(--font-mono)] text-[10px] tracking-[0.3em] text-[var(--accent)] uppercase">
-          Потрібен вхід
-        </p>
-        <h2 className="font-[family-name:var(--font-heading)] text-3xl tracking-[0.06em] uppercase">
+        <p className="pt-note pt-note--accent">Потрібен вхід</p>
+        <h2
+          className="pt-display pt-title"
+          style={{ fontSize: 30, marginBottom: 0 }}
+        >
           Це твоя картка?
         </h2>
-        <p className="text-[14px] text-[var(--text-muted)]">
+        <p style={{ fontSize: 14, color: "var(--text-muted)" }}>
           Щоб редагувати — підтверди, що це ти.
         </p>
         {button}
@@ -144,24 +140,32 @@ export function Login({
 /** Logged-in strip — same in every variant, so login state is never ambiguous. */
 export function SessionBar({ onLogout }: { onLogout: () => void }) {
   return (
-    <div className="fixed top-0 right-0 left-0 z-[300] flex items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--bg-footer)] px-6 py-3">
+    <div className="pt-session">
       <div className="flex items-center gap-3">
         <span
-          className="flex h-7 w-7 items-center justify-center font-[family-name:var(--font-mono)] text-[11px] font-bold text-white"
+          className="pt-session-avatar"
           style={{ background: MOCK_DISCORD_USER.colour }}
         >
           {MOCK_DISCORD_USER.callsign[0]}
         </span>
-        <span className="font-[family-name:var(--font-label)] text-[13px] font-bold tracking-[0.12em] uppercase">
+        <span
+          style={{
+            fontFamily: "var(--font-label), sans-serif",
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+          }}
+        >
           {MOCK_DISCORD_USER.callsign}
         </span>
-        <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] text-[var(--accent)] uppercase">
-          {MOCK_DISCORD_USER.rank}
-        </span>
+        <span className="pt-note pt-note--accent">{MOCK_DISCORD_USER.rank}</span>
       </div>
       <button
+        type="button"
         onClick={onLogout}
-        className="font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] text-[var(--text-dark)] uppercase transition-colors duration-150 hover:text-[var(--text-main)]"
+        className="pt-note"
+        style={{ background: "transparent", border: "none", cursor: "pointer" }}
       >
         Вийти
       </button>

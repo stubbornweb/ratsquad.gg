@@ -1,0 +1,846 @@
+/* ═══════════════════════════════════════════════════════
+   PROTOTYPE — THROWAWAY. Wayfinder #15.
+
+   Scoped to /prototype/profile so it stays out of globals.css.
+   Delete with the rest of the directory once a variant wins.
+
+   Every colour, font and radius below is a reference to a token in
+   globals.css. Nothing is restated as a literal — if a value appears
+   here that is not var(--…), it is a mistake.
+   ═══════════════════════════════════════════════════════ */
+
+/* NASTUP is the site's display face. Headings that skip it stop
+   looking like RATS, which is exactly how the first pass went wrong. */
+.pt-display {
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+/* ── Page shell ── */
+
+.pt-page {
+    min-height: 100vh;
+    background-color: var(--bg-main);
+    padding: 112px 40px 160px;
+}
+
+.pt-shell {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pt-shell--wide {
+    max-width: 1200px;
+}
+
+/* ── Masthead ── */
+
+.pt-eyebrow {
+    font-family: var(--font-label), sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.pt-eyebrow::before {
+    content: '';
+    width: 32px;
+    height: 2px;
+    background-color: var(--accent);
+    flex-shrink: 0;
+}
+
+.pt-title {
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+}
+
+.pt-lede {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin-bottom: 72px;
+}
+
+/* ── Block: one question on the page ── */
+
+.pt-block {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 32px;
+    margin-bottom: 72px;
+}
+
+.pt-block-title {
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+}
+
+.pt-block-sub {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 28px;
+}
+
+.pt-note {
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+}
+
+.pt-note--accent {
+    color: var(--accent);
+}
+
+/* Stamp rendered outside a manifest row (the preview card) has no
+   parent [data-state] to key off, so it carries the fill itself. */
+.pt-stamp--filled {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-main);
+}
+
+/* ── Role grid ──
+   Real per-cell borders, not a gap-px background trick: 14 items in a
+   4-column grid leave a ragged last row, and the trick renders those
+   empty cells as solid blocks. This just ends. */
+
+.pt-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+    .pt-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 900px) {
+    .pt-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.pt-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 18px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pt-cell:hover {
+    background-color: var(--bg-alt);
+}
+
+.pt-cell[data-on="true"] {
+    background-color: var(--accent-subtle);
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.pt-cell-name {
+    font-family: var(--font-label), sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-main);
+    transition: color 0.15s ease;
+}
+
+.pt-cell[data-on="true"] .pt-cell-name {
+    color: var(--accent);
+}
+
+.pt-cell-hint {
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+}
+
+.pt-cell-mark {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.pt-cell[data-on="true"] .pt-cell-mark {
+    opacity: 1;
+}
+
+/* ── Chips: compact role toggles ── */
+
+.pt-chip {
+    font-family: var(--font-label), sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: 0;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pt-chip:hover {
+    color: var(--text-main);
+    border-color: var(--text-dark);
+}
+
+.pt-chip[data-on="true"] {
+    color: var(--accent);
+    border-color: var(--accent);
+    background-color: var(--accent-subtle);
+}
+
+.pt-chip:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.pt-chip--sm {
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    padding: 6px 12px;
+}
+
+/* ── Group heading inside the stepped variant ── */
+
+.pt-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+}
+
+.pt-group::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--accent);
+    opacity: 0.2;
+}
+
+/* ── Form controls ── */
+
+.pt-label {
+    display: block;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.pt-input,
+.pt-select {
+    width: 100%;
+    background-color: var(--bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+    color: var(--text-main);
+    padding: 14px 18px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pt-input {
+    font-family: var(--font-mono), monospace;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    max-width: 420px;
+}
+
+.pt-input::placeholder {
+    color: var(--text-dark);
+}
+
+.pt-select {
+    appearance: none;
+    font-family: var(--font-label), sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pt-input:focus,
+.pt-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* ── Ordinal slots (variant A's top-3) ── */
+
+.pt-slots {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+    .pt-slots { grid-template-columns: repeat(3, 1fr); }
+}
+
+.pt-slot {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pt-slot:last-child {
+    border-bottom: none;
+}
+
+@media (min-width: 640px) {
+    .pt-slot {
+        border-bottom: none;
+        border-right: 1px solid var(--border-subtle);
+    }
+    .pt-slot:last-child { border-right: none; }
+}
+
+.pt-slot-ordinal {
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.25;
+    margin-bottom: 12px;
+}
+
+.pt-empty {
+    border: 1px dashed var(--border-subtle);
+    padding: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+/* ── Напрямок tiles ── */
+
+.pt-dirs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--border-subtle);
+    border-left: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+    .pt-dirs { grid-template-columns: repeat(4, 1fr); }
+}
+
+.pt-dir {
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    padding: 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pt-dir:hover {
+    background-color: var(--bg-alt);
+}
+
+.pt-dir[data-on="true"] {
+    background-color: var(--accent-subtle);
+    box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.pt-dir:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+.pt-dir-name {
+    display: block;
+    font-family: var(--font-label), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-main);
+    transition: color 0.15s ease;
+}
+
+.pt-dir[data-on="true"] .pt-dir-name {
+    color: var(--accent);
+}
+
+.pt-dir-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-dark);
+}
+
+/* ── Step rail (variant B) ──
+   Echoes the site's .loading-progress / .nav-scanline uplink motif.
+   Numbering is earned here: a wizard genuinely is a sequence. */
+
+.pt-rail {
+    display: flex;
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 56px;
+}
+
+.pt-rail-step {
+    flex: 1;
+    position: relative;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--border-subtle);
+    border-radius: 0;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.pt-rail-step:last-child {
+    border-right: none;
+}
+
+.pt-rail-step:hover {
+    background-color: var(--bg-alt);
+}
+
+.pt-rail-step::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+
+.pt-rail-step[data-state="current"]::after {
+    transform: scaleX(1);
+}
+
+.pt-rail-index {
+    display: block;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--text-dark);
+    transition: color 0.15s ease;
+}
+
+.pt-rail-step[data-state="current"] .pt-rail-index,
+.pt-rail-step[data-state="done"] .pt-rail-index {
+    color: var(--accent);
+}
+
+.pt-rail-label {
+    display: block;
+    margin-top: 6px;
+    font-family: var(--font-label), sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    transition: color 0.15s ease;
+}
+
+.pt-rail-step[data-state="current"] .pt-rail-label {
+    color: var(--text-main);
+}
+
+/* ── Reorderable top-3 rows (variant B) ── */
+
+.pt-reorder-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background-color: var(--bg-alt);
+    border: 1px solid var(--border-subtle);
+    padding: 16px 20px;
+    cursor: grab;
+}
+
+.pt-reorder-row:active {
+    cursor: grabbing;
+}
+
+.pt-reorder-index {
+    font-family: 'NASTUP', var(--font-heading), sans-serif;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--accent);
+}
+
+.pt-reorder-name {
+    flex: 1;
+    font-family: var(--font-label), sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* ── Направление rows (variant B step 3) ── */
+
+.pt-dir-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: var(--bg-alt);
+    border: 1px solid var(--border-subtle);
+    padding: 16px 20px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.pt-dir-row[data-on="true"] {
+    border-color: var(--accent);
+    background-color: var(--accent-subtle);
+}
+
+/* ── Summary table ── */
+
+.pt-summary {
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-alt);
+}
+
+.pt-summary-row {
+    display: flex;
+    gap: 24px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pt-summary-row:last-child {
+    border-bottom: none;
+}
+
+.pt-summary-key {
+    width: 128px;
+    flex-shrink: 0;
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+}
+
+.pt-summary-val {
+    flex: 1;
+    font-family: var(--font-label), sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-main);
+}
+
+/* ── Manifest rows (variant C) ──
+   Dense, stamped, mono — reads like a kit list, not a form. */
+
+.pt-manifest {
+    border-top: 1px solid var(--border-subtle);
+}
+
+.pt-manifest-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pt-manifest-row:hover {
+    background-color: var(--bg-alt);
+}
+
+.pt-manifest-row[data-state="can"] {
+    background-color: var(--bg-alt);
+}
+
+.pt-manifest-row[data-state="top"] {
+    background-color: var(--accent-subtle);
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.pt-stamp {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-subtle);
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: transparent;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.pt-manifest-row:hover .pt-stamp {
+    border-color: var(--text-dark);
+}
+
+.pt-manifest-row[data-state="can"] .pt-stamp {
+    border-color: var(--accent-dim);
+}
+
+.pt-manifest-row[data-state="top"] .pt-stamp {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-main);
+}
+
+.pt-manifest-name {
+    width: 160px;
+    flex-shrink: 0;
+    font-family: var(--font-label), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    transition: color 0.15s ease;
+}
+
+.pt-manifest-row[data-state="can"] .pt-manifest-name {
+    color: var(--text-main);
+}
+
+.pt-manifest-row[data-state="top"] .pt-manifest-name {
+    color: var(--accent);
+}
+
+.pt-manifest-hint {
+    flex: 1;
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+}
+
+.pt-manifest-state {
+    font-family: var(--font-mono), monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: transparent;
+    transition: color 0.15s ease;
+}
+
+.pt-manifest-row:hover .pt-manifest-state {
+    color: var(--text-dark);
+}
+
+/* ── Preview card side (variant C) ── */
+
+.pt-preview-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-label), sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.pt-preview-block {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.pt-preview-key {
+    font-family: var(--font-mono), monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.pt-preview-val {
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* ── Session strip ── */
+
+.pt-session {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background-color: var(--bg-footer);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.pt-session-avatar {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono), monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* ── Login ── */
+
+.pt-gate {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    padding: 40px;
+    text-align: center;
+}
+
+.pt-gate .pt-eyebrow::after {
+    content: '';
+    width: 32px;
+    height: 2px;
+    background-color: var(--accent);
+    flex-shrink: 0;
+}
+
+.pt-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background-color: rgb(from var(--bg-main) r g b / 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.pt-modal {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 40px;
+    background-color: var(--bg-alt);
+    border: 1px solid var(--border-subtle);
+}
+
+/* ── Step nav ── */
+
+.pt-stepnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 24px;
+    margin-top: 56px;
+}
+
+.pt-stepnav button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-label), sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.15s ease;
+}
+
+.pt-stepnav button:hover:not(:disabled) {
+    color: var(--text-main);
+}
+
+.pt-stepnav button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+.pt-stepnav button.is-forward {
+    color: var(--accent);
+}
+
+/* ── Mobile ── */
+
+@media (max-width: 768px) {
+    .pt-page { padding: 96px 24px 160px; }
+    .pt-lede { margin-bottom: 48px; }
+    .pt-block { margin-bottom: 56px; }
+    .pt-manifest-name { width: 110px; }
+    .pt-manifest-hint { display: none; }
+}

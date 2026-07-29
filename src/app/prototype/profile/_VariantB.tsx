@@ -10,11 +10,15 @@
  * Топ-3 is a DRAG-reorder list, and it is a separate step — so the two questions
  * are maximally separated in time. If they still feel like one question here,
  * they are one question.
+ *
+ * The step rail carries the site's uplink motif (a scanline sweeping under the
+ * active step, echoing .nav-scanline / .loading-progress). Numbering is earned:
+ * a wizard genuinely is a sequence.
  */
 
 import { useState } from "react";
 import { AnimatePresence, motion, Reorder } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, GripVertical } from "lucide-react";
+import { ArrowLeft, ArrowRight, GripVertical } from "lucide-react";
 import {
   DIRECTIONS,
   GROUP_LABELS,
@@ -23,15 +27,11 @@ import {
   type ProfileDraft,
   type RoleGroup,
 } from "./_data";
+import { ease } from "@/hooks/useAnimations";
 
 const GROUPS: RoleGroup[] = ["infantry", "vehicle", "other"];
 
-const STEPS = [
-  { key: "roles", label: "Ролі" },
-  { key: "top", label: "Топ-3" },
-  { key: "profile", label: "Напрямок" },
-  { key: "done", label: "Готово" },
-];
+const STEPS = ["Ролі", "Топ-3", "Напрямок", "Готово"];
 
 type Props = {
   draft: ProfileDraft;
@@ -57,251 +57,234 @@ export function VariantB({ draft, setDraft }: Props) {
   };
 
   return (
-    <div className="mx-auto max-w-[820px] px-6 pt-28 pb-40">
-      {/* ── Step rail ── */}
-      <div className="mb-14 flex items-stretch gap-px bg-[var(--border-subtle)]">
-        {STEPS.map((s, i) => (
-          <button
-            key={s.key}
-            onClick={() => setStep(i)}
-            className={`flex-1 bg-[var(--bg-alt)] px-3 py-4 text-left transition-colors duration-150 ${
-              i === step ? "bg-[var(--accent-subtle)]" : "hover:bg-[var(--bg-card)]"
-            }`}
-          >
-            <span
-              className={`block font-[family-name:var(--font-mono)] text-[10px] tracking-[0.25em] ${
-                i <= step ? "text-[var(--accent)]" : "text-[var(--text-dark)]"
-              }`}
+    <div className="pt-page">
+      <div className="pt-shell" style={{ maxWidth: 820 }}>
+        <nav className="pt-rail">
+          {STEPS.map((label, i) => (
+            <button
+              key={label}
+              type="button"
+              className="pt-rail-step"
+              data-state={i === step ? "current" : i < step ? "done" : "todo"}
+              onClick={() => setStep(i)}
             >
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span
-              className={`mt-1 block font-[family-name:var(--font-label)] text-[12px] font-bold tracking-[0.14em] uppercase ${
-                i === step ? "text-[var(--text-main)]" : "text-[var(--text-dark)]"
-              }`}
-            >
-              {s.label}
-            </span>
-          </button>
-        ))}
-      </div>
+              <span className="pt-rail-index">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="pt-rail-label">{label}</span>
+            </button>
+          ))}
+        </nav>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -16 }}
-          transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-        >
-          {step === 0 && (
-            <StepShell
-              title="Що ти можеш грати"
-              sub="Познач усе, що витягнеш на прохання командира. Це не про бажання — це про здатність."
-            >
-              <div className="flex flex-col gap-10">
-                {GROUPS.map((group) => (
-                  <div key={group}>
-                    <p className="mb-4 flex items-center gap-4 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.3em] text-[var(--accent)] uppercase">
-                      {GROUP_LABELS[group]}
-                      <span className="h-px flex-1 bg-[var(--accent)] opacity-20" />
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {ROLES.filter((r) => r.group === group).map((role) => {
-                        const on = draft.can.includes(role.id);
-                        return (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.18, ease: ease.sharp }}
+          >
+            {step === 0 && (
+              <Step
+                title="Що ти можеш грати"
+                sub="Познач усе, що витягнеш на прохання командира. Це не про бажання — це про здатність."
+              >
+                <div className="flex flex-col gap-10">
+                  {GROUPS.map((group) => (
+                    <div key={group}>
+                      <p className="pt-group">{GROUP_LABELS[group]}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {ROLES.filter((r) => r.group === group).map((role) => (
                           <button
                             key={role.id}
-                            onClick={() => toggleCan(role.id)}
+                            type="button"
+                            className="pt-chip"
+                            data-on={draft.can.includes(role.id)}
                             title={role.hint}
-                            className={`border px-4 py-2.5 font-[family-name:var(--font-label)] text-[13px] font-bold tracking-[0.12em] uppercase transition-colors duration-150 ${
-                              on
-                                ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--accent)]"
-                                : "border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--text-dark)] hover:text-[var(--text-main)]"
-                            }`}
+                            onClick={() => toggleCan(role.id)}
                           >
                             {role.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Step>
+            )}
+
+            {step === 1 && (
+              <Step
+                title="Твоя топ-3"
+                sub="Обери до трьох з того, що позначив. Перетягни, щоб змінити порядок."
+              >
+                {draft.can.length === 0 ? (
+                  <p className="pt-empty">
+                    Перший крок порожній — повернись і познач ролі.
+                  </p>
+                ) : (
+                  <>
+                    <div className="mb-8 flex flex-wrap gap-2">
+                      {draft.can.map((id) => {
+                        const on = draft.top.includes(id);
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            className="pt-chip"
+                            data-on={on}
+                            disabled={draft.top.length >= 3 && !on}
+                            onClick={() => toggleTop(id)}
+                          >
+                            {ROLE_BY_ID[id].label}
                           </button>
                         );
                       })}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </StepShell>
-          )}
 
-          {step === 1 && (
-            <StepShell
-              title="Твоя топ-3"
-              sub="Обери до трьох з того, що позначив. Перетягни, щоб змінити порядок."
-            >
-              <div className="mb-8 flex flex-wrap gap-2">
-                {draft.can.map((id) => {
-                  const on = draft.top.includes(id);
-                  const full = draft.top.length >= 3 && !on;
-                  return (
-                    <button
-                      key={id}
-                      disabled={full}
-                      onClick={() => toggleTop(id)}
-                      className={`border px-4 py-2.5 font-[family-name:var(--font-label)] text-[13px] font-bold tracking-[0.12em] uppercase transition-colors duration-150 ${
-                        on
-                          ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--accent)]"
-                          : "border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--text-dark)]"
-                      } ${full ? "cursor-not-allowed opacity-25" : ""}`}
+                    <Reorder.Group
+                      axis="y"
+                      values={draft.top}
+                      onReorder={(top: string[]) => setDraft({ ...draft, top })}
+                      className="flex flex-col gap-2"
                     >
-                      {ROLE_BY_ID[id].label}
-                    </button>
-                  );
-                })}
-                {draft.can.length === 0 && (
-                  <p className="text-[14px] text-[var(--text-dark)]">
-                    Крок 01 порожній — повернись і познач ролі.
-                  </p>
-                )}
-              </div>
-
-              <Reorder.Group
-                axis="y"
-                values={draft.top}
-                onReorder={(top: string[]) => setDraft({ ...draft, top })}
-                className="flex flex-col gap-2"
-              >
-                {draft.top.map((id, i) => (
-                  <Reorder.Item
-                    key={id}
-                    value={id}
-                    className="flex cursor-grab items-center gap-4 border border-[var(--border-subtle)] bg-[var(--bg-alt)] px-5 py-4 active:cursor-grabbing"
-                  >
-                    <span className="font-[family-name:var(--font-mono)] text-[11px] tracking-[0.25em] text-[var(--accent)]">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="flex-1 font-[family-name:var(--font-label)] text-[15px] font-bold tracking-[0.12em] uppercase">
-                      {ROLE_BY_ID[id].label}
-                    </span>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-[var(--text-dark)] uppercase">
-                      {ROLE_BY_ID[id].hint}
-                    </span>
-                    <GripVertical size={16} className="text-[var(--text-dark)]" />
-                  </Reorder.Item>
-                ))}
-              </Reorder.Group>
-            </StepShell>
-          )}
-
-          {step === 2 && (
-            <StepShell
-              title="Напрямок і Steam"
-              sub="Де тобі природно на карті, і чим тебе зіставити зі статистикою матчу."
-            >
-              <div className="mb-10 flex flex-col gap-2">
-                {DIRECTIONS.map((d) => {
-                  const on = draft.direction === d.id;
-                  const second = draft.directionSecondary === d.id;
-                  return (
-                    <div
-                      key={d.id}
-                      className={`flex items-center gap-4 border px-5 py-4 transition-colors duration-150 ${
-                        on || second
-                          ? "border-[var(--accent)] bg-[var(--accent-subtle)]"
-                          : "border-[var(--border-subtle)] bg-[var(--bg-alt)]"
-                      }`}
-                    >
-                      <div className="flex-1">
-                        <span
-                          className={`block font-[family-name:var(--font-label)] text-[14px] font-bold tracking-[0.14em] uppercase ${
-                            on || second
-                              ? "text-[var(--accent)]"
-                              : "text-[var(--text-main)]"
-                          }`}
+                      {draft.top.map((id, i) => (
+                        <Reorder.Item
+                          key={id}
+                          value={id}
+                          className="pt-reorder-row"
                         >
-                          {d.label}
-                        </span>
-                        <span className="text-[12px] text-[var(--text-dark)]">
-                          {d.hint}
-                        </span>
+                          <span className="pt-reorder-index">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <span className="pt-reorder-name">
+                            {ROLE_BY_ID[id].label}
+                          </span>
+                          <span className="pt-cell-hint">
+                            {ROLE_BY_ID[id].hint}
+                          </span>
+                          <GripVertical
+                            size={16}
+                            style={{ color: "var(--text-dark)" }}
+                          />
+                        </Reorder.Item>
+                      ))}
+                    </Reorder.Group>
+                  </>
+                )}
+              </Step>
+            )}
+
+            {step === 2 && (
+              <Step
+                title="Напрямок і Steam"
+                sub="Де тобі природно на карті, і чим тебе зіставити зі статистикою матчу."
+              >
+                <div className="mb-10 flex flex-col gap-2">
+                  {DIRECTIONS.map((d) => {
+                    const primary = draft.direction === d.id;
+                    const second = draft.directionSecondary === d.id;
+                    return (
+                      <div
+                        key={d.id}
+                        className="pt-dir-row"
+                        data-on={primary || second}
+                      >
+                        <div className="flex-1">
+                          <span
+                            className="pt-dir-name"
+                            style={
+                              primary || second
+                                ? { color: "var(--accent)" }
+                                : undefined
+                            }
+                          >
+                            {d.label}
+                          </span>
+                          <span className="pt-dir-hint">{d.hint}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="pt-chip pt-chip--sm"
+                          data-on={primary}
+                          onClick={() => setDraft({ ...draft, direction: d.id })}
+                        >
+                          Основний
+                        </button>
+                        <button
+                          type="button"
+                          className="pt-chip pt-chip--sm"
+                          data-on={second}
+                          disabled={primary}
+                          onClick={() =>
+                            setDraft({
+                              ...draft,
+                              directionSecondary: second ? null : d.id,
+                            })
+                          }
+                        >
+                          Другий
+                        </button>
                       </div>
-                      <button
-                        onClick={() => setDraft({ ...draft, direction: d.id })}
-                        className={`border px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] uppercase transition-colors duration-150 ${
-                          on
-                            ? "border-[var(--accent)] text-[var(--accent)]"
-                            : "border-[var(--border-subtle)] text-[var(--text-dark)] hover:border-[var(--text-dark)]"
-                        }`}
-                      >
-                        Основний
-                      </button>
-                      <button
-                        onClick={() =>
-                          setDraft({
-                            ...draft,
-                            directionSecondary: second ? null : d.id,
-                          })
-                        }
-                        disabled={on}
-                        className={`border px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] uppercase transition-colors duration-150 ${
-                          second
-                            ? "border-[var(--accent)] text-[var(--accent)]"
-                            : "border-[var(--border-subtle)] text-[var(--text-dark)] hover:border-[var(--text-dark)]"
-                        } ${on ? "cursor-not-allowed opacity-25" : ""}`}
-                      >
-                        Другий
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              <label className="mb-3 block font-[family-name:var(--font-mono)] text-[10px] tracking-[0.25em] text-[var(--text-dark)] uppercase">
-                Steam ID — 17 цифр
-              </label>
-              <input
-                value={draft.steamId}
-                onChange={(e) => setDraft({ ...draft, steamId: e.target.value })}
-                placeholder="76561198000000000"
-                inputMode="numeric"
-                className="w-full rounded-none border border-[var(--border-color)] bg-[var(--bg-alt)] px-5 py-4 font-[family-name:var(--font-mono)] text-[15px] tracking-wider text-[var(--text-main)] transition-colors duration-150 outline-none placeholder:text-[var(--text-dark)] focus:border-[var(--accent)]"
-              />
-            </StepShell>
-          )}
+                <label className="pt-label" htmlFor="pt-steam">
+                  Steam ID — 17 цифр
+                </label>
+                <input
+                  id="pt-steam"
+                  className="pt-input"
+                  style={{ maxWidth: "none" }}
+                  value={draft.steamId}
+                  onChange={(e) => setDraft({ ...draft, steamId: e.target.value })}
+                  placeholder="76561198000000000"
+                  inputMode="numeric"
+                />
+              </Step>
+            )}
 
-          {step === 3 && (
-            <StepShell
-              title="Готово"
-              sub="Ось що побачить командир. Правити можна будь-коли."
-            >
-              <div className="border border-[var(--border-subtle)] bg-[var(--bg-alt)]">
+            {step === 3 && (
+              <Step
+                title="Готово"
+                sub="Ось що побачить командир. Правити можна будь-коли."
+              >
                 <Summary draft={draft} />
-              </div>
-              <button className="btn btn-primary btn-large mt-10">Зберегти</button>
-            </StepShell>
-          )}
-        </motion.div>
-      </AnimatePresence>
+                <div className="mt-10 flex flex-wrap items-center gap-6">
+                  <button type="button" className="btn btn-primary btn-large">
+                    Зберегти
+                  </button>
+                  <span className="pt-note">Прототип — нічого не зберігається</span>
+                </div>
+              </Step>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-      {/* ── Step nav ── */}
-      <div className="mt-14 flex items-center justify-between border-t border-[var(--border-subtle)] pt-6">
-        <button
-          disabled={step === 0}
-          onClick={() => setStep(step - 1)}
-          className="flex items-center gap-3 font-[family-name:var(--font-label)] text-[12px] font-bold tracking-[0.2em] text-[var(--text-muted)] uppercase transition-colors duration-150 hover:text-[var(--text-main)] disabled:opacity-25"
-        >
-          <ArrowLeft size={14} /> Назад
-        </button>
-        <button
-          disabled={step === STEPS.length - 1}
-          onClick={() => setStep(step + 1)}
-          className="flex items-center gap-3 font-[family-name:var(--font-label)] text-[12px] font-bold tracking-[0.2em] text-[var(--accent)] uppercase transition-colors duration-150 hover:text-[var(--text-main)] disabled:opacity-25"
-        >
-          Далі <ArrowRight size={14} />
-        </button>
+        <div className="pt-stepnav">
+          <button
+            type="button"
+            disabled={step === 0}
+            onClick={() => setStep(step - 1)}
+          >
+            <ArrowLeft size={14} /> Назад
+          </button>
+          <button
+            type="button"
+            className="is-forward"
+            disabled={step === STEPS.length - 1}
+            onClick={() => setStep(step + 1)}
+          >
+            Далі <ArrowRight size={14} />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function StepShell({
+function Step({
   title,
   sub,
   children,
@@ -312,17 +295,19 @@ function StepShell({
 }) {
   return (
     <div>
-      <h2 className="mb-2 font-[family-name:var(--font-heading)] text-4xl tracking-[0.08em] uppercase">
+      <h2 className="pt-display pt-title" style={{ fontSize: "clamp(30px, 4vw, 40px)" }}>
         {title}
       </h2>
-      <p className="mb-10 max-w-[560px] text-[15px] text-[var(--text-muted)]">{sub}</p>
+      <p className="pt-lede" style={{ marginBottom: 40 }}>
+        {sub}
+      </p>
       {children}
     </div>
   );
 }
 
 function Summary({ draft }: { draft: ProfileDraft }) {
-  const rows: [string, React.ReactNode][] = [
+  const rows: [string, string][] = [
     [
       "Топ-3",
       draft.top.length
@@ -331,9 +316,7 @@ function Summary({ draft }: { draft: ProfileDraft }) {
     ],
     [
       "Може грати",
-      draft.can.length
-        ? draft.can.map((id) => ROLE_BY_ID[id].label).join(", ")
-        : "—",
+      draft.can.length ? draft.can.map((id) => ROLE_BY_ID[id].label).join(", ") : "—",
     ],
     [
       "Напрямок",
@@ -346,23 +329,13 @@ function Summary({ draft }: { draft: ProfileDraft }) {
   ];
 
   return (
-    <dl className="divide-y divide-[var(--border-subtle)]">
-      {rows.map(([label, value]) => (
-        <div key={label} className="flex gap-6 px-6 py-4">
-          <dt className="w-32 shrink-0 font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] text-[var(--text-dark)] uppercase">
-            {label}
-          </dt>
-          <dd className="flex-1 font-[family-name:var(--font-label)] text-[14px] tracking-[0.08em] text-[var(--text-main)] uppercase">
-            {value}
-          </dd>
+    <div className="pt-summary">
+      {rows.map(([key, value]) => (
+        <div key={key} className="pt-summary-row">
+          <span className="pt-summary-key">{key}</span>
+          <span className="pt-summary-val">{value}</span>
         </div>
       ))}
-      <div className="flex items-center gap-3 px-6 py-4">
-        <Check size={14} className="text-[var(--status-success)]" />
-        <span className="font-[family-name:var(--font-mono)] text-[10px] tracking-[0.2em] text-[var(--text-dark)] uppercase">
-          Прототип — нічого не зберігається
-        </span>
-      </div>
-    </dl>
+    </div>
   );
 }

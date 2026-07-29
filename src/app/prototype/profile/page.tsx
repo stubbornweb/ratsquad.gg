@@ -23,6 +23,7 @@ import {
   PrototypeToggle,
 } from "@/components/PrototypeSwitcher";
 import { EMPTY_DRAFT, FILLED_DRAFT, type ProfileDraft } from "./_data";
+import "./prototype.css";
 import { Login, SessionBar } from "./_Login";
 import { VariantA } from "./_VariantA";
 import { VariantB } from "./_VariantB";
@@ -78,7 +79,7 @@ function Prototype() {
   const showBody = loggedIn || variant === "C";
 
   return (
-    <main className="min-h-screen bg-[var(--bg-main)]">
+    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg-main)" }}>
       {loggedIn && <SessionBar onLogout={() => setLoggedIn(false)} />}
 
       {!loggedIn && (
