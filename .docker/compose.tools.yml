@@ -1,0 +1,31 @@
+# compose.tools.yml — provisioning CLIs (turso, vercel), not a dev server.
+# Usage: make tools-shell / make turso ARGS="db list" / make vercel ARGS="env ls"
+#
+# Never started by `make up`: this is a one-shot shell, not a service.
+
+name: rats-site-tools
+
+services:
+  tools:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+      target: tools
+      args:
+        UID: ${DOCKER_UID:-1001}
+        GID: ${DOCKER_GID:-1001}
+    volumes:
+      - ..:/app
+      # Keeps `turso auth login` and `vercel login` alive across runs. Both
+      # write credentials under $HOME.
+      - tools_home:/home/dev
+    working_dir: /app
+    environment:
+      - HOME=/home/dev
+    # Logins are interactive and print a URL to paste into a browser.
+    stdin_open: true
+    tty: true
+    restart: "no"
+
+volumes:
+  tools_home:

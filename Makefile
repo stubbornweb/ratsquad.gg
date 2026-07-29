@@ -15,6 +15,11 @@ PORT       := 3000
 export DOCKER_UID := $(shell id -u)
 export DOCKER_GID := $(shell id -g)
 COMPOSE    := docker compose -f .docker/compose.bun.yml
+# Provisioning CLIs (turso, vercel) — a one-shot shell, never a running service.
+COMPOSE_TOOLS := docker compose -f .docker/compose.tools.yml
+TOOLS      := $(COMPOSE_TOOLS) run --rm tools
+# Arguments passed through to the CLI targets below.
+ARGS       ?=
 
 # ── Help ───────────────────────────────────────────────────
 .PHONY: help
@@ -103,6 +108,24 @@ discord-channels: ## List Discord channel IDs
 
 check-provisioning: ## Verify credentials, channel IDs and bot permissions (issue #14)
 	npx --no-install tsx --env-file=.env.local scripts/check-provisioning.ts
+
+# ── Provisioning tools ─────────────────────────────────────
+.PHONY: tools-build tools-shell turso vercel
+
+tools-build: ## Build the provisioning CLI image (turso, vercel)
+	$(COMPOSE_TOOLS) build
+
+tools-shell: ## Open a shell with turso + vercel available
+	$(TOOLS) bash
+
+# Logins persist in a named volume, so `turso auth login` is a one-off.
+# Usage: make turso ARGS="db list"
+turso: ## Run the Turso CLI in Docker — make turso ARGS="db list"
+	$(TOOLS) turso $(ARGS)
+
+# Usage: make vercel ARGS="env ls"
+vercel: ## Run the Vercel CLI in Docker — make vercel ARGS="env ls"
+	$(TOOLS) vercel $(ARGS)
 
 nuke: ## Full clean — remove node_modules, .next, out
 	rm -rf node_modules .next out
