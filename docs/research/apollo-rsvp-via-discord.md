@@ -11,7 +11,7 @@ Reading Apollo RSVP data from Discord is technically feasible via the Discord RE
 
 1. **MESSAGE_CONTENT intent:** Embeds are gated by the MESSAGE_CONTENT privileged intent on the REST API. However, **unverified bots (in fewer than 75 servers, reaching fewer than 10,000 unique users) can access embeds without approval**—a self-serve toggle in the Developer Portal suffices. RATS, as a clan-only bot, qualifies. Verified bots in 100+ servers (or reaching 10,000+ users as of June 2026) face review barriers.
 
-2. **Apollo embed schema:** The official RSVP embed structure is **not documented in Apollo's primary sources** (no public API docs or source repository). The default fields are Accepted / Declined / Tentative, but **whether these contain user mentions (`<@userID>`) or plain display names is unverified**. This is the make-or-break detail—mentions are robust; names are fragile (members rename, special characters break parsing). A fallback is required if you cannot verify this empirically before implementation.
+2. **Apollo embed schema:** Not documented in Apollo's primary sources (no public API docs, closed-source bot), so it was **verified empirically against a real event message from the clan's own channel on 2026-07-29**. The Accepted / Declined / Tentative fields carry **`<@id>` user mentions**, not display names — roster slots can key on Discord ID with no name matching. Field *names* are unstable (`<:emoji:id> Status (count)`), values are `>>> `-prefixed and newline-separated, and event time is a `<t:unix:F>` timestamp. See section 3.
 
 **For message discovery:** Discord REST API does not support full-text search. Parse a message link or iterate recent channel messages by ID.
 
@@ -133,23 +133,59 @@ Apollo events use embeds with the following standard RSVP fields:
 
 [Source: Apollo blog - Custom signup options](https://apollo.fyi/blog/custom-signup-options) (fetched 2026-07-29); multiple bot listing sites confirm these fields exist.
 
-### What I Could NOT Verify: User Mentions vs. Display Names
+### VERIFIED EMPIRICALLY: The fields carry user mentions
 
-**Critical gap:** Whether the Accepted/Declined/Tentative fields contain:
-- **User mentions** (`<@123456789...>`, which resolves to user IDs and survive name changes), or  
-- **Plain display names** (`HeresJohnny`, which are fragile—members rename, and unicode/parentheses break text parsing)
+This could not be answered from any published source — Apollo does not document an embed
+schema and the bot is closed-source ([Apollo GitHub organization](https://github.com/apollo-fyi),
+fetched 2026-07-29; docs.apollo.fyi times out). It was settled instead by fetching a real
+event message from the clan's own archived scrim channel on 2026-07-29 via
+`GET /channels/{channel.id}/messages`.
 
-**Why this matters:**
-- Mentions → robust matching against guild members; survives renames and special characters
-- Display names → fragile; requires fuzzy matching, breaks on unicode or parentheses
+**The RSVP fields contain `<@id>` user mentions, not display names.** Roster slots can key on
+Discord ID and join directly to player rows; no name matching, no fuzzy matching, and the
+rename problem does not arise.
 
-**Where to check:**
-- Apollo's official documentation at [docs.apollo.fyi](https://docs.apollo.fyi) — no public API docs or embed schema published
-- Apollo's GitHub ([github.com/apollo-fyi](https://github.com/apollo-fyi)) — closed-source; only `apollo-docs` (documentation) and `discord.py` (wrapper) are public
+Observed shape (member IDs replaced with placeholders, structure otherwise faithful):
 
-**Recommendation:** Fetch an actual Apollo event embed from your clan's scrim announcements and inspect the JSON structure. Parse a message link, call `GET /channels/{channel.id}/messages/{message.id}`, and examine the `embeds[0].fields` array. This is the only way to confirm whether names or mentions are used.
+```json
+{
+  "type": "rich",
+  "title": "1",
+  "description": "20R vs RATS\nDate: 30.05\nTime (Match) 18:00 UTC\nSize: 26v26\nMap: SEC 26 Black cost\nServer: \nRules: SEC Rules",
+  "color": 15844367,
+  "fields": [
+    { "name": "Time", "inline": false,
+      "value": "<t:1780164000:F> [[+]](http://www.google.com/calendar/event?action=TEMPLATE&...) [[View on web]](https://app.apollo.fyi/workspaces/{workspaceId}/events/{eventId})\n<:countdown:878391707727716413> <t:1780164000:R>" },
+    { "name": "<:accepted:713124484436983971> Accepted (22)", "inline": true,
+      "value": ">>> <@100000000000000001>\n<@100000000000000002>\n<@100000000000000003>" },
+    { "name": "<:declined:713124484688642068> Declined (18)", "inline": true,
+      "value": ">>> <@100000000000000023>\n<@100000000000000024>" },
+    { "name": "<:tentative:713214962641666109> Tentative (3)", "inline": true,
+      "value": ">>> <@100000000000000041>" }
+  ],
+  "footer": { "text": "Created by MOP" }
+}
+```
 
-[Source: Apollo GitHub organization](https://github.com/apollo-fyi) (fetched 2026-07-29); Apollo docs site search (docs.apollo.fyi times out, 2026-07-29)
+Consequences for a parser:
+
+- **Field names are not stable keys.** They are `<:emoji:id> Status (count)` — the status word
+  plus a live count, wrapped in a custom emoji. Match on the emoji ID or a substring, never on
+  string equality.
+- **Values are blockquote-prefixed.** A leading `>>> ` on the first line only, then mentions
+  separated by `\n`. Extract with `/<@(\d+)>/g` and ignore the rest.
+- **Time is machine-readable.** `<t:1780164000:F>` is a Unix timestamp — no date parsing. The
+  same field carries an `app.apollo.fyi/workspaces/{ws}/events/{id}` link, so Apollo's own
+  event ID is recoverable.
+- **Everything else is freeform prose.** The observed `title` was `"1"`; matchup, size, map and
+  rules are unstructured lines in `description`. Do not build on them.
+- **Apollo edits the message in place as votes arrive.** The sample's `edited_timestamp` was
+  four days after its `timestamp`. Any cached RSVP list goes stale silently, and Apollo's
+  buttons (`components` with `signup:<id>` custom IDs) belong to Apollo — their clicks are not
+  observable. Reading RSVPs is therefore a poll, not an event subscription.
+
+**MESSAGE_CONTENT was already enabled** on the existing bot: the fetch returned populated
+`embeds`, which per section 2 would be empty without the intent.
 
 ---
 
@@ -325,11 +361,15 @@ If Phase 1 reveals plain names, implement manual-paste with fuzzy matching, or r
 
 ## Open Questions / Could Not Verify
 
-1. **Exact Apollo embed field names:** Whether the fields are exactly "Accepted" / "Declined" / "Tentative", or use different names (e.g., "Going", "Not Going", "Maybe"). Check the actual embed.
+_Items 1 and 2 below were the original blockers; both were closed empirically on 2026-07-29 (see section 3). They are kept here as resolved, with what the single sample could not tell us._
 
-2. **User mention vs. name format in Apollo fields:** PRIMARY blocker. Must verify empirically by inspecting an Apollo event embed.
+1. ~~**Exact Apollo embed field names.**~~ Resolved: `<:accepted:713124484436983971> Accepted (22)` and the equivalents for Declined / Tentative. **Still open:** whether the status words are localised per workspace, and whether the emoji IDs are stable across Apollo versions.
 
-3. **Apollo's custom role fields:** Structure and naming convention for custom attendance categories. Likely documented in Apollo's bot help commands, not public API docs.
+2. ~~**User mention vs. name format.**~~ Resolved: `<@id>` mentions.
+
+3. **Apollo's custom role fields:** Structure and naming convention for custom attendance categories. The sampled event used only the three default fields, so a custom-signup event has not been observed. Likely documented in Apollo's bot help commands, not public API docs.
+
+3a. **One sample, one event type.** Everything in section 3 comes from a single 26v26 scrim message. Recurring events, custom signup options, and events with a headcount field may differ.
 
 4. **Message Content Intent review timeline:** How long does Discord take to review a Privileged Intent access request for apps in 75+ servers? Public docs don't specify.
 
