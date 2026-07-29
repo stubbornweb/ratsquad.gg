@@ -39,6 +39,26 @@ export const ROSTER_ROLES = {
   full: [ROLE_DUCHE, ROLE_VO_DUCHE, ROLE_OFFICER, ROLE_RATS],
 } as const;
 
+// --- Channel IDs (discover with `make discord-channels`) ---
+// Channel IDs are not secrets — they live here beside the guild and role IDs,
+// not in the environment, which is reserved for credentials.
+
+/**
+ * Where the current Discord registration form posts recruit applications
+ * («анкети»): the «📁・для-анкет» channel. Read-only for the bot.
+ */
+export const CHANNEL_APPLICATIONS = "1249820817827692645";
+
+/**
+ * The channel carrying Apollo's RSVP embeds. The bot's Send Messages and
+ * Manage Messages grant is scoped to this channel and nowhere else — see
+ * `make check-provisioning`, which fails if that grant leaks wider.
+ *
+ * Empty until a human fills it in: RATS opens a channel per event, so which
+ * one is authoritative is a clan decision, not something to detect.
+ */
+export const CHANNEL_EVENT = "";
+
 /**
  * Custom display order for featured members on RosterPreview.
  * Callsigns listed here appear first, in this order.

@@ -22,6 +22,10 @@ RATS is a competitive EU clan in **Squad**, the hardcore tactical shooter. This 
 - `src/consts/` — routing and Discord configuration (guild ID, role IDs, display-name mapping).
 - `src/lib/discord.ts` — the live roster source; fetches guild members from the Discord API. `src/data/roster.ts` is the fallback when that call fails.
 - `src/hooks/useAnimations.ts` — shared Framer Motion variants. Reuse these before writing new ones.
+- `src/lib/env.ts` — the server-side credential surface, and the only place that decides what "provisioned" means.
+- `src/lib/discord-permissions.ts` — pure Discord permission-overwrite resolution, used to prove the bot's write access is scoped.
+
+Tests are Vitest, co-located as `*.test.ts` beside the module they cover.
 
 Domain vocabulary is defined in `CONTEXT.md` at the repo root — read it before naming anything.
 
@@ -30,8 +34,11 @@ Domain vocabulary is defined in `CONTEXT.md` at the repo root — read it before
 `npm` is the package manager. `bun.lock` is not committed; `.docker/compose.bun.yml` is an optional fast dev container only.
 
 - `make dev` — dev server
-- `make check` — lint + typecheck; run this before every commit
-- `make lint` / `make lint-fix` / `make typecheck` — individually
+- `make check` — lint + typecheck + tests; run this before every commit
+- `make lint` / `make lint-fix` / `make typecheck` / `make test` — individually
+- `make check-provisioning` — verify credentials, channel IDs and bot
+  permissions against the live services (see `docs/setup/provisioning.md`)
+- `make discord-roles` / `make discord-channels` — discover Discord IDs
 - `make build` / `make start` — production build (standalone)
 - `make up` / `make down` / `make logs` — Docker dev environment
 - `make help` — everything else

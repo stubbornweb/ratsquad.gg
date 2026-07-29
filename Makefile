@@ -35,7 +35,7 @@ clean: ## Remove build artifacts
 	rm -rf .next out node_modules/.cache
 
 # ── Quality ────────────────────────────────────────────────
-.PHONY: lint lint-fix typecheck check
+.PHONY: lint lint-fix typecheck test test-watch check
 
 lint: ## Run ESLint
 	npm run lint
@@ -46,7 +46,13 @@ lint-fix: ## Run ESLint with auto-fix
 typecheck: ## Run TypeScript type checking
 	npx tsc --noEmit
 
-check: lint typecheck ## Run lint + typecheck
+test: ## Run the test suite
+	npm run test
+
+test-watch: ## Run the test suite in watch mode
+	npm run test:watch
+
+check: lint typecheck test ## Run lint + typecheck + tests
 
 # ── Build ──────────────────────────────────────────────────
 .PHONY: build start
@@ -87,7 +93,16 @@ shell: ## Open shell in running container
 	$(COMPOSE) exec app sh
 
 # ── Utilities ──────────────────────────────────────────────
-.PHONY: nuke
+.PHONY: nuke discord-roles discord-channels check-provisioning
+
+discord-roles: ## List Discord role IDs
+	npx --no-install tsx --env-file=.env.local scripts/list-discord-roles.ts
+
+discord-channels: ## List Discord channel IDs
+	npx --no-install tsx --env-file=.env.local scripts/list-discord-channels.ts
+
+check-provisioning: ## Verify credentials, channel IDs and bot permissions (issue #14)
+	npx --no-install tsx --env-file=.env.local scripts/check-provisioning.ts
 
 nuke: ## Full clean — remove node_modules, .next, out
 	rm -rf node_modules .next out
