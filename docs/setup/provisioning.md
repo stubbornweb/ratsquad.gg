@@ -92,65 +92,109 @@ make vercel ARGS="env ls"
 
 ---
 
-## 2. Discord OAuth application — ⬜ one step left
+## 2. Discord application — a new one, owned by the clan
 
-**Where:** <https://discord.com/developers/applications> → **RATS Integration
-Helper** → OAuth2.
+**Decision (2026-08-18): stop using `RATS Integration Helper` and stand up a
+replacement application, bot included.** The old app is not extended, patched or
+transferred — it is retired.
 
-Use the **existing** application — the one whose bot token already powers the
-roster. A second application would mean a second bot in the guild.
+`GET /applications/@me` reports `team: null` and `owner: creepachok`. The
+application sits on one person's personal Discord account, so nobody else can
+add a redirect URI, reset the client secret, or **rotate the bot token that is
+already in production**. That last one is the real problem: if that account is
+lost, `DISCORD_BOT_TOKEN` can never be rotated and the roster integration cannot
+be recovered.
+
+Transferring the old app to a Team would fix ownership, but it still needs
+Creep-ak to perform the transfer — and it inherits the other mess. A fresh app
+fixes both at once, and fixes them *without a single portal action by anyone but
+the site maintainer*:
+
+- **Ownership** — created inside a Team from the start, so it survives any one
+  account leaving, and secrets are self-serve forever after.
+- **The Administrator escalation (§4) disappears rather than being repaired.**
+  A bot's permissions are fixed *at invite time*. The new bot is invited with
+  `View Channels` + `Read Message History` and nothing else, so it never holds
+  Administrator and there is nothing to strip. Retiring the old bot deletes its
+  managed `Integration Helper` role along with it — and with it the write access
+  currently leaking into 406 channels.
+
+The one cost is that the Discord consent screen at login shows the new
+application's name, so name and icon it as the clan, not as a dev tool.
+
+> The earlier "second, OAuth-only application" option carried an untested
+> assumption — whether `guilds.members.read` works against a guild the app has
+> no bot in. **That risk does not apply here**: this app's bot *is* in the guild,
+> which is the documented, ordinary case.
 
 | | |
 | --- | --- |
-| Application | `RATS Integration Helper` (owner `creepachok`) |
-| **Client ID** | `1304040209725521950` ✅ recorded |
-| Client Secret | ⬜ **needs the portal** |
-| Redirect URIs | ⬜ **needs the portal** |
+| Old application | `RATS Integration Helper` · `1304040209725521950` · owner `creepachok` — **to be retired** |
+| New application | ⬜ to be created, inside a Discord Team |
+| New Client ID | ⬜ replaces `DISCORD_CLIENT_ID` |
+| New Client Secret | ⬜ |
+| New Bot Token | ⬜ replaces `DISCORD_BOT_TOKEN` |
 
-The client ID is the application ID, so it was read straight off the API — no
-portal needed, and it is not a secret. Everything below is not so lucky:
-`PATCH /applications/@me` **accepts** a `redirect_uris` field and then silently
-ignores it. Verified: the write returns 200 and a re-read still shows `[]`.
-Redirect URIs are portal-only.
+`DISCORD_REDIRECT_URI` does **not** change — the callback URLs are a property of
+this site, not of the application.
 
-### ⚠️ Access blocker — the application is personally owned
+### ⚠️ The one prerequisite
 
-`GET /applications/@me` reports `team: null` and `owner: creepachok`
-(**Creep-ak**). The application sits on one person's personal Discord account,
-so nobody else can add a redirect URI, reset the client secret, or **rotate the
-bot token that is already in production**.
+Inviting a bot needs **Manage Server** in the RATS guild. If the site maintainer
+does not hold it, that is the single remaining human dependency — and it is a
+guild admin, not Creep-ak. Everything else below is self-serve.
 
-That last one is the real problem. It is not an OAuth inconvenience: if that
-account is lost, or its owner leaves, `DISCORD_BOT_TOKEN` can never be rotated
-and the roster integration cannot be recovered. This is worth fixing regardless
-of what #14 needed.
+Creep-ak is needed for **nothing** in this plan. The old bot can be removed by
+any guild admin; the old application can be left to rot on his account, since
+after cutover nothing reads its token.
 
-**Recommended: move the app to a Discord Team.** Teams exist for exactly this —
-several people administer one application, and ownership survives any one
-account. Creep-ak does it once:
+### 2a. Create the Team and the application
 
-> Developer Portal → the profile menu → **Teams** → *Create Team* → then
-> **RATS Integration Helper** → Settings → **Transfer ownership** → to the team →
-> then Team → *Members* → invite the other maintainers as **Developer** (enough
-> to manage secrets and redirects) or **Admin**.
+Developer Portal → profile menu → **Teams** → *Create Team* → then
+**Applications** → *New Application*, and pick the team as its owner in the
+creation dialog. Invite the other maintainers under Team → *Members* as
+**Developer** (enough for secrets and redirects) or **Admin**.
 
-After that, everything in §2 is self-serve and this blocker never returns.
+Creating it *inside* the team is better than creating it personally and
+transferring later — a transfer is another step that can be forgotten, and it is
+exactly the step that stranded the old app.
 
-**Fallback: Creep-ak performs §2a and §2b directly.** Faster, but every future
-secret rotation or redirect change needs them again, and the token-rotation risk
-above stays open.
+### 2b. Add the bot and enable both privileged intents
 
-**Last resort: a second, OAuth-only application** owned by whoever maintains the
-site. Login does not need a bot — the `identify` and `guilds.members.read`
-scopes read the *user's* own token — so **do not invite its bot to the guild**
-and no second bot appears. Costs: the Discord consent screen shows the new
-application's name rather than the clan's, there are two apps to keep straight,
-and `guilds.members.read` against a guild the app has no bot in is **untested
-here** — the docs do not state whether it is allowed, so verify it before
-committing to this path. The bot token, and §4's permission work, still depend
-on Creep-ak either way.
+**Bot** → *Add Bot*, then under **Privileged Gateway Intents** enable:
 
-### 2a. Add the three redirect URIs
+- **Server Members Intent** — `GET /guilds/{id}/members` is rejected without it,
+  and that call *is* the roster.
+- **Message Content Intent** — without it `content` and `embeds` come back empty
+  on REST reads too, so the Apollo RSVP embed reads blank. See §3.
+
+Both are self-serve toggles: RATS is far under the 75-guild verification
+threshold. **Presence Intent is not needed** — leave it off.
+
+> **A missing Server Members intent does not fail loudly.**
+> `fetchAllGuildMembers()` in `src/lib/discord.ts` logs the API error and
+> returns what it has, so the roster silently empties to the
+> `src/data/roster.ts` fallback instead of throwing. If `/roster` looks thin
+> after cutover, this toggle is the first thing to check.
+
+Then **Reset Token** and copy the bot token — shown once.
+
+### 2c. Invite the bot, scoped from the first second
+
+Build the invite from the new client ID:
+
+```
+https://discord.com/oauth2/authorize?client_id=<NEW_CLIENT_ID>&scope=bot&permissions=66560
+```
+
+`66560` is exactly `View Channels` (1 << 10) + `Read Message History` (1 << 16).
+Nothing else — **no Administrator, no Send Messages**. Writing is granted in one
+place only, on the category, in §4.
+
+Open it as a user holding Manage Server, pick the RATS guild, and confirm the
+permission list on the consent screen reads only those two.
+
+### 2d. Add the three redirect URIs
 
 OAuth2 → **Redirects** → Add. Exactly these, no trailing slash — Discord
 matches character for character:
@@ -175,28 +219,47 @@ matches what the site already declares in `src/app/layout.tsx` (`metadataBase`),
 `sitemap.ts` and `robots.ts`. **If `ratsquad.gg` is ever pointed at Vercel, a
 fourth redirect URI has to be added here** — and those three files updated.
 
-### 2b. Copy the client secret
+### 2e. Copy the client ID and secret
 
-OAuth2 → Client information → **Reset Secret** → copy it (shown once).
+**Client information** → the **Application ID** is the client ID, and it is not
+a secret. **Reset Secret** → copy it (shown once).
 
-Then record it in both places:
+### 2f. Cut over — local first, production last
+
+The old token is live in production. Do not overwrite it until the new bot is
+proven, or the roster goes empty on the public site.
 
 ```bash
-# .env.local
-DISCORD_CLIENT_SECRET=<the secret>
+# 1. .env.local only — production still runs on the old bot
+DISCORD_BOT_TOKEN=<new bot token>
+DISCORD_CLIENT_ID=<new application id>
+DISCORD_CLIENT_SECRET=<new secret>
 
-# Vercel, all three environments
+# 2. prove it against the live guild
+make check-provisioning        # expect green, including the §4 scoping
+make dev                       # then open /roster — it must be fully populated
+
+# 3. only then, push all three to Vercel, all environments
+make vercel ARGS='env add DISCORD_BOT_TOKEN production'      # …and preview, development
+make vercel ARGS='env add DISCORD_CLIENT_ID production'
 make vercel ARGS='env add DISCORD_CLIENT_SECRET production'
-make vercel ARGS='env add DISCORD_CLIENT_SECRET preview'
-make vercel ARGS='env add DISCORD_CLIENT_SECRET development'
 ```
 
-`make check-provisioning` goes green on this group once it is set.
+Replacing an existing Vercel variable means removing it first —
+`make vercel ARGS='env rm DISCORD_BOT_TOKEN production'`. Redeploy, then check
+`/roster` on production before step 4.
 
-### Already done
+**4. Retire the old bot.** Server Settings → Integrations (or the member list) →
+remove **RATS Integration Helper** from the guild. Its managed `Integration
+Helper` role is deleted with it, which is what finally clears §4's 406-channel
+leak. Leave the old *application* alone — once nothing reads its token, an
+abandoned app on a personal account is harmless.
 
-`DISCORD_CLIENT_ID` and `DISCORD_REDIRECT_URI` are in `.env.local` and in Vercel.
-The redirect URI is set **per environment**, since each one differs:
+Re-run `make check-provisioning` after the removal. It reads whichever token is
+in `.env.local`, so it is now reporting on the new bot.
+
+`DISCORD_REDIRECT_URI` is unchanged by any of this — it is set **per
+environment**, since each one differs:
 
 | Environment | `DISCORD_REDIRECT_URI` |
 | --- | --- |
@@ -220,58 +283,61 @@ REST reads too — not only over the gateway — so the Apollo RSVP embed would 
 back blank. RATS is under the 75-server verification threshold, so this is a
 self-serve toggle with no review.
 
-**Already enabled** — measured on 2026-07-29 by reading a real channel with the
-bot token: `content` and `embeds` came back populated, which is impossible
-without the intent. `make check-provisioning` re-proves it on every run by
-reading the newest channel in «Календар 1.1».
+**Enabled on the old app** — measured on 2026-07-29 by reading a real channel
+with its bot token: `content` and `embeds` came back populated, which is
+impossible without the intent.
+
+**It does not carry over.** Intents are per-application, so the new app of §2
+starts with it off; §2b turns it on. `make check-provisioning` re-proves it on
+every run by reading the newest channel in «Календар 1.1», against whichever
+token is configured — so a forgotten toggle after cutover fails the check
+rather than surfacing as a blank RSVP mid-scrim.
 
 ---
 
 ## 4. Bot write access — scoped to the event category
 
-**Where:** Discord client → Server Settings → Roles, then «Календар 1.1».
+**Where:** Discord client → «Календар 1.1» → Edit Category → Permissions.
 
-> **The bot is not read-only today.** Its role, **Integration Helper**, holds
-> guild-wide **Administrator**: it can already post in, and delete from, all 390
-> channels including `🔐・паролі` and `moderator-only`. This was measured on
-> 2026-07-29, not assumed: `GET /guilds/{id}/roles` shows Integration Helper
-> with the `ADMINISTRATOR` bit set. So this step is a *reduction* in access, not
-> the escalation the ticket anticipated. `make check-provisioning` reports it as
-> its own finding.
+**This step got much smaller when §2 became a new application.** The original
+plan was a *reduction*: the old bot's role, `Integration Helper`, holds
+guild-wide **Administrator** — measured, not assumed, from
+`GET /guilds/{id}/roles` — so it can post in and delete from all 406 channels
+including `🔐・паролі` and `moderator-only`, and any channel-scoped grant was
+decorative until that was stripped.
 
-**Not the same person as §2.** This step needs **any guild admin with Manage
-Roles** whose own top role sits above **position 36** — it does *not* need the
-application's owner. Six roles currently qualify (`Discobot`, `Apollo`,
-`carl-bot`, `Tickets`, `MEE6`, `Dyno` sit above it, as does any staff role
-higher still). §2 is the only part that is Creep-ak-only.
+A bot cannot strip its own Administrator bit (it may edit only roles *below* its
+highest, and `Integration Helper` at position 36 is its only role), so that
+demotion needed a human. **The new bot makes it unnecessary.** It arrives with
+`View Channels` + `Read Message History` and nothing more (§2c), and removing
+the old bot deletes its managed role outright. Nothing is demoted; the
+over-privileged role stops existing.
 
-**Grant first, then demote — the reverse of the obvious order.** Doing it the
-other way leaves a window where the bot can write nowhere, and if that window
-spans a scrim the RSVP read still works but publishing does not.
+So the whole of §4 is now one grant:
 
 1. Open the **«Календар 1.1» category** → Edit Category → Permissions.
-2. Add **Integration Helper** as an override and allow exactly
-   **Send Messages** and **Manage Messages**. Leave everything else neutral.
-   There is **no Integration Helper override on the category today** — verified
-   against `GET /channels/1251110806225948722`.
-3. Grant it on the **category**, not on each channel and not on the role. New
+2. Add the **new bot's role** as an override and allow exactly **Send Messages**
+   and **Manage Messages**. Leave everything else neutral.
+3. Grant it on the **category**, not on each channel and not guild-wide. New
    event channels are created inside the category and inherit it, so a
    per-channel grant would have to be repeated every scrim — and forgotten once.
-4. **Then** Server Settings → Roles → Integration Helper → remove
-   Administrator. Leave it with `View Channels` and `Read Message History` only.
-5. Grant nothing guild-wide — a guild-wide grant is what the check below exists
-   to catch.
+   A guild-wide grant is what the check below exists to catch.
 
-**Step 1–3 can be automated; step 4 cannot.** A bot may edit only roles *below*
-its own highest role, and `Integration Helper` (position 36) is the bot's only
-role — so it cannot strip its own Administrator bit however much permission it
-holds. The category override, by contrast, is an ordinary `PUT
-/channels/{category}/permissions/{role}` the bot is entitled to make.
+There is **no category override for either bot today** — verified against
+`GET /channels/1251110806225948722`.
 
-Removing Administrator may break other things the token is used for. The roster
-fetch (`src/lib/discord.ts`) needs only `View Channels` plus the Server Members
-intent, so it is unaffected; anything else using this token has to be checked
-before flipping it.
+**This can be automated, but only before the old bot is retired.** A bot cannot
+grant itself permissions it does not hold, so the new bot cannot create its own
+override. The old bot can: it still holds Administrator, and
+`PUT /channels/{category}/permissions/{role}` is an ordinary call for it. Doing
+it during the window when both bots are in the guild — after §2c, before §2f
+step 4 — costs no human action at all. Otherwise any admin with Manage Roles
+does it by hand in the client.
+
+**Nothing else is known to use the old token.** The roster fetch
+(`src/lib/discord.ts`) is the only consumer in this repo, and it needs only
+`View Channels` plus the Server Members intent. Confirm nobody is running
+scripts against it outside the repo before removing the old bot.
 
 `make check-provisioning` resolves the bot's effective permissions in **every**
 channel and fails if it can write anywhere outside «Календар 1.1».
