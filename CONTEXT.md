@@ -29,3 +29,7 @@ _Avoid_: Team, lineup, squad list
 **Squad Lead**:
 A Member who commands a squad in-game — the Rank displayed for the Discord role "Officer".
 _Avoid_: Officer (that's the Discord role name), SL, leader
+
+**RATS HQ**:
+The clan's own Discord bot — one Team-owned application, replacing the third-party bots in the guild. It owns every Discord write: the site writes rows, RATS HQ makes Discord match them. Its throwaway development counterpart is a separate application, `RATS HQ Dev`, which lives alone in a test guild and never joins the RATS guild.
+_Avoid_: The bot (unqualified), the integration, Integration Helper (the retired application)

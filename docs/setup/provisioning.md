@@ -122,6 +122,13 @@ the site maintainer*:
 The one cost is that the Discord consent screen at login shows the new
 application's name, so name and icon it as the clan, not as a dev tool.
 
+**The name is `RATS HQ`** (decided 2026-08-19). It reads as the clan on the
+consent screen, and it deliberately is **not** bare `RATS`: a bot's username
+becomes its managed Discord role, and a role named `RATS` already exists
+(`1249804025667260467`, the one behind the Rank `MEMBER`). A second `RATS` in
+the role list would be ambiguous in exactly the place it matters most — the
+permission-overwrite picker §4 uses to scope the bot's writes. See `CONTEXT.md`.
+
 > The earlier "second, OAuth-only application" option carried an untested
 > assumption — whether `guilds.members.read` works against a guild the app has
 > no bot in. **That risk does not apply here**: this app's bot *is* in the guild,
@@ -130,7 +137,7 @@ application's name, so name and icon it as the clan, not as a dev tool.
 | | |
 | --- | --- |
 | Old application | `RATS Integration Helper` · `1304040209725521950` · owner `creepachok` — **to be retired** |
-| New application | ⬜ to be created, inside a Discord Team |
+| New application | ⬜ `RATS HQ` — to be created, inside a Discord Team |
 | New Client ID | ⬜ replaces `DISCORD_CLIENT_ID` |
 | New Client Secret | ⬜ |
 | New Bot Token | ⬜ replaces `DISCORD_BOT_TOKEN` |
@@ -151,8 +158,10 @@ after cutover nothing reads its token.
 ### 2a. Create the Team and the application
 
 Developer Portal → profile menu → **Teams** → *Create Team* → then
-**Applications** → *New Application*, and pick the team as its owner in the
-creation dialog. Invite the other maintainers under Team → *Members* as
+**Applications** → *New Application*, named **`RATS HQ`**, and pick the team as
+its owner in the creation dialog. Set the bot's username to `RATS HQ` too, in
+**Bot** → *Username* — it is a separate field from the application name, and
+leaving them different means the consent screen and the member list disagree. Invite the other maintainers under Team → *Members* as
 **Developer** (enough for secrets and redirects) or **Admin**.
 
 Creating it *inside* the team is better than creating it personally and
