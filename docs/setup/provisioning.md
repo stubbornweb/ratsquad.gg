@@ -239,16 +239,34 @@ reading the newest channel in «Календар 1.1».
 > the escalation the ticket anticipated. `make check-provisioning` reports it as
 > its own finding.
 
-1. **Server Settings → Roles → Integration Helper → remove Administrator.**
-   Leave it with `View Channels` and `Read Message History` only.
-2. Open the **«Календар 1.1» category** → Edit Category → Permissions.
-3. Add **Integration Helper** as an override and allow exactly
+**Not the same person as §2.** This step needs **any guild admin with Manage
+Roles** whose own top role sits above **position 36** — it does *not* need the
+application's owner. Six roles currently qualify (`Discobot`, `Apollo`,
+`carl-bot`, `Tickets`, `MEE6`, `Dyno` sit above it, as does any staff role
+higher still). §2 is the only part that is Creep-ak-only.
+
+**Grant first, then demote — the reverse of the obvious order.** Doing it the
+other way leaves a window where the bot can write nowhere, and if that window
+spans a scrim the RSVP read still works but publishing does not.
+
+1. Open the **«Календар 1.1» category** → Edit Category → Permissions.
+2. Add **Integration Helper** as an override and allow exactly
    **Send Messages** and **Manage Messages**. Leave everything else neutral.
-4. Grant it on the **category**, not on each channel and not on the role. New
+   There is **no Integration Helper override on the category today** — verified
+   against `GET /channels/1251110806225948722`.
+3. Grant it on the **category**, not on each channel and not on the role. New
    event channels are created inside the category and inherit it, so a
    per-channel grant would have to be repeated every scrim — and forgotten once.
+4. **Then** Server Settings → Roles → Integration Helper → remove
+   Administrator. Leave it with `View Channels` and `Read Message History` only.
 5. Grant nothing guild-wide — a guild-wide grant is what the check below exists
    to catch.
+
+**Step 1–3 can be automated; step 4 cannot.** A bot may edit only roles *below*
+its own highest role, and `Integration Helper` (position 36) is the bot's only
+role — so it cannot strip its own Administrator bit however much permission it
+holds. The category override, by contrast, is an ordinary `PUT
+/channels/{category}/permissions/{role}` the bot is entitled to make.
 
 Removing Administrator may break other things the token is used for. The roster
 fetch (`src/lib/discord.ts`) needs only `View Channels` plus the Server Members
@@ -285,8 +303,16 @@ text channels in Discord's own order and **drops the first** — that is the
 no RSVP.
 
 Anything that needs "the event channel" should call `listEventChannels()`, never
-hardcode an ID. As of 2026-07-29 the category holds two live event channels
-(`🍺・хх-07-26-анті`, `🍺・09-08-26-sph`) plus the template.
+hardcode an ID.
+
+> **The category is not scrims-only.** As of 2026-08-18 it resolves to four
+> channels — `⚽・17-08-26-лекція-сквадний`, `⚽・18-08-26-підготовка-до-скріма`,
+> `🍺・22-08-26-sph`, `19-08-26-лекція` — of which only one is a scrim. The rest
+> are lectures and prep sessions: real events people RSVP to, but nothing the
+> roster builder can produce rounds and squads for. `listEventChannels()` is a
+> *provisioning* boundary (where may the bot write) and is correct as it stands;
+> which of those channels the builder should offer is a separate question, open
+> on the map.
 
 > «Arma Календар 1.4» is a second calendar with the same shape, for Arma rather
 > than Squad. It is deliberately **not** in scope: `CATEGORY_EVENTS` is a single
