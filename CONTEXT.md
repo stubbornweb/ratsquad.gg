@@ -33,3 +33,13 @@ _Avoid_: Officer (that's the Discord role name), SL, leader
 **RATS HQ**:
 The clan's own Discord bot — one Team-owned application, replacing the third-party bots in the guild. It owns every Discord write: the site writes rows, RATS HQ makes Discord match them. Its throwaway development counterpart is a separate application, `RATS HQ Dev`, which lives alone in a test guild and never joins the RATS guild.
 _Avoid_: The bot (unqualified), the integration, Integration Helper (the retired application)
+
+**Roster post**:
+The Discord message that projects a published event's rounds and squads. RATS HQ re-renders it wholesale from the rows and edits it in place; it is never republished, so an event has at most one Roster post for its whole life.
+_Avoid_: The roster message, the embed, the announcement
+
+**Call-up**:
+A message posted beneath a Roster post, mentioning only the Members whose slots changed since the previous one — added, moved or removed. One per batch of changes, kept as history rather than replaced, because it is the record of who was told what and when.
+_Avoid_: Ping, tag, notification, mention message
+
+> **On the word "publish":** it names the state transition — an event gaining a publication time — not the message. The message is the **Roster post**, and it outlives every later edit.

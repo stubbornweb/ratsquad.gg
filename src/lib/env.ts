@@ -6,6 +6,13 @@
  * appear under a `NEXT_PUBLIC_` name — that would inline the value into the
  * client bundle. Non-secret Discord IDs (guild, roles, channels) are not env
  * vars at all; they live in `src/consts/discord.ts`.
+ *
+ * **Two targets.** Every credential exists twice: once for the real clan
+ * services, once for their throwaway development counterparts — the `rats-
+ * site-dev` database and the `RATS HQ Dev` application in its test guild
+ * (#29). The development names carry a `_DEV_` infix. Resolution picks one
+ * target and reads only that target's names, so a half-configured dev setup
+ * can never silently fall through to production and write to real data.
  */
 
 export interface ServerEnv {
@@ -17,45 +24,94 @@ export interface ServerEnv {
   tursoAuthToken: string;
 }
 
-const KEYS = {
-  DISCORD_BOT_TOKEN: "discordBotToken",
-  DISCORD_CLIENT_ID: "discordClientId",
-  DISCORD_CLIENT_SECRET: "discordClientSecret",
-  DISCORD_REDIRECT_URI: "discordRedirectUri",
-  TURSO_DATABASE_URL: "tursoDatabaseUrl",
-  TURSO_AUTH_TOKEN: "tursoAuthToken",
-} as const satisfies Record<string, keyof ServerEnv>;
+/** Which set of services the process should talk to. */
+export type EnvTarget = "development" | "production";
 
-export type ServerEnvKey = keyof typeof KEYS;
+const KEYS = {
+  discordBotToken: {
+    production: "DISCORD_BOT_TOKEN",
+    development: "DISCORD_DEV_BOT_TOKEN",
+  },
+  discordClientId: {
+    production: "DISCORD_CLIENT_ID",
+    development: "DISCORD_DEV_CLIENT_ID",
+  },
+  discordClientSecret: {
+    production: "DISCORD_CLIENT_SECRET",
+    development: "DISCORD_DEV_CLIENT_SECRET",
+  },
+  discordRedirectUri: {
+    production: "DISCORD_REDIRECT_URI",
+    development: "DISCORD_DEV_REDIRECT_URI",
+  },
+  tursoDatabaseUrl: {
+    production: "TURSO_DATABASE_URL",
+    development: "TURSO_DEV_DATABASE_URL",
+  },
+  tursoAuthToken: {
+    production: "TURSO_AUTH_TOKEN",
+    development: "TURSO_DEV_AUTH_TOKEN",
+  },
+} as const satisfies Record<keyof ServerEnv, Record<EnvTarget, string>>;
+
+/** The name of an environment variable this module reads. */
+export type ServerEnvKey =
+  (typeof KEYS)[keyof ServerEnv][EnvTarget];
 
 export type EnvResult =
   | { ok: true; config: ServerEnv }
   | { ok: false; problems: EnvProblem[] };
 
 export interface EnvProblem {
+  /** The variable actually looked up, so the fix is unambiguous. */
   key: ServerEnvKey;
   /** `exposed` — the value was found under a `NEXT_PUBLIC_` alias. */
   reason: "missing" | "exposed" | "invalid";
 }
 
-/** Per-key shape checks, to catch the paste errors that look plausible. */
-const SHAPE: Partial<Record<ServerEnvKey, (value: string) => boolean>> = {
+/** Per-field shape checks, to catch the paste errors that look plausible. */
+const SHAPE: Partial<Record<keyof ServerEnv, (value: string) => boolean>> = {
   // libsql:// and https:// are Turso; file: is the self-hosted exit path.
-  TURSO_DATABASE_URL: (v) => /^(libsql|https|file):/.test(v),
+  tursoDatabaseUrl: (v) => /^(libsql|https|file):/.test(v),
   // Discord matches redirect URIs exactly, so it must be absolute.
-  DISCORD_REDIRECT_URI: (v) => /^https?:\/\/.+/.test(v),
+  discordRedirectUri: (v) => /^https?:\/\/.+/.test(v),
 };
+
+/**
+ * Which services this process should be talking to.
+ *
+ * Vercel's own `VERCEL_ENV` is the authority where it exists, and **preview
+ * counts as development**: a preview branch is exactly where the registration
+ * flow gets tested with invented profiles, which must not land in the clan's
+ * real database. Everything else — CI, `vitest`, one-off `tsx` scripts —
+ * defaults to production, because those either supply their own variables or
+ * are checking the real services on purpose.
+ */
+export function resolveTarget(
+  env: Partial<Record<string, string>> = process.env,
+): EnvTarget {
+  if (env.APP_ENV === "development" || env.APP_ENV === "production") {
+    return env.APP_ENV;
+  }
+  if (env.VERCEL_ENV) {
+    return env.VERCEL_ENV === "production" ? "production" : "development";
+  }
+  return env.NODE_ENV === "development" ? "development" : "production";
+}
 
 export function readServerEnv(
   env: Partial<Record<string, string>>,
+  target: EnvTarget = resolveTarget(env),
 ): EnvResult {
   const config = {} as ServerEnv;
   const problems: EnvProblem[] = [];
 
-  for (const [key, field] of Object.entries(KEYS) as [
-    ServerEnvKey,
+  for (const [field, names] of Object.entries(KEYS) as [
     keyof ServerEnv,
+    Record<EnvTarget, ServerEnvKey>,
   ][]) {
+    const key = names[target];
+
     // A NEXT_PUBLIC_ alias is a leak whether or not the private name is also
     // set: Next.js inlines it into the client bundle at build time.
     if (env[`NEXT_PUBLIC_${key}`]?.trim()) {
@@ -69,7 +125,7 @@ export function readServerEnv(
       continue;
     }
 
-    if (SHAPE[key] && !SHAPE[key](value)) {
+    if (SHAPE[field] && !SHAPE[field](value)) {
       problems.push({ key, reason: "invalid" });
       continue;
     }

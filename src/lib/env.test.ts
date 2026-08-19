@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { readServerEnv } from "./env";
+import { readServerEnv, resolveTarget } from "./env";
 
 const complete = {
   DISCORD_BOT_TOKEN: "bot-token",
@@ -113,5 +113,85 @@ describe("readServerEnv", () => {
     });
 
     expect(result.ok).toBe(true);
+  });
+});
+
+const completeDev = {
+  DISCORD_DEV_BOT_TOKEN: "dev-bot-token",
+  DISCORD_DEV_CLIENT_ID: "1539396258769412196",
+  DISCORD_DEV_CLIENT_SECRET: "dev-client-secret",
+  DISCORD_DEV_REDIRECT_URI: "http://localhost:3000/api/auth/callback",
+  TURSO_DEV_DATABASE_URL: "libsql://rats-site-dev.turso.io",
+  TURSO_DEV_AUTH_TOKEN: "dev-turso-token",
+};
+
+describe("the development target", () => {
+  it("reads only the _DEV_ names", () => {
+    const result = readServerEnv(completeDev, "development");
+
+    expect(result).toEqual({
+      ok: true,
+      config: {
+        discordBotToken: "dev-bot-token",
+        discordClientId: "1539396258769412196",
+        discordClientSecret: "dev-client-secret",
+        discordRedirectUri: "http://localhost:3000/api/auth/callback",
+        tursoDatabaseUrl: "libsql://rats-site-dev.turso.io",
+        tursoAuthToken: "dev-turso-token",
+      },
+    });
+  });
+
+  it("never falls back to a production credential", () => {
+    // The whole point of the split: a half-configured dev setup must fail
+    // loudly rather than quietly writing to the clan's real database.
+    const result = readServerEnv(
+      { ...completeDev, TURSO_DEV_DATABASE_URL: undefined, ...complete },
+      "development",
+    );
+
+    expect(result.ok === false && result.problems).toEqual([
+      { key: "TURSO_DEV_DATABASE_URL", reason: "missing" },
+    ]);
+  });
+
+  it("names the _DEV_ variable in the problem, so the fix is unambiguous", () => {
+    const result = readServerEnv({}, "development");
+
+    expect(result.ok === false && result.problems.map((p) => p.key)).toEqual([
+      "DISCORD_DEV_BOT_TOKEN",
+      "DISCORD_DEV_CLIENT_ID",
+      "DISCORD_DEV_CLIENT_SECRET",
+      "DISCORD_DEV_REDIRECT_URI",
+      "TURSO_DEV_DATABASE_URL",
+      "TURSO_DEV_AUTH_TOKEN",
+    ]);
+  });
+});
+
+describe("resolveTarget", () => {
+  it("treats a Vercel preview as development", () => {
+    // A preview branch is where the registration flow gets tested with
+    // invented profiles; those must not land in the clan's real database.
+    expect(resolveTarget({ VERCEL_ENV: "preview" })).toBe("development");
+  });
+
+  it("treats a Vercel production deployment as production", () => {
+    expect(resolveTarget({ VERCEL_ENV: "production" })).toBe("production");
+  });
+
+  it("follows NODE_ENV when Vercel is not the host", () => {
+    expect(resolveTarget({ NODE_ENV: "development" })).toBe("development");
+  });
+
+  it("defaults to production, so scripts check the real services", () => {
+    expect(resolveTarget({})).toBe("production");
+    expect(resolveTarget({ NODE_ENV: "test" })).toBe("production");
+  });
+
+  it("lets APP_ENV override the host's own signal", () => {
+    expect(resolveTarget({ APP_ENV: "development", VERCEL_ENV: "production" })).toBe(
+      "development",
+    );
   });
 });
