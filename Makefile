@@ -109,6 +109,23 @@ discord-channels: ## List Discord channel IDs
 check-provisioning: ## Verify credentials, channel IDs and bot permissions (issue #14)
 	npx --no-install tsx --env-file=.env.local scripts/check-provisioning.ts
 
+# ── Database ───────────────────────────────────────────────
+# Everything here targets the DEV database unless the target says otherwise:
+# migrating the clan's real data has to be asked for by name.
+.PHONY: db-generate db-migrate db-migrate-prod db-studio
+
+db-generate: ## Generate a migration from the schema (touches no database)
+	npx --no-install drizzle-kit generate
+
+db-migrate: ## Apply pending migrations to the DEV database
+	set -a && . ./.env.local && set +a && npx --no-install drizzle-kit migrate
+
+db-migrate-prod: ## Apply pending migrations to PRODUCTION — the clan's real data
+	set -a && . ./.env.local && set +a && APP_ENV=production npx --no-install drizzle-kit migrate
+
+db-studio: ## Browse the DEV database in Drizzle Studio
+	set -a && . ./.env.local && set +a && npx --no-install drizzle-kit studio
+
 # ── Provisioning tools ─────────────────────────────────────
 .PHONY: tools-build tools-shell turso vercel
 

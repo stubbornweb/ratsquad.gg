@@ -17,6 +17,12 @@ export const ROLE_VO_DUCHE = "1249808893400449064";
 export const ROLE_OFFICER = "1249806255388627015";
 // "RATS" — regular members
 export const ROLE_RATS = "1249804025667260467";
+// "Recruit" — on trial, not yet a full member
+export const ROLE_RECRUIT = "1249802231054860401";
+// "Inactive" — a declared leave of absence, granted on the member's own
+// request. NOT the same as having left: an Inactive member is still in the
+// guild, which is why `members.is_left` is a separate fact.
+export const ROLE_INACTIVE = "1278662254522273793";
 
 /**
  * Maps Discord role IDs to display labels shown on the site.
