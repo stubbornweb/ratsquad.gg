@@ -100,14 +100,23 @@ shell: ## Open shell in running container
 # ── Utilities ──────────────────────────────────────────────
 .PHONY: nuke discord-roles discord-channels check-provisioning
 
-discord-roles: ## List Discord role IDs
-	npx --no-install tsx --env-file=.env.local scripts/list-discord-roles.ts
+# Which services a command talks to is chosen here, by filename, at the call
+# site — never inferred from NODE_ENV, which says "production" on a Vercel
+# preview too. Each file carries an APP_ENV marker the scripts assert on, so a
+# swapped --env-file fails loudly instead of running against the wrong guild.
+#
+# These three discover and verify the REAL clan guild, so they name the
+# production file. `next dev` is the odd one out: it picks up .env.development
+# by itself and cannot be pointed at production.
 
-discord-channels: ## List Discord channel IDs
-	npx --no-install tsx --env-file=.env.local scripts/list-discord-channels.ts
+discord-roles: ## List Discord role IDs from the real guild
+	npx --no-install tsx --env-file=.env.production scripts/list-discord-roles.ts
+
+discord-channels: ## List Discord channel IDs from the real guild
+	npx --no-install tsx --env-file=.env.production scripts/list-discord-channels.ts
 
 check-provisioning: ## Verify credentials, channel IDs and bot permissions (issue #14)
-	npx --no-install tsx --env-file=.env.local scripts/check-provisioning.ts
+	npx --no-install tsx --env-file=.env.production scripts/check-provisioning.ts
 
 # ── Database ───────────────────────────────────────────────
 # Everything here targets the DEV database unless the target says otherwise:
@@ -117,14 +126,17 @@ check-provisioning: ## Verify credentials, channel IDs and bot permissions (issu
 db-generate: ## Generate a migration from the schema (touches no database)
 	npx --no-install drizzle-kit generate
 
+# drizzle-kit takes no --env-file, so the file is sourced into the shell.
+# EXPECTED_TARGET is what the command asked for; drizzle.config.ts refuses to
+# run if the file's own APP_ENV disagrees.
 db-migrate: ## Apply pending migrations to the DEV database
-	set -a && . ./.env.local && set +a && npx --no-install drizzle-kit migrate
+	set -a && . ./.env.development && set +a && EXPECTED_TARGET=development npx --no-install drizzle-kit migrate
 
 db-migrate-prod: ## Apply pending migrations to PRODUCTION — the clan's real data
-	set -a && . ./.env.local && set +a && APP_ENV=production npx --no-install drizzle-kit migrate
+	set -a && . ./.env.production && set +a && EXPECTED_TARGET=production npx --no-install drizzle-kit migrate
 
 db-studio: ## Browse the DEV database in Drizzle Studio
-	set -a && . ./.env.local && set +a && npx --no-install drizzle-kit studio
+	set -a && . ./.env.development && set +a && EXPECTED_TARGET=development npx --no-install drizzle-kit studio
 
 # ── Provisioning tools ─────────────────────────────────────
 .PHONY: tools-build tools-shell turso vercel

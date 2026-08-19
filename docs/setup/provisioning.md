@@ -12,6 +12,53 @@ document, as the definition of "done".
 
 ---
 
+## Where credentials live
+
+**One set of names, two sources of values.** The clan's real services and their
+throwaway counterparts use the *same* variable names — `DISCORD_BOT_TOKEN`,
+`TURSO_DATABASE_URL` and so on. What differs is where the values come from:
+
+| | Source |
+| --- | --- |
+| `next dev` | `.env.development` — Next.js loads `.env.$NODE_ENV`, and `next dev` is always `NODE_ENV=development` |
+| `make db-migrate`, `make db-studio` | `.env.development`, named explicitly |
+| `make check-provisioning`, `make db-migrate-prod`, `make discord-roles`, `make discord-channels` | `.env.production`, named explicitly |
+| Vercel Preview | the project's **Preview** environment scope → the dev services |
+| Vercel Production | the project's **Production** environment scope → the real services |
+
+Copy `.env.development.example` and `.env.production.example` to their
+unsuffixed names to start. Both real files are git-ignored (`.gitignore` ignores
+`.env*` and negates only `!.env*.example`).
+
+> **There must be no `.env.local`.** Next.js gives it higher precedence than
+> `.env.development`, so one lying around silently shadows the dev file and you
+> will debug a ghost. If you have one from before this split, rename it away.
+
+### The `APP_ENV` marker
+
+Because the names are identical, nothing *in* a file says which services it
+points at — so each file says so outright:
+
+```
+APP_ENV=production
+```
+
+It is not a secret, and it must also be set in **both** Vercel environment
+scopes. `readServerEnv()` in `src/lib/env.ts` refuses an environment that
+declares no target, and a caller may assert the one it expects:
+`make check-provisioning` asks for `production`, so pointing it at the dev file
+fails the check instead of reporting a green production setup it never
+contacted.
+
+**Nothing may infer the target from `NODE_ENV` or `VERCEL_ENV`.** Both read
+`production` on a Vercel Preview — the one case where guessing sends test
+traffic at the clan's real data. Vercel also never reads a repo `.env*` file at
+all, at build or at runtime, which is why the Preview scope rather than a
+filename is what points previews at the dev services. Full findings and
+citations: `docs/research/env-files-vs-name-prefixes.md`.
+
+---
+
 ## 0. The CLIs
 
 `turso` and `vercel` are pinned in the project's Docker image, so provisioning
@@ -83,7 +130,7 @@ beyond 40 players. Its one real limit is a **1-day** point-in-time restore
 window; Developer ($4.99/mo) raises that to 10 days. See
 `docs/research/turso-on-vercel.md`.
 
-Both values are in `.env.local` **and** in Vercel for Production, Preview and
+Both values are in `.env.production` **and** in Vercel for Production, Preview and
 Development — verified by pulling them back down and comparing:
 
 ```bash
@@ -239,7 +286,7 @@ The old token is live in production. Do not overwrite it until the new bot is
 proven, or the roster goes empty on the public site.
 
 ```bash
-# 1. .env.local only — production still runs on the old bot
+# 1. .env.production only — Vercel still runs on the old bot
 DISCORD_BOT_TOKEN=<new bot token>
 DISCORD_CLIENT_ID=<new application id>
 DISCORD_CLIENT_SECRET=<new secret>
@@ -265,7 +312,7 @@ leak. Leave the old *application* alone — once nothing reads its token, an
 abandoned app on a personal account is harmless.
 
 Re-run `make check-provisioning` after the removal. It reads whichever token is
-in `.env.local`, so it is now reporting on the new bot.
+in `.env.production`, so it is now reporting on the new bot.
 
 `DISCORD_REDIRECT_URI` is unchanged by any of this — it is set **per
 environment**, since each one differs:
@@ -398,14 +445,31 @@ hardcode an ID.
 
 ## What lives where, in one table
 
-| Credential | Local | Vercel | Notes |
-| --- | --- | --- | --- |
-| `DISCORD_BOT_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | already provisioned |
-| `DISCORD_CLIENT_ID` | `.env.local` ✅ | env var, all envs ✅ | `1304040209725521950` — the application ID, not a secret |
-| `DISCORD_CLIENT_SECRET` | `.env.local` ⬜ | env var, all envs ⬜ | shown once on reset — the last missing credential |
-| `DISCORD_REDIRECT_URI` | `.env.local` ✅ | env var, **per environment** ✅ | must match a registered redirect exactly |
-| `TURSO_DATABASE_URL` | `.env.local` ✅ | env var, all envs ✅ | `libsql://rats-site-smereka.aws-eu-west-1.turso.io` |
-| `TURSO_AUTH_TOKEN` | `.env.local` ✅ | env var, all envs ✅ | shown once on creation; re-mint with `make turso ARGS="db tokens create rats-site"` |
-| Guild / role / channel IDs | — | — | `src/consts/discord.ts`, in git |
+Every name below exists once, and holds a different value per source — see
+*Where credentials live* above. Status as of the env split (2026-08-19):
+
+| Name | `.env.production` | `.env.development` | Vercel | Notes |
+| --- | --- | --- | --- | --- |
+| `APP_ENV` | `production` ✅ | `development` ✅ | ⬜ **both scopes** | not a secret; the marker `src/lib/env.ts` asserts on |
+| `DISCORD_BOT_TOKEN` | ✅ | ✅ | ⬜ per scope | production value is the *old* app's, until the §2 cutover |
+| `DISCORD_CLIENT_ID` | ✅ | ✅ | ⬜ per scope | the application ID, not a secret |
+| `DISCORD_CLIENT_SECRET` | ✅ | ⬜ | ⬜ per scope | shown once on reset; the dev app's is still missing |
+| `DISCORD_REDIRECT_URI` | ✅ | ✅ | ⬜ per scope | must match a registered redirect exactly |
+| `TURSO_DATABASE_URL` | ⬜ | ✅ | ⬜ per scope | `rats-site` (prod) / `rats-site-dev` |
+| `TURSO_AUTH_TOKEN` | ⬜ | ✅ | ⬜ per scope | shown once on creation; re-mint with `make turso ARGS="db tokens create <db>"` |
+| Guild / role / channel IDs | — | — | — | `src/consts/discord.ts`, in git |
 
 None of these may ever carry a `NEXT_PUBLIC_` prefix.
+
+**Two gaps the split exposed**, both previously reported as done:
+
+- `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` are **absent from the production
+  file** — they were only ever recorded under the dev database. §1 above claims
+  Turso is provisioned and verified, and it was, but the values now in hand
+  point at `rats-site-dev`. Re-mint the `rats-site` token before trusting
+  `make check-provisioning`.
+- `DISCORD_DEV_GUILD_ID` was carried into `.env.development` unchanged. It is
+  **not** part of `ServerEnv` and nothing reads it: `DISCORD_GUILD_ID` is
+  hardcoded in `src/consts/discord.ts`, so the dev app's test guild cannot
+  actually be targeted yet. Making the guild ID per-target is its own piece of
+  work.

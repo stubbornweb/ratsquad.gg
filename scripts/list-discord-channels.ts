@@ -5,7 +5,7 @@
  * category. Use it to find the event channel (Apollo RSVP embeds) and the
  * anketa channel, then record both in src/consts/discord.ts.
  *
- * Run: npx tsx --env-file=.env.local scripts/list-discord-channels.ts
+ * Run: npx tsx --env-file=.env.production scripts/list-discord-channels.ts
  *
  * Requires DISCORD_BOT_TOKEN.
  */
@@ -17,7 +17,7 @@ const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 if (!BOT_TOKEN) {
   console.error("ERROR: DISCORD_BOT_TOKEN environment variable is required.");
   console.error(
-    "Usage: npx tsx --env-file=.env.local scripts/list-discord-channels.ts",
+    "Usage: npx tsx --env-file=.env.production scripts/list-discord-channels.ts",
   );
   process.exit(1);
 }

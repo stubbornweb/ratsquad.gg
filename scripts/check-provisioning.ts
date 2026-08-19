@@ -74,17 +74,24 @@ async function discord<T>(path: string, token: string): Promise<T | null> {
 function checkEnv(): void {
   section("Credentials");
 
-  const result = readServerEnv(process.env);
+  // This script exists to check the clan's real services, so it says so —
+  // pointing it at .env.development fails here rather than reporting a green
+  // production setup that was never contacted.
+  const result = readServerEnv(process.env, "production");
   if (result.ok) {
     pass("all six credentials present, none under NEXT_PUBLIC_");
+    pass(`APP_ENV declares the ${result.config.target} target`);
     return;
   }
 
   for (const problem of result.problems) {
     const reason = {
-      missing: "not set (add it to .env.local and Vercel)",
+      missing: "not set (see docs/setup/provisioning.md)",
       exposed: "found under NEXT_PUBLIC_ — it would ship to the browser",
       invalid: "set but malformed",
+      mismatch:
+        "these are the development credentials — this check must run against " +
+        "production (make check-provisioning, not the dev file)",
     }[problem.reason];
     fail(`${problem.key}: ${reason}`);
   }

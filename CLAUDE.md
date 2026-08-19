@@ -51,7 +51,7 @@ Domain vocabulary is defined in `CONTEXT.md` at the repo root — read it before
 - **Sharp corners** — `rounded-none`, or `rounded-sm` at most.
 - **Fast transitions** — 150-200ms. Slow fades only for scroll reveals.
 - **Analytics**: Vercel Analytics and Speed Insights are enabled in `layout.tsx` and are cookieless. No other tracking, no cookie banner.
-- Secrets go in Vercel env vars or `.env.local` — never in `NEXT_PUBLIC_*`, never committed.
+- Secrets go in Vercel env vars or `.env.development` / `.env.production` — never in `NEXT_PUBLIC_*`, never committed. **One set of names, two sources of values**: locally the file is chosen per command in the `Makefile`, on Vercel by the Preview / Production environment scope. Never add a `_DEV_` variant of a name, and never infer the target from `NODE_ENV` — it reads `production` on a Vercel preview. Each source declares `APP_ENV`, which `src/lib/env.ts` checks. See `docs/research/env-files-vs-name-prefixes.md`.
 
 ## Agent skills
 
