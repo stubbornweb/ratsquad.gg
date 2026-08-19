@@ -43,3 +43,23 @@ A message posted beneath a Roster post, mentioning only the Members whose slots 
 _Avoid_: Ping, tag, notification, mention message
 
 > **On the word "publish":** it names the state transition — an event gaining a publication time — not the message. The message is the **Roster post**, and it outlives every later edit.
+
+**Напрямок**:
+A type of squad, not a position on the map — one of six: `FRONTLINE`·ФРОНТ, `BACKLINE`·ТИЛ, `FLANK`·ФЛАНГ, `FLEX`·ФЛЕКС, `VIC`·ТЕХНІКА, `MORTAR`·МІНОМЕТ. A Member has one primary Напрямок and optionally a second. CMD is not one of them — it is a format-dependent hat marked per slot on the roster.
+_Avoid_: Squad type, direction, lane, position, battlefield identity
+
+**Squad role**:
+One of the fourteen in-game kits a Member can play — «Роль» — listed in `src/consts/squad.ts`. **Роль is _what I can do_; Напрямок is _where I belong_.** Always qualified as a *Squad role*, never bare "role", which this file already reserves as ambiguous.
+_Avoid_: Role (unqualified), kit, class, loadout
+
+**Атрибут**:
+A single 0–100 measure of what a player *wants* from a match, produced by the Squad Assessment tool and never observed from play. Two kinds — a Риса and a Схильність — and the pair of them is the entire vocabulary the assessment's scoring is written against. An Атрибут is always an appetite, never a claim of skill: the tool cannot know how well someone shoots, only what they want the match to turn on.
+_Avoid_: Trait (unqualified), stat, score, rating, personality
+
+**Риса**:
+A behavioural Атрибут that sums into a Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ГРА ПО КАРТІ. ЛІДЕРСТВО is also a Риса but weighs zero against every Напрямок; it exists to inform Squad role recommendation.
+_Avoid_: Personality trait, attribute (that's the parent term), soft skill
+
+**Схильність**:
+An Атрибут naming a taste for a *subject* rather than a way of behaving — ТЕХНІКА and НЕПРЯМИЙ ВОГОНЬ. Asked bluntly, one question each, and it floors rather than sums: a low Схильність pushes its Напрямок to the bottom of the result no matter how well the Риси fit, because nobody should be recommended armour they said they don't want to crew.
+_Avoid_: Affinity (unqualified), interest, preference (that's the player's stated choice, a different thing)
