@@ -57,9 +57,17 @@ A single 0–100 measure of what a player *wants* from a match, produced by the 
 _Avoid_: Trait (unqualified), stat, score, rating, personality
 
 **Риса**:
-A behavioural Атрибут that sums into a Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ГРА ПО КАРТІ. ЛІДЕРСТВО is also a Риса but weighs zero against every Напрямок; it exists to inform Squad role recommendation.
+A behavioural Атрибут that feeds the Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ГРА ПО КАРТІ. It is compared against a Профіль напрямку, never summed: overshooting a target counts against a Напрямок exactly as undershooting does. ЛІДЕРСТВО is also a Риса but has importance zero in every Профіль напрямку; it exists to inform Squad role recommendation.
 _Avoid_: Personality trait, attribute (that's the parent term), soft skill
 
 **Схильність**:
 An Атрибут naming a taste for a *subject* rather than a way of behaving — ТЕХНІКА and НЕПРЯМИЙ ВОГОНЬ. Asked bluntly, one question each, and it floors rather than sums: a low Схильність pushes its Напрямок to the bottom of the result no matter how well the Риси fit, because nobody should be recommended armour they said they don't want to crew.
 _Avoid_: Affinity (unqualified), interest, preference (that's the player's stated choice, a different thing)
+
+**Профіль напрямку**:
+What a Напрямок wants from a player: for each Риса, a target value (0–100) and an importance (0–3, where 0 means the Напрямок genuinely does not care). Six profiles, one per Напрямок. A profile states an appetite the squad needs, never a standard the player must meet — «ФРОНТ хоче АГРЕСІЮ дуже високу» is a description of the job, not a bar to clear.
+_Avoid_: Weight table (the thing it replaced — weights are signed and a profile is not), ideal player, requirements
+
+**Відповідність**:
+How well a player's Риси match a Профіль напрямку — the assessment's output, one figure per Напрямок. It is **relative, not a probability**: «ФЛАНГ 83%» means this Напрямок is much more the player than the others are, never that they belong there with 83% certainty. A low Схильність floors its Напрямок's Відповідність near the bottom without removing it, so the result always shows all six.
+_Avoid_: Score, match percentage, confidence (killed as a figure — the model has no basis for one), fit (in Ukrainian copy)
