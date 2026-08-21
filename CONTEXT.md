@@ -49,19 +49,19 @@ A type of squad, not a position on the map — one of six: `FRONTLINE`·ФРОН
 _Avoid_: Squad type, direction, lane, position, battlefield identity
 
 **Squad role**:
-One of the fourteen in-game kits a Member can play — «Роль» — listed in `src/consts/squad.ts`. **Роль is _what I can do_; Напрямок is _where I belong_.** Always qualified as a *Squad role*, never bare "role", which this file already reserves as ambiguous.
-_Avoid_: Role (unqualified), kit, class, loadout
+One of the ten in-game kits a Member can play — «Роль» — listed in `src/consts/squad.ts`. **Роль is _what I can do_; Напрямок is _where I belong_.** Always qualified as a *Squad role*, never bare "role", which this file already reserves as ambiguous. Splits in two wherever a Member picks from the list: **базові кіти** (`RIFLER`, `MEDIC`, `LAT`) any загін runs, and **спеціальні кіти** (`HAT`, `GL`, `CE`, `MORTAR`, `CREW`, `CREW_SL`, `SL`) demanding a specific gameplay. RATS does not field Marksman, MG or Pilot, and `CREW`/`CREW_SL` name a *seat*, not a vehicle — the old Tech light/middle/heavy tiers were vehicle tiers, not kits.
+_Avoid_: Role (unqualified), kit, class, loadout, Tech light/middle/heavy (removed)
 
 **Атрибут**:
 A single 0–100 measure of what a player *wants* from a match, produced by the Squad Assessment tool and never observed from play. Two kinds — a Риса and a Схильність — and the pair of them is the entire vocabulary the assessment's scoring is written against. An Атрибут is always an appetite, never a claim of skill: the tool cannot know how well someone shoots, only what they want the match to turn on.
 _Avoid_: Trait (unqualified), stat, score, rating, personality
 
 **Риса**:
-A behavioural Атрибут that feeds the Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ЧИТАННЯ КАРТИ (key `MAP_PLAY`, renamed in Ukrainian only). It is compared against a Профіль напрямку, never summed: overshooting a target counts against a Напрямок exactly as undershooting does. ЛІДЕРСТВО is also a Риса but has importance zero in every Профіль напрямку; it exists to inform Squad role recommendation.
+A behavioural Атрибут that feeds the Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ЧИТАННЯ КАРТИ (key `MAP_PLAY`, renamed in Ukrainian only). It is compared against a Профіль напрямку, never summed: overshooting a target counts against a Напрямок exactly as undershooting does. ЛІДЕРСТВО is also a Риса but has importance zero in every Профіль напрямку; it exists solely to name `SL` — and, with ТЕХНІКА, `CREW_SL` — and only at a full 100, since it rests on a single question.
 _Avoid_: Personality trait, attribute (that's the parent term), soft skill
 
 **Схильність**:
-An Атрибут naming a taste for a *subject* rather than a way of behaving — ТЕХНІКА and НЕПРЯМИЙ ВОГОНЬ. Asked bluntly, one question each, and it floors rather than sums: a low Схильність pushes its Напрямок to the bottom of the result no matter how well the Риси fit, because nobody should be recommended armour they said they don't want to crew.
+An Атрибут naming a taste for a *subject* rather than a way of behaving — ТЕХНІКА and НЕПРЯМИЙ ВОГОНЬ. Asked bluntly, one question each, and it floors rather than sums: a low Схильність pushes its Напрямок to the bottom of the result no matter how well the Риси fit, because nobody should be recommended armour they said they don't want to crew. A Схильність is also the only thing that may name a Squad role — ТЕХНІКА names `CREW`, НЕПРЯМИЙ ВОГОНЬ names `MORTAR` — precisely because it was asked outright; no Squad role is ever inferred from a Риса.
 _Avoid_: Affinity (unqualified), interest, preference (that's the player's stated choice, a different thing)
 
 **Профіль напрямку**:
