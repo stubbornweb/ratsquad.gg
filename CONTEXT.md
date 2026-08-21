@@ -57,7 +57,7 @@ A single 0–100 measure of what a player *wants* from a match, produced by the 
 _Avoid_: Trait (unqualified), stat, score, rating, personality
 
 **Риса**:
-A behavioural Атрибут that feeds the Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ГРА ПО КАРТІ. It is compared against a Профіль напрямку, never summed: overshooting a target counts against a Напрямок exactly as undershooting does. ЛІДЕРСТВО is also a Риса but has importance zero in every Профіль напрямку; it exists to inform Squad role recommendation.
+A behavioural Атрибут that feeds the Напрямок recommendation — АГРЕСІЯ, ТЕРПЛЯЧІСТЬ, САМОСТІЙНІСТЬ, АДАПТИВНІСТЬ, ЧИТАННЯ КАРТИ (key `MAP_PLAY`, renamed in Ukrainian only). It is compared against a Профіль напрямку, never summed: overshooting a target counts against a Напрямок exactly as undershooting does. ЛІДЕРСТВО is also a Риса but has importance zero in every Профіль напрямку; it exists to inform Squad role recommendation.
 _Avoid_: Personality trait, attribute (that's the parent term), soft skill
 
 **Схильність**:
@@ -71,3 +71,11 @@ _Avoid_: Weight table (the thing it replaced — weights are signed and a profil
 **Відповідність**:
 How well a player's Риси match a Профіль напрямку — the assessment's output, one figure per Напрямок. It is **relative, not a probability**: «ФЛАНГ 83%» means this Напрямок is much more the player than the others are, never that they belong there with 83% certainty. A low Схильність floors its Напрямок's Відповідність near the bottom without removing it, so the result always shows all six.
 _Avoid_: Score, match percentage, confidence (killed as a figure — the model has no basis for one), fit (in Ukrainian copy)
+
+**Шортколер**:
+The player calling the shots for the team during a scrim, alongside or as CMD. Not a Напрямок and not a Squad role — like CMD, a hat worn for a match. Appears in assessment copy as «CMD/Шортколер».
+_Avoid_: Shotcaller (in Ukrainian copy), IGL, каптан
+
+**Scrim slang**:
+The register of all player-facing assessment copy: **тригер** / **актуал** (the contested capture point), **райлі** (rally), **фоб** / **хаб**, **логі**, **якір** (the player held back so a squad is never wiped), **позиціонка** (the position a squad fights from), **кап** / **капати**, **войс**, **кіт**, **тікети**. This is how RATS talks in a scrim and it is deliberately not translated into formal Ukrainian — a question a player has to decode measures reading comprehension, not appetite.
+_Avoid_: Formalising these into літературна українська, or into English (`rally`, `FOB`) in player-facing copy
