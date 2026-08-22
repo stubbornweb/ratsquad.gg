@@ -53,7 +53,7 @@ One of the ten in-game kits a Member can play — «Роль» — listed in `sr
 _Avoid_: Role (unqualified), kit, class, loadout, Tech light/middle/heavy (removed)
 
 **Атрибут**:
-A single 0–100 measure of what a player *wants* from a match, produced by the Squad Assessment tool and never observed from play. Two kinds — a Риса and a Схильність — and the pair of them is the entire vocabulary the assessment's scoring is written against. An Атрибут is always an appetite, never a claim of skill: the tool cannot know how well someone shoots, only what they want the match to turn on.
+A single 0–100 measure of what a player *wants* from a match, produced by the Squad Assessment tool and never observed from play. Two kinds — a Риса and a Схильність — and the pair of them is the entire vocabulary the assessment's scoring is written against. An Атрибут is always an appetite, never a claim of skill: the tool cannot know how well someone shoots, only what they want the match to turn on. **It is never stored**: an Атрибут is computed, shown to the player who answered, and discarded — no Member row holds one and no officer ever reads one.
 _Avoid_: Trait (unqualified), stat, score, rating, personality
 
 **Риса**:
@@ -77,7 +77,7 @@ An assessment that names two Напрями rather than one, because nothing in 
 _Avoid_: Tie, inconclusive, low confidence, unclear
 
 **Вибір гравця**:
-The Напрямок a player picks for themselves after reading their result — asked as a choice, never as agreement or disagreement with the recommendation, and always asked last, because asking it first would colour every answer before it. It is what becomes the Member's primary Напрямок. A Вибір гравця that differs from the Відповідність is not a failure of the assessment and is not stored as a disagreement: the Відповідність is recomputable from the Атрибути, so the divergence is always visible without recording it.
+The Напрямок a player picks for themselves after reading their result — asked as a choice, never as agreement or disagreement with the recommendation, and always asked last, because asking it first would colour every answer before it. It is what becomes the Member's primary Напрямок. A Вибір гравця that differs from the Відповідність is not a failure of the assessment and is not recorded as a disagreement — it is visible to the player on the result screen at the moment of choosing, and nowhere afterwards to anyone, because the Атрибути it was weighed against are gone. It is the only thing the assessment leaves behind, alongside the kits the player ticked.
 _Avoid_: Preference (unqualified — see Схильність), stated preference, agreement, override
 
 **Шортколер**:
