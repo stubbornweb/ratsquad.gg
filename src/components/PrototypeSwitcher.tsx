@@ -2,12 +2,15 @@
 
 /**
  * PROTOTYPE — throwaway. Floating bar for flipping between UI variants.
- * Hidden in production builds so a stray merge cannot ship it.
+ * Rendered only on /prototype routes, so a stray merge cannot ship it.
+ *
+ * Collapsible, because the prototypes it drives have fixed bottom bars of their
+ * own and on a phone the dev bar sits on top of the very button being tested.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 type Props = {
   variants: { key: string; name: string }[];
@@ -20,6 +23,7 @@ export function PrototypeSwitcher({ variants, current, children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [collapsed, setCollapsed] = useState(false);
 
   const index = Math.max(
     0,
@@ -50,7 +54,24 @@ export function PrototypeSwitcher({ variants, current, children }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (process.env.NODE_ENV === "production") return null;
+  // Gate on the route, not on NODE_ENV. `NODE_ENV` reads "production" on a
+  // Vercel Preview — the trap `src/lib/env.ts` exists to document — so the old
+  // check hid the bar on exactly the deploy the prototype is meant to be run
+  // from. The pathname is also the stronger guard against a stray merge: it
+  // keeps the bar off every real page, not just off production.
+  if (!pathname.startsWith("/prototype")) return null;
+
+  if (collapsed) {
+    return (
+      <button
+        onClick={() => setCollapsed(false)}
+        aria-label="Показати панель прототипу"
+        className="fixed right-2 bottom-2 z-[500] border-2 border-white bg-black px-3 py-2 font-mono text-[10px] tracking-widest text-white uppercase opacity-60"
+      >
+        {variants[index].key}
+      </button>
+    );
+  }
 
   return (
     <div className="fixed bottom-0 left-1/2 z-[500] flex max-w-[100vw] -translate-x-1/2 flex-wrap items-stretch justify-center border-2 border-white bg-black font-mono text-[10px] tracking-widest text-white uppercase shadow-[0_8px_32px_rgba(0,0,0,0.8)] sm:bottom-5 sm:text-[11px]">
@@ -79,6 +100,14 @@ export function PrototypeSwitcher({ variants, current, children }: Props) {
           {children}
         </div>
       ) : null}
+
+      <button
+        onClick={() => setCollapsed(true)}
+        aria-label="Сховати панель прототипу"
+        className="flex items-center border-l-2 border-white px-3 transition-colors duration-150 hover:bg-white hover:text-black"
+      >
+        <X size={14} />
+      </button>
     </div>
   );
 }

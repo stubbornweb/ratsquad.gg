@@ -682,6 +682,13 @@
     color: var(--accent);
 }
 
+/* The cap is shown, not enforced silently: once three are picked the rest go
+   dim rather than swallowing the tap. */
+.pa-kit:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
 .pa-kit-hint {
     display: block;
     font-family: var(--font-mono), monospace;

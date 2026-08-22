@@ -482,6 +482,42 @@ export const KIT_REASONS: Partial<Record<Kit, string>> = {
 /** #51: the SL invitation hangs off the SL entry, never as a banner. */
 export const SL_INVITATION = "Поговори з офіцерами.";
 
+/* ═══════════════════════════════════════════════════════
+   Round two — the kits. NOT from a closed ticket.
+   ═══════════════════════════════════════════════════════ */
+
+/**
+ * The cap. `MAX_ROLE_PREFERENCES` in `src/consts/squad.ts` is already 3, and
+ * this is that field — the **top-3 preference**, not the capability set.
+ *
+ * That distinction is the whole cost of this change and is flagged on #55:
+ * an uncapped grid answers «що вмієш» and writes `member_roles`; a grid capped
+ * at three answers «що граєш основним» and writes `preference`. #53 wrote
+ * `member_roles` and left `preference` untouched. Capping swaps which of the
+ * two the tool fills, and «хто ще може сісти в танк?» stops being answerable
+ * from anything this tool collects.
+ */
+export const MAX_MAIN_KITS = 3;
+
+/**
+ * UNSIGNED — round two has no clan-authored copy, because no ticket ever wrote
+ * any. #50's rule bites here: situations must come from a clan member, so this
+ * round is deliberately a **pick**, not a set of invented scrim questions. If
+ * it should become real questions, the situations come from the clan the same
+ * way the eighteen did, and drop into this round's structure unchanged.
+ */
+export const ROUND_TWO_COPY = {
+  eyebrow: "РАУНД 2 / 2",
+  title: "ЩО ТИ ГРАЄШ ОСНОВНИМ",
+  lede: "Обери до трьох кітів. Це те, що ти береш, коли вибір за тобою.",
+  counter: (picked: number) => `${picked} / ${MAX_MAIN_KITS}`,
+  full: "Більше трьох не можна — зніми один, щоб обрати інший.",
+  next: "результат",
+} as const;
+
+/** UNSIGNED — round one's own eyebrow, added only because there are now two. */
+export const ROUND_ONE_EYEBROW = "РАУНД 1 / 2";
+
 /**
  * #52's ten reason fragments — high form (target ≥ 60) and low form (≤ 40).
  * Ten rather than thirty deliberately, so they survive #69 editing the targets.

@@ -31,7 +31,8 @@ import {
   PrototypeSwitcher,
   PrototypeToggle,
 } from "@/components/PrototypeSwitcher";
-import { QUESTIONS } from "./_data";
+import { MAX_MAIN_KITS, MEMBER_ON_FILE, QUESTIONS, type Kit } from "./_data";
+import { Kits } from "./_Kits";
 import { JourneyA } from "./_JourneyA";
 import { JourneyB } from "./_JourneyB";
 import { JourneyC } from "./_JourneyC";
@@ -44,6 +45,13 @@ const VARIANTS = [
   { key: "B", name: "Стрічка" },
   { key: "C", name: "Сектори" },
 ];
+
+/**
+ * A runs two rounds — the eighteen, then the kits. B and C are frozen at the
+ * one-round shape they were judged in; they are the record of why A won, not
+ * live designs, so they skip `kits` and keep the grid on the result screen.
+ */
+type Stage = "intro" | "questions" | "kits" | "result";
 
 /**
  * A realistic run, for reaching the result screen without eighteen taps.
@@ -71,9 +79,12 @@ function Prototype() {
     | "C";
 
   const [answers, setAnswers] = useState<Answers>({});
-  const [stage, setStage] = useState<"intro" | "questions" | "result">("intro");
+  const [stage, setStage] = useState<Stage>("intro");
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [member, setMember] = useState(false);
+  // Round two. Capped at three — this is the top-3 preference, not the
+  // capability set. Seeded for a returning member, per #54.
+  const [mainKits, setMainKits] = useState<Kit[]>([]);
 
   // The site's global Lenis smoothing is tuned for the homepage's long reveals.
   // A and C are fixed full-screen stages that never scroll, and leaving Lenis
@@ -93,20 +104,33 @@ function Prototype() {
     setAnswers((prev) => ({ ...prev, [n]: value }));
   }, []);
 
+  // A goes to round two; B and C go straight to the result they were judged on.
   const onDone = useCallback(() => {
-    setStage("result");
+    setStage(variant === "A" ? "kits" : "result");
     window.scrollTo({ top: 0 });
+  }, [variant]);
+
+  const toggleKit = useCallback((kit: Kit) => {
+    setMainKits((prev) =>
+      prev.includes(kit)
+        ? prev.filter((k) => k !== kit)
+        : prev.length >= MAX_MAIN_KITS
+          ? prev
+          : [...prev, kit],
+    );
   }, []);
 
   const restart = () => {
     setAnswers({});
+    setMainKits([]);
     setStage("intro");
     window.scrollTo({ top: 0 });
   };
 
+  // Lands on round two for A, so the whole A path stays reachable in one tap.
   const jump = (preset: Answers) => {
     setAnswers(preset);
-    setStage("result");
+    setStage(variant === "A" ? "kits" : "result");
     window.scrollTo({ top: 0 });
   };
 
@@ -161,8 +185,28 @@ function Prototype() {
         <JourneyC answers={answers} onAnswer={onAnswer} onDone={onDone} />
       ) : null}
 
+      {stage === "kits" ? (
+        <Kits
+          picked={mainKits}
+          onToggle={toggleKit}
+          member={member}
+          onBack={() => setStage("questions")}
+          onDone={() => {
+            setStage("result");
+            window.scrollTo({ top: 0 });
+          }}
+        />
+      ) : null}
+
       {result ? (
-        <Result result={result} member={member} onRestart={restart} />
+        <Result
+          result={result}
+          member={member}
+          // A collects the kits in round two, so the result screen shows them
+          // read-only. B and C keep the interactive grid they were judged with.
+          mainKits={variant === "A" ? mainKits : null}
+          onRestart={restart}
+        />
       ) : null}
 
       <PrototypeSwitcher variants={VARIANTS} current={variant}>
@@ -174,7 +218,12 @@ function Prototype() {
         <PrototypeToggle
           label={member ? "учасник" : "анонім"}
           active={member}
-          onClick={() => setMember(!member)}
+          onClick={() => {
+            const next = !member;
+            setMember(next);
+            // #54: a returning member's grid is seeded from `member_roles`.
+            setMainKits(next ? MEMBER_ON_FILE.kits.slice(0, MAX_MAIN_KITS) : []);
+          }}
         />
         <PrototypeToggle
           label="заповнити"

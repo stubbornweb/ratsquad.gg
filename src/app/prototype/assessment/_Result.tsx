@@ -27,6 +27,7 @@ import {
   KIT_LABELS,
   KIT_REASONS,
   MEMBER_ON_FILE,
+  ROUND_TWO_COPY,
   SL_INVITATION,
   SPECIAL_KITS,
   TRAITS,
@@ -42,6 +43,12 @@ type Props = {
   result: Result;
   /** #54: a logged-in member. Drives ФЛЕКС, the seeded grid and the on-file Напрямок. */
   member: boolean;
+  /**
+   * A's round two already collected the top-3, so the result screen reports it
+   * instead of asking again. `null` keeps #52's interactive grid, which is what
+   * B and C were judged with.
+   */
+  mainKits: Kit[] | null;
   onRestart: () => void;
 };
 
@@ -52,7 +59,7 @@ const reveal = {
   viewport: { once: true, amount: 0.2 },
 };
 
-export function Result({ result, member, onRestart }: Props) {
+export function Result({ result, member, mainKits, onRestart }: Props) {
   // #52: the choice is pre-selected to the recommendation — except for a
   // returning member with a Напрямок on file, where #54 requires no default.
   const hasOnFile = member && MEMBER_ON_FILE.directionPrimary !== undefined;
@@ -69,7 +76,9 @@ export function Result({ result, member, onRestart }: Props) {
   const [saved, setSaved] = useState(false);
 
   const onFileKits = new Set(member ? MEMBER_ON_FILE.kits : []);
-  const removed = [...onFileKits].filter((k) => !ticked.has(k));
+  // A's round two is the source of truth when it ran; otherwise the grid is.
+  const savedKits = mainKits ?? [...ticked];
+  const removed = [...onFileKits].filter((k) => !savedKits.includes(k));
 
   const toggle = (kit: Kit) => {
     setTicked((prev) => {
@@ -190,25 +199,49 @@ export function Result({ result, member, onRestart }: Props) {
           ))
         )}
 
-        <h2 className="pa-section-head" style={{ marginTop: 32 }}>
-          {COPY.gridHeader}
-        </h2>
+        {mainKits === null ? (
+          <>
+            <h2 className="pa-section-head" style={{ marginTop: 32 }}>
+              {COPY.gridHeader}
+            </h2>
 
-        <div className="pa-group-label">{COPY.groupBasic}</div>
-        <KitGrid
-          kits={BASIC_KITS}
-          ticked={ticked}
-          onFile={onFileKits}
-          onToggle={toggle}
-        />
+            <div className="pa-group-label">{COPY.groupBasic}</div>
+            <KitGrid
+              kits={BASIC_KITS}
+              ticked={ticked}
+              onFile={onFileKits}
+              onToggle={toggle}
+            />
 
-        <div className="pa-group-label">{COPY.groupSpecial}</div>
-        <KitGrid
-          kits={SPECIAL_KITS}
-          ticked={ticked}
-          onFile={onFileKits}
-          onToggle={toggle}
-        />
+            <div className="pa-group-label">{COPY.groupSpecial}</div>
+            <KitGrid
+              kits={SPECIAL_KITS}
+              ticked={ticked}
+              onFile={onFileKits}
+              onToggle={toggle}
+            />
+          </>
+        ) : (
+          <>
+            <h2 className="pa-section-head" style={{ marginTop: 32 }}>
+              {ROUND_TWO_COPY.title}
+            </h2>
+            {mainKits.length ? (
+              <div className="pa-kit-grid">
+                {mainKits.map((kit) => (
+                  <div key={kit} className="pa-kit" data-ticked="true">
+                    {KIT_LABELS[kit]}
+                    {KIT_HINTS[kit] ? (
+                      <span className="pa-kit-hint">{KIT_HINTS[kit]}</span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="pa-attr-sentence">Ти не обрав жодного основного кіта.</p>
+            )}
+          </>
+        )}
       </motion.section>
 
       {/* 7 · What will be saved, then the CTA. */}
@@ -222,10 +255,10 @@ export function Result({ result, member, onRestart }: Props) {
             </span>
           </div>
           <div className="pa-save-row">
-            <span className="pa-save-key">Кіти</span>
+            <span className="pa-save-key">{mainKits ? "Основні кіти" : "Кіти"}</span>
             <span className="pa-save-val">
-              {ticked.size
-                ? [...ticked].map((k) => KIT_LABELS[k]).join(", ")
+              {savedKits.length
+                ? savedKits.map((k) => KIT_LABELS[k]).join(", ")
                 : "жодного"}
             </span>
           </div>

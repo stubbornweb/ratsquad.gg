@@ -14,7 +14,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
-import { QUESTIONS } from "./_data";
+import { QUESTIONS, ROUND_ONE_EYEBROW } from "./_data";
 import { option, optionGroup, swap } from "./_motion";
 import type { Answers } from "./_scoring";
 
@@ -89,6 +89,9 @@ export function JourneyA({ answers, onAnswer, autoAdvance, onDone }: Props) {
             animate="animate"
             exit="exit"
           >
+            <div className="pa-label" style={{ marginBottom: 10 }}>
+              {ROUND_ONE_EYEBROW}
+            </div>
             <div className="pa-qnum">
               {String(question.n).padStart(2, "0")}
               <span> / {QUESTIONS.length}</span>
