@@ -72,6 +72,14 @@ _Avoid_: Weight table (the thing it replaced — weights are signed and a profil
 How well a player's Риси match a Профіль напрямку — the assessment's output, one figure per Напрямок. It is **relative, not a probability**: «ФЛАНГ 83%» means this Напрямок is much more the player than the others are, never that they belong there with 83% certainty. A low Схильність floors its Напрямок's Відповідність near the bottom without removing it, so the result always shows all six.
 _Avoid_: Score, match percentage, confidence (killed as a figure — the model has no basis for one), fit (in Ukrainian copy)
 
+**Рівний результат**:
+An assessment that names two Напрями rather than one, because nothing in the answers separates them — the top two are within fifteen displayed points, or every Риса landed mid-range. Its opposite is a **чіткий результат**, which names one. Рівний is a real answer and never an error state: «ти ще не знаєш — ось що спробувати» is a true thing to tell a player, and the two Напрями are presented unordered because ordering them would assert a difference the model did not find.
+_Avoid_: Tie, inconclusive, low confidence, unclear
+
+**Вибір гравця**:
+The Напрямок a player picks for themselves after reading their result — asked as a choice, never as agreement or disagreement with the recommendation, and always asked last, because asking it first would colour every answer before it. It is what becomes the Member's primary Напрямок. A Вибір гравця that differs from the Відповідність is not a failure of the assessment and is not stored as a disagreement: the Відповідність is recomputable from the Атрибути, so the divergence is always visible without recording it.
+_Avoid_: Preference (unqualified — see Схильність), stated preference, agreement, override
+
 **Шортколер**:
 The player calling the shots for the team during a scrim, alongside or as CMD. Not a Напрямок and not a Squad role — like CMD, a hat worn for a match. Appears in assessment copy as «CMD/Шортколер».
 _Avoid_: Shotcaller (in Ukrainian copy), IGL, каптан
