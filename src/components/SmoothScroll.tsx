@@ -18,7 +18,15 @@ export function SmoothScroll() {
 
     requestAnimationFrame(raf)
 
+    // PROTOTYPE-ONLY (wayfinder #55): exposed so /prototype/assessment can stop
+    // Lenis for the eighteen. A 1.2s global smoothing turns every programmatic
+    // jump in the journey into a second of drift, which would read as a finding
+    // about the design rather than about the scroll library. Revert with the
+    // rest of the prototype branch.
+    ;(window as unknown as { __lenis?: Lenis }).__lenis = lenis
+
     return () => {
+      delete (window as unknown as { __lenis?: Lenis }).__lenis
       lenis.destroy()
     }
   }, [])
