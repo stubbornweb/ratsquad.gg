@@ -27,6 +27,7 @@ import {
   KIT_LABELS,
   KIT_REASONS,
   MEMBER_ON_FILE,
+  ROLE_SLOTS,
   ROUND_TWO_COPY,
   SL_INVITATION,
   SPECIAL_KITS,
@@ -44,11 +45,11 @@ type Props = {
   /** #54: a logged-in member. Drives ФЛЕКС, the seeded grid and the on-file Напрямок. */
   member: boolean;
   /**
-   * A's round two already collected the top-3, so the result screen reports it
+   * A's round two already collected the ordered top-3, so the result reports it
    * instead of asking again. `null` keeps #52's interactive grid, which is what
    * B and C were judged with.
    */
-  mainKits: Kit[] | null;
+  roles: (Kit | null)[] | null;
   onRestart: () => void;
 };
 
@@ -59,7 +60,7 @@ const reveal = {
   viewport: { once: true, amount: 0.2 },
 };
 
-export function Result({ result, member, mainKits, onRestart }: Props) {
+export function Result({ result, member, roles, onRestart }: Props) {
   // #52: the choice is pre-selected to the recommendation — except for a
   // returning member with a Напрямок on file, where #54 requires no default.
   const hasOnFile = member && MEMBER_ON_FILE.directionPrimary !== undefined;
@@ -77,7 +78,7 @@ export function Result({ result, member, mainKits, onRestart }: Props) {
 
   const onFileKits = new Set(member ? MEMBER_ON_FILE.kits : []);
   // A's round two is the source of truth when it ran; otherwise the grid is.
-  const savedKits = mainKits ?? [...ticked];
+  const savedKits = roles ? roles.filter((r): r is Kit => r !== null) : [...ticked];
   const removed = [...onFileKits].filter((k) => !savedKits.includes(k));
 
   const toggle = (kit: Kit) => {
@@ -199,7 +200,7 @@ export function Result({ result, member, mainKits, onRestart }: Props) {
           ))
         )}
 
-        {mainKits === null ? (
+        {roles === null ? (
           <>
             <h2 className="pa-section-head" style={{ marginTop: 32 }}>
               {COPY.gridHeader}
@@ -226,20 +227,19 @@ export function Result({ result, member, mainKits, onRestart }: Props) {
             <h2 className="pa-section-head" style={{ marginTop: 32 }}>
               {ROUND_TWO_COPY.title}
             </h2>
-            {mainKits.length ? (
-              <div className="pa-kit-grid">
-                {mainKits.map((kit) => (
-                  <div key={kit} className="pa-kit" data-ticked="true">
-                    {KIT_LABELS[kit]}
-                    {KIT_HINTS[kit] ? (
-                      <span className="pa-kit-hint">{KIT_HINTS[kit]}</span>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="pa-attr-sentence">Ти не обрав жодного основного кіта.</p>
+            {/* Ordered, and labelled by slot — the order is the whole point of
+                round two, so a flat row of three would throw it away. */}
+            {ROLE_SLOTS.map((spec, i) =>
+              roles[i] ? (
+                <div key={spec.key} className="pa-save-row">
+                  <span className="pa-save-key">{spec.question.replace("Яка ваша ", "").replace("?", "")}</span>
+                  <span className="pa-save-val">{KIT_LABELS[roles[i]]}</span>
+                </div>
+              ) : null,
             )}
+            {savedKits.length === 0 ? (
+              <p className="pa-attr-sentence">Ви не обрали жодної ролі.</p>
+            ) : null}
           </>
         )}
       </motion.section>
@@ -255,7 +255,7 @@ export function Result({ result, member, mainKits, onRestart }: Props) {
             </span>
           </div>
           <div className="pa-save-row">
-            <span className="pa-save-key">{mainKits ? "Основні кіти" : "Кіти"}</span>
+            <span className="pa-save-key">{roles ? "Ролі (1-2-3)" : "Кіти"}</span>
             <span className="pa-save-val">
               {savedKits.length
                 ? savedKits.map((k) => KIT_LABELS[k]).join(", ")

@@ -500,18 +500,63 @@ export const SL_INVITATION = "Поговори з офіцерами.";
 export const MAX_MAIN_KITS = 3;
 
 /**
- * UNSIGNED — round two has no clan-authored copy, because no ticket ever wrote
- * any. #50's rule bites here: situations must come from a clan member, so this
- * round is deliberately a **pick**, not a set of invented scrim questions. If
- * it should become real questions, the situations come from the clan the same
- * way the eighteen did, and drop into this round's structure unchanged.
+ * Round two: three ordered slots, not an unordered pick.
+ *
+ * **The three `question` strings are the clan's, verbatim** — including the
+ * secondary's parenthetical, which is the actual domain reason a second choice
+ * exists at all. Everything else on this screen is `UNSIGNED` microcopy.
+ *
+ * REGISTER MISMATCH, FLAGGED ON #55: these speak «ви», while #50's eighteen and
+ * #52's whole deck speak «ти» («Ти на позиції», «А ЩО ОБЕРЕШ ТИ?»). The screen
+ * is kept internally consistent in «ви» rather than half-converted; which way
+ * the tool unifies is the clan's call, not mine to make silently.
+ *
+ * VOCABULARY, ALSO FLAGGED: the clan's text says «роль». `CONTEXT.md` reserves
+ * bare "role" as ambiguous and #52's deck says «кіт» throughout.
+ */
+export const ROLE_SLOTS = [
+  {
+    key: "primary",
+    question: "Яка ваша основна роль?",
+    note: null,
+    // UNSIGNED
+    hint: "Кіт, який ви берете, коли вибір за вами — те, чим граєте найчастіше.",
+    required: true,
+  },
+  {
+    key: "secondary",
+    question: "Яка ваша другорядна роль?",
+    note: "(В разі, якщо основна використовується кимось іншим)",
+    // UNSIGNED
+    hint: "Те, на що перемикаєтесь, коли основну вже зайняли в загоні.",
+    required: false,
+  },
+  {
+    key: "tertiary",
+    question: "Яка ваша третьорядна роль?",
+    note: null,
+    // UNSIGNED
+    hint: "Те, чим ще будете корисним, якщо перші дві зайняті.",
+    required: false,
+  },
+] as const;
+
+/**
+ * UNSIGNED — round two's chrome.
+ *
+ * The clan's source text carried `*` on the first and third questions but not
+ * the second. Read as a copy-paste artifact from an existing form: **primary is
+ * required, the other two are optional**, which is also the only reading that
+ * makes domain sense. Flagged on #55 rather than assumed silently.
  */
 export const ROUND_TWO_COPY = {
   eyebrow: "РАУНД 2 / 2",
-  title: "ЩО ТИ ГРАЄШ ОСНОВНИМ",
-  lede: "Обери до трьох кітів. Це те, що ти береш, коли вибір за тобою.",
-  counter: (picked: number) => `${picked} / ${MAX_MAIN_KITS}`,
-  full: "Більше трьох не можна — зніми один, щоб обрати інший.",
+  title: "ВАШІ РОЛІ",
+  criteria:
+    "Обирайте за тим, чим реально граєте, а не за тим, чого хочете навчитись. Місця на кіти в загоні обмежені — тому і потрібні три варіанти.",
+  slotCounter: (n: number) => `${n} / ${ROLE_SLOTS.length}`,
+  taken: "вже обрано",
+  skip: "пропустити",
   next: "результат",
 } as const;
 

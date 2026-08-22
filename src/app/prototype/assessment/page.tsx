@@ -82,9 +82,10 @@ function Prototype() {
   const [stage, setStage] = useState<Stage>("intro");
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [member, setMember] = useState(false);
-  // Round two. Capped at three — this is the top-3 preference, not the
-  // capability set. Seeded for a returning member, per #54.
-  const [mainKits, setMainKits] = useState<Kit[]>([]);
+  // Round two: three ordered slots — the top-3 preference, not the capability
+  // set. Seeded for a returning member, per #54.
+  const [roles, setRoles] = useState<(Kit | null)[]>([null, null, null]);
+  const [slot, setSlot] = useState(0);
 
   // The site's global Lenis smoothing is tuned for the homepage's long reveals.
   // A and C are fixed full-screen stages that never scroll, and leaving Lenis
@@ -110,19 +111,14 @@ function Prototype() {
     window.scrollTo({ top: 0 });
   }, [variant]);
 
-  const toggleKit = useCallback((kit: Kit) => {
-    setMainKits((prev) =>
-      prev.includes(kit)
-        ? prev.filter((k) => k !== kit)
-        : prev.length >= MAX_MAIN_KITS
-          ? prev
-          : [...prev, kit],
-    );
+  const pickRole = useCallback((at: number, kit: Kit) => {
+    setRoles((prev) => prev.map((r, i) => (i === at ? kit : r)));
   }, []);
 
   const restart = () => {
     setAnswers({});
-    setMainKits([]);
+    setRoles([null, null, null]);
+    setSlot(0);
     setStage("intro");
     window.scrollTo({ top: 0 });
   };
@@ -187,8 +183,11 @@ function Prototype() {
 
       {stage === "kits" ? (
         <Kits
-          picked={mainKits}
-          onToggle={toggleKit}
+          roles={roles}
+          slot={slot}
+          onPick={pickRole}
+          onSlotChange={setSlot}
+          autoAdvance={autoAdvance}
           member={member}
           onBack={() => setStage("questions")}
           onDone={() => {
@@ -202,9 +201,9 @@ function Prototype() {
         <Result
           result={result}
           member={member}
-          // A collects the kits in round two, so the result screen shows them
-          // read-only. B and C keep the interactive grid they were judged with.
-          mainKits={variant === "A" ? mainKits : null}
+          // A collects the three roles in round two, so the result screen shows
+          // them read-only. B and C keep the grid they were judged with.
+          roles={variant === "A" ? roles : null}
           onRestart={restart}
         />
       ) : null}
@@ -221,8 +220,15 @@ function Prototype() {
           onClick={() => {
             const next = !member;
             setMember(next);
-            // #54: a returning member's grid is seeded from `member_roles`.
-            setMainKits(next ? MEMBER_ON_FILE.kits.slice(0, MAX_MAIN_KITS) : []);
+            // #54: a returning member's slots are seeded from what is on file.
+            setRoles(
+              next
+                ? Array.from(
+                    { length: MAX_MAIN_KITS },
+                    (_, i) => MEMBER_ON_FILE.kits[i] ?? null,
+                  )
+                : [null, null, null],
+            );
           }}
         />
         <PrototypeToggle
