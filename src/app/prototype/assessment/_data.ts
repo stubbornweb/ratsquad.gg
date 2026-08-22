@@ -483,6 +483,46 @@ export const KIT_REASONS: Partial<Record<Kit, string>> = {
 export const SL_INVITATION = "Поговори з офіцерами.";
 
 /* ═══════════════════════════════════════════════════════
+   «Що варто спробувати» — a SECOND block, and a reversal of #51
+   ═══════════════════════════════════════════════════════ */
+
+/**
+ * UNSIGNED, and a deliberate reversal of two #51 rulings. Both go to #69.
+ *
+ * **What #51 decided.** Naming `HAT` / `GL` / `CE` off Риса thresholds was
+ * considered and rejected as «three more unsigned numbers, the exact shape #49
+ * got burned on — unlike ТЕХНІКА, the player never said they wanted it». And
+ * ЛІДЕРСТВО fires only at 100, because «a false invitation costs more than a
+ * missed one».
+ *
+ * **What changed.** The clan asked for a suggestion where the block was empty,
+ * and for a potential-vs-actual SL reading. #51's objection is answered by
+ * *separating the two claims* rather than by softening either: block one stays
+ * exactly what the player **said outright**, and this is a second, visibly
+ * different block of what they might **try**. «Спробуй» is not «ти це граєш»,
+ * which is the assertion #51 refused.
+ *
+ * **The axes are #51's own** — the ones it wrote down while rejecting them.
+ * The cutoffs are not: nobody has ever set one, so they sit on #50's lattice
+ * and are drafts for #69 exactly like #49's thirty numbers.
+ */
+export const SUGGESTION_THRESHOLD = { high: 70, low: 40 } as const;
+
+export const SUGGESTION_COPY = {
+  header: "ЩО ВАРТО СПРОБУВАТИ",
+  sub: "Ти цього не заявляв — це те, на що вказують твої відповіді. Хочеш спробувати — почни звідси.",
+  // The potential SL: ЛІДЕРСТВО 55 is Q8's «загін не беру, але можу допомогти
+  // з організацією» — appetite for organising short of taking a загін.
+  slPotential:
+    "Ти готовий допомагати з організацією. Наступний крок — узяти загін.",
+  hat: "Терпіння і гра по карті — це те, на чому тримається HAT.",
+  ce: "Ти готовий готувати позицію заздалегідь — спробуй CE.",
+  gl: "Ти граєш на темпі — GL дає цей темп усьому загону.",
+  /** Shown only when both blocks come up empty. */
+  fallback: "Почни з базових кітів — на них тримається будь-який загін.",
+} as const;
+
+/* ═══════════════════════════════════════════════════════
    Round two — the kits. NOT from a closed ticket.
    ═══════════════════════════════════════════════════════ */
 

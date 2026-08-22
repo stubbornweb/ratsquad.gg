@@ -30,6 +30,7 @@ import {
   ROLE_SLOTS,
   ROUND_TWO_COPY,
   SL_INVITATION,
+  SUGGESTION_COPY,
   SPECIAL_KITS,
   TRAITS,
   TRAIT_LABELS,
@@ -77,6 +78,16 @@ export function Result({ result, member, roles, onRestart }: Props) {
   const [saved, setSaved] = useState(false);
 
   const onFileKits = new Set(member ? MEMBER_ON_FILE.kits : []);
+
+  // Never suggest something the player has already claimed — in round two, in
+  // the grid, or on file. An «actual» SL is not offered the potential-SL line.
+  const claimed = new Set<Kit>([
+    ...(roles?.filter((r): r is Kit => r !== null) ?? []),
+    ...ticked,
+    ...onFileKits,
+    ...result.evidencedKits.map((e) => e.kit),
+  ]);
+  const suggestions = result.suggestedKits.filter((s) => !claimed.has(s.kit));
   // A's round two is the source of truth when it ran; otherwise the grid is.
   const savedKits = roles ? roles.filter((r): r is Kit => r !== null) : [...ticked];
   const removed = [...onFileKits].filter((k) => !savedKits.includes(k));
@@ -185,10 +196,18 @@ export function Result({ result, member, roles, onRestart }: Props) {
 
       {/* 6 · Evidenced kits (0–3), then the ten-grid split базові / спеціальні. */}
       <motion.section {...reveal} className="pa-result-section">
-        <h2 className="pa-section-head">{COPY.evidencedHeader}</h2>
+        {/* The «нічого не вказує» line is suppressed when there is something to
+            suggest — «твої відповіді не вказують на жоден кіт» immediately above
+            two suggested kits reads as the screen contradicting itself. It
+            survives only as the genuine both-empty case. */}
+        {result.evidencedKits.length > 0 || suggestions.length === 0 ? (
+          <h2 className="pa-section-head">{COPY.evidencedHeader}</h2>
+        ) : null}
 
         {result.evidencedKits.length === 0 ? (
-          <p className="pa-attr-sentence">{COPY.evidencedEmpty}</p>
+          suggestions.length === 0 ? (
+            <p className="pa-attr-sentence">{COPY.evidencedEmpty}</p>
+          ) : null
         ) : (
           result.evidencedKits.map(({ kit }) => (
             <div key={kit} className="pa-evidenced">
@@ -199,6 +218,36 @@ export function Result({ result, member, roles, onRestart }: Props) {
             </div>
           ))
         )}
+
+        {/* A second block, visibly weaker than the first. #51's line between
+            «what you said» and «what we suspect» is what makes this safe, so it
+            has to be legible on the screen and not only in the code. */}
+        {suggestions.length ? (
+          <>
+            <h2
+              className="pa-section-head"
+              style={{ marginTop: result.evidencedKits.length ? 32 : 0 }}
+            >
+              {SUGGESTION_COPY.header}
+            </h2>
+            <p className="pa-sub">{SUGGESTION_COPY.sub}</p>
+            {suggestions.map(({ kit, reason }) => (
+              <div key={kit} className="pa-suggested">
+                <div className="pa-suggested-kit">{KIT_LABELS[kit]}</div>
+                <p className="pa-evidenced-reason">{reason}</p>
+                {kit === "SL" ? (
+                  <p className="pa-evidenced-invite">{SL_INVITATION}</p>
+                ) : null}
+              </div>
+            ))}
+          </>
+        ) : null}
+
+        {result.evidencedKits.length === 0 && suggestions.length === 0 ? (
+          <p className="pa-attr-sentence" style={{ marginTop: 10 }}>
+            {SUGGESTION_COPY.fallback}
+          </p>
+        ) : null}
 
         {roles === null ? (
           <>

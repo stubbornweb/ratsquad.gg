@@ -19,6 +19,8 @@ import {
   QUESTIONS,
   REASON_FRAGMENTS,
   SCORING_TRAITS,
+  SUGGESTION_COPY,
+  SUGGESTION_THRESHOLD,
   type Direction,
   type Inclination,
   type Kit,
@@ -56,6 +58,8 @@ export type Result = {
   reasons: string[];
   flexSuppressed: boolean;
   evidencedKits: { kit: Kit; reason: string }[];
+  /** What the answers hint at but the player never claimed. See `_data.ts`. */
+  suggestedKits: { kit: Kit; reason: string }[];
 };
 
 /* ── Атрибути out of eighteen answers ── */
@@ -147,6 +151,41 @@ function evidencedKits(profile: Profile): { kit: Kit; reason: string }[] {
   return out;
 }
 
+/**
+ * «Що варто спробувати» — candidates, not claims.
+ *
+ * Kept strictly separate from `evidencedKits`: that block is what the player
+ * said outright, this is what the model suspects. #51 refused to merge them and
+ * the reversal recorded in `_data.ts` does not change that — it adds a second
+ * block, it does not soften the first.
+ *
+ * The caller filters out anything the player has already claimed.
+ */
+function suggestedKits(profile: Profile): { kit: Kit; reason: string }[] {
+  const t = profile.traits;
+  const { high, low } = SUGGESTION_THRESHOLD;
+  const out: { kit: Kit; reason: string }[] = [];
+
+  // Actual SL is ЛІДЕРСТВО 100 and belongs to the evidenced block. This is the
+  // potential one — the middle answer, which #51 treated as nothing.
+  if (t.LEADERSHIP === 55) {
+    out.push({ kit: "SL", reason: SUGGESTION_COPY.slPotential });
+  }
+  if (t.PATIENCE >= high && t.MAP_PLAY >= high) {
+    out.push({ kit: "HAT", reason: SUGGESTION_COPY.hat });
+  }
+  if (t.PATIENCE >= high && t.AGGRESSION <= low) {
+    out.push({ kit: "CE", reason: SUGGESTION_COPY.ce });
+  }
+  if (t.AGGRESSION >= high) {
+    out.push({ kit: "GL", reason: SUGGESTION_COPY.gl });
+  }
+
+  // Capped at two. A longer list is the ranked-ten #51 called «guessed», and
+  // the player can tell.
+  return out.slice(0, 2);
+}
+
 /* ── The whole result ── */
 
 export function computeResult(
@@ -212,5 +251,6 @@ export function computeResult(
     reasons: tier1.map((b) => reasonFor(profile, b.direction)),
     flexSuppressed: !flexEligible,
     evidencedKits: evidencedKits(profile),
+    suggestedKits: suggestedKits(profile),
   };
 }
