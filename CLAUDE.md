@@ -47,17 +47,9 @@ Domain vocabulary is defined in `CONTEXT.md` at the repo root — read it before
 
 ## Agent skills
 
-### Issue tracker
-
-GitHub Issues on `stubbornweb/ratsquad.gg`, via the `gh` CLI. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Five canonical roles, label string = role name. See `docs/agents/triage-labels.md`.
-
 ### Domain docs
 
-Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+This repo's glossary is `CONTEXT.md`, not `GLOSSARY.md`.
 
 ## Reference
 
