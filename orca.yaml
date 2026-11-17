@@ -1,0 +1,4 @@
+scripts:
+  setup: |
+    cp "$ORCA_ROOT_PATH"/.env.development "$ORCA_ROOT_PATH"/.env.production . 2>/dev/null || true
+    npm ci
